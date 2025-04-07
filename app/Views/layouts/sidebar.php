@@ -148,7 +148,7 @@
                                     <!--begin:Menu item-->
                                     <div class="menu-item">
                                         <!--begin:Menu link-->
-                                        <a class="menu-link" href="authentication/layouts/corporate/sign-in.html">
+                                        <a class="menu-link active" href="<?= base_url('patient') ?>">
                                             <span class="menu-bullet">
                                                 <span class="bullet bullet-dot"></span>
                                             </span>
