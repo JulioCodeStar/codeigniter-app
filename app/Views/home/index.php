@@ -1,5 +1,11 @@
  <?= $this->extend('layouts/template'); ?>
 
+ <?= $this->section('title'); ?>
+
+ Menu Principal | KYP BIOINGENIERIA
+
+ <?= $this->endSection(); ?>
+
  <?= $this->section('content'); ?>
  
  <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 my-6">

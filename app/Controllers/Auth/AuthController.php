@@ -3,58 +3,103 @@
 namespace App\Controllers\Auth;
 
 use App\Controllers\BaseController;
+use App\Models\SedeModel;
 use App\Models\Users;
+use CodeIgniter\API\ResponseTrait;
+use Firebase\JWT\JWT;
 
 class AuthController extends BaseController
 {
-    public function index()
-    {
-        return view('auth/login');
+  use ResponseTrait;
+
+  public function index()
+  {
+    return view('auth/login');
+  }
+
+  public function login()
+  {
+    $rules = [
+      'email' => 'required|valid_email',
+      'password' => 'required|min_length[8]',
+    ];
+
+    if (!$this->validate($rules)) {
+      return redirect()->back()->withInput()->with('errors', $this->validator->listErrors());
     }
 
-    public function login()
-    {
-        $rules = [
-            'email' => 'required|valid_email',
-            'password' => 'required|min_length[8]',
-        ];
+    $userModel = new Users();
+    $post = $this->request->getPost(['email', 'password']);
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->listErrors());
-        }
+    $user = $userModel->validateUser($post['email'], $post['password']);
 
-        $userModel = new Users();
-        $post = $this->request->getPost(['email', 'password']);
+    if ($user !== null) {
+      $jwt = $this->generateJWT($user);
+      $this->setSession($user);
 
-        $user = $userModel->validateUser($post['email'], $post['password']);
-
-        if ($user !== null) {
-            $this->setSession($user);
-            return redirect()->to(base_url('/'));
-        }
-
-        return redirect()->back()->withInput()->with('errors', 'Usuario o contraseña incorrectos');
+      if ($this->request->is('ajax')) {
+        return $this->respond([
+          'token' => $jwt,
+          'redirect' => base_url('/')
+        ]);
+      }
+      return redirect()->to(base_url('/'));
     }
 
-    private function setSession($user) 
-    {
-        $data = [
-            'logged_in' => true,
-            'user_id' => $user['id'],
-            'nombres' => $user['nombres'],
-            'apellidos' => $user['apellidos'],
-            'email' => $user['email'],
-            'active' => $user['is_active'],
-        ];    
-        
-        $this->session->set($data);
+    return redirect()->back()->withInput()->with('errors', 'Usuario o contraseña incorrectos');
+  }
+
+  private function generateJWT($user)
+  {
+    $key = getenv('JWT_SECRET_KEY');
+    $payload = [
+      'iss' => base_url(),
+      'aud' => base_url(),
+      'iat' => time(),
+      'exp' => time() + 172800, // 2 días (60*60*24*2)
+      'data' => [
+        'user_id' => $user['id'],
+        'email' => $user['email'],
+        //'roles' => $user['roles'], // Asumiendo que tu modelo devuelve los roles
+        //'permisos' => $user['permisos'] // Asumiendo que tu modelo devuelve los permisos
+      ]
+    ];
+
+    return JWT::encode($payload, $key, 'HS256');
+  }
+
+  private function setSession($user)
+  {
+    $data = [
+      'logged_in' => true,
+      'user_id' => $user['id'],
+      'nombres' => $user['nombres'],
+      'apellidos' => $user['apellidos'],
+      'email' => $user['email'],
+      'active' => $user['is_active'],
+    ];
+
+    $this->session->set($data);
+  }
+
+  public function logout()
+  {
+    if ($this->session->get('logged_in')) {
+      $this->session->destroy();
     }
 
-    public function logout()
-    {
-        if ($this->session->get('logged_in')) {
-            $this->session->destroy();
-        }
-        return redirect()->to(base_url('/auth/login'));
-    }
+    // Para JWT: Invalida el token si usas lista de tokens
+    return redirect()->to(base_url('/auth/login'));
+  }
+
+
+  /* CAJA VENTAS */
+  public function sales() 
+  {
+    $sedeModel = new SedeModel();
+
+    $data['sede'] = $sedeModel->findAll();
+    return view('sales/auth/login/index', $data);  
+  }
 }
+

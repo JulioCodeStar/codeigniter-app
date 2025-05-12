@@ -2,7 +2,7 @@
 <html lang="es">
 
 <head>
-    <title>Metronic - The World's #1 Selling Bootstrap Admin Template - Metronic by KeenThemes</title>
+    <title><?= $this->renderSection('title'); ?></title>
     <meta charset="utf-8" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />
@@ -211,7 +211,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/amazon.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/amazon.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">AWS</span>
                                                         </a>
                                                     </div>
@@ -219,7 +219,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/angular-icon-1.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/angular-icon-1.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">AngularJS</span>
                                                         </a>
                                                     </div>
@@ -227,7 +227,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/atica.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/atica.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Atica</span>
                                                         </a>
                                                     </div>
@@ -235,7 +235,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/beats-electronics.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/beats-electronics.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Music</span>
                                                         </a>
                                                     </div>
@@ -243,7 +243,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/codeigniter.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/codeigniter.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Codeigniter</span>
                                                         </a>
                                                     </div>
@@ -251,7 +251,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/bootstrap-4.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/bootstrap-4.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Bootstrap</span>
                                                         </a>
                                                     </div>
@@ -259,7 +259,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/google-tag-manager.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/google-tag-manager.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">GTM</span>
                                                         </a>
                                                     </div>
@@ -267,7 +267,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/disqus.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/disqus.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Disqus</span>
                                                         </a>
                                                     </div>
@@ -275,7 +275,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/dribbble-icon-1.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/dribbble-icon-1.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Dribble</span>
                                                         </a>
                                                     </div>
@@ -283,7 +283,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/google-play-store.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/google-play-store.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Play Store</span>
                                                         </a>
                                                     </div>
@@ -291,7 +291,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/google-podcasts.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/google-podcasts.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Podcasts</span>
                                                         </a>
                                                     </div>
@@ -299,7 +299,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/figma-1.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/figma-1.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Figma</span>
                                                         </a>
                                                     </div>
@@ -307,7 +307,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/github.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/github.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Github</span>
                                                         </a>
                                                     </div>
@@ -315,7 +315,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/gitlab.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/gitlab.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Gitlab</span>
                                                         </a>
                                                     </div>
@@ -323,7 +323,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/instagram-2-1.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/instagram-2-1.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Instagram</span>
                                                         </a>
                                                     </div>
@@ -331,7 +331,7 @@
                                                     <!--begin::Col-->
                                                     <div class="col-4">
                                                         <a href="#" class="d-flex flex-column flex-center text-center text-gray-800 text-hover-primary bg-hover-light rounded py-4 px-3 mb-3">
-                                                            <img src="assets/media/svg/brand-logos/pinterest-p.svg" class="w-25px h-25px mb-2" alt="" />
+                                                            <img src="<?= base_url('assets/media/svg/brand-logos/pinterest-p.svg') ?>" class="w-25px h-25px mb-2" alt="" />
                                                             <span class="fw-semibold">Pinterest</span>
                                                         </a>
                                                     </div>
@@ -615,18 +615,23 @@
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
     <script src="<?= base_url('assets/plugins/global/plugins.bundle.js') ?>"></script>
     <script src="<?= base_url('assets/js/scripts.bundle.js') ?>"></script>
+    <script src="<?= base_url('assets/plugins/global/plugins.bundle.js') ?>"></script>
     <!--end::Global Javascript Bundle-->
     <!--begin::Vendors Javascript(used for this page only)-->
-    <script src="<?= base_url('assets/plugins/custom/fullcalendar/fullcalendar.bundle.js') ?>"></script>
+    <script src="<?= base_url('assets/plugins/custom/formrepeater/formrepeater.bundle.js') ?>"></script>
     <script src="<?= base_url('assets/plugins/custom/datatables/datatables.bundle.js') ?>"></script>
     
     <!--end::Vendors Javascript-->
     <!--begin::Custom Javascript(used for this page only)-->
     <script src="<?= base_url('assets/js/widgets.bundle.js') ?>"></script>
     <script src="<?= base_url('assets/js/custom/widgets.js') ?>"></script>
-    <script src="<?= base_url('assets/js/custom/apps/user-management/users/list/table.js') ?>"></script>
     <!--end::Custom Javascript-->
     <!--end::Javascript-->
+
+    <!-- begin::Functions App Javascript -->
+    <?= $this->renderSection('scripts'); ?>
+    <!-- end::Functions App Javascript -->
+
 </body>
 <!--end::Body-->
 

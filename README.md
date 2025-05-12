@@ -1,68 +1,279 @@
-# CodeIgniter 4 Application Starter
+# Guía de Consultas en CodeIgniter 4
 
-## What is CodeIgniter?
+Este archivo README recopila ejemplos de cómo interactuar con la base de datos utilizando CodeIgniter 4, ya sea mediante los **Modelos** o utilizando el **Query Builder**. Además, se incluyen ejemplos de cómo ejecutar consultas SQL crudas y otras operaciones útiles.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Índice
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+- [Introducción](#introducción)
+- [Consultas con Modelos](#consultas-con-modelos)
+  - [a. Seleccionar Datos (Read)](#a-seleccionar-datos-read)
+  - [b. Insertar Datos (Create)](#b-insertar-datos-create)
+  - [c. Actualizar Datos (Update)](#c-consultas-con-el-query-builder)
+  - [d. Eliminar Datos (Delete)](#e-consultas-delete)
+- [Consultas con el Query Builder](#consultas-con-el-query-builder)
+  - [a. Preparar el Builder](#a-preparar-el-builder)
+  - [b. Consultas SELECT](#b-consultas-select)
+  - [c. Consultas INSERT](#c-consultas-insert)
+  - [d. Consultas UPDATE](#d-consultas-update)
+  - [e. Consultas DELETE](#e-consultas-delete)
+- [Consultas SQL Crudas (Raw Queries)](#consultas-sql-crudas-raw-queries)
+- [Otras Operaciones y Funciones de Agregado](#otras-operaciones-y-funciones-de-agregado)
+- [Consideraciones Finales](#consideraciones-finales)
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## Introducción
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+CodeIgniter 4 ofrece dos metodologías principales para interactuar con la base de datos:
 
-## Installation & updates
+- **Consultas con Modelos:** Utilizando el patrón Active Record para operaciones CRUD de forma sencilla y estructurada.
+- **Consultas con el Query Builder:** Permite escribir consultas de forma fluida y flexible sin necesidad de escribir SQL manualmente (aunque siempre puedes hacerlo en caso necesario).
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+## Consultas con Modelos
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+Asegúrate de tener creado un modelo, por ejemplo `PatientModel.php`, en `app/Models`:
 
-## Setup
+```php
+<?php
+namespace App\Models;
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+use CodeIgniter\Model;
 
-## Important Change with index.php
+class PatientModel extends Model
+{
+    protected $table = 'patient';         // Nombre de la tabla
+    protected $primaryKey = 'id';         // Llave primaria
+    protected $allowedFields = ['nombre', 'apellido', 'edad', 'direccion']; 
+    protected $useTimestamps = true;
+}
+```
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+### a. Seleccionar Datos (Read)
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+- **Obtener todos los registros:**
 
-**Please** read the user guide for a better explanation of how CI4 works!
+  ```php
+  // Dentro de PatientController.php
+  use App\Models\PatientModel;
 
-## Repository Management
+  public function index()
+  {
+      $patientModel = new PatientModel();
+      $data['patients'] = $patientModel->findAll();
+      return view('patients/index', $data);
+  }
+  ```
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+- **Obtener un registro específico (por ID):**
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+  ```php
+  $patient = $patientModel->find($id);
+  ```
 
-## Server Requirements
+- **Obtener registros con condiciones:**
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+  ```php
+  // Ejemplo: Pacientes cuyo nombre sea 'Juan'
+  $patients = $patientModel->where('nombre', 'Juan')->findAll();
+  ```
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+### b. Insertar Datos (Create)
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+- **Insertar un único registro:**
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+  ```php
+  $data = [
+      'nombre'    => 'Pedro',
+      'apellido'  => 'García',
+      'edad'      => 30,
+      'direccion' => 'Calle Falsa 123'
+  ];
+  $patientModel->insert($data);
+  ```
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+- **Insertar múltiples registros:**
+
+  ```php
+  $dataBatch = [
+      [
+          'nombre'    => 'Ana',
+          'apellido'  => 'Martínez',
+          'edad'      => 28,
+          'direccion' => 'Av. Siempre Viva 456'
+      ],
+      [
+          'nombre'    => 'Luis',
+          'apellido'  => 'Ramírez',
+          'edad'      => 34,
+          'direccion' => 'Boulevard Central 789'
+      ]
+  ];
+  $patientModel->insertBatch($dataBatch);
+  ```
+
+### c. Actualizar Datos (Update)
+
+- **Actualizar un registro específico:**
+
+  ```php
+  $data = [
+      'edad'      => 35,
+      'direccion' => 'Nueva Calle 101'
+  ];
+  $patientModel->update($id, $data);
+  ```
+
+- **Actualizar múltiples registros (Batch Update):**
+
+  ```php
+  $dataBatch = [
+      ['id' => 1, 'edad' => 36],
+      ['id' => 2, 'edad' => 29]
+  ];
+  $patientModel->updateBatch($dataBatch, 'id');
+  ```
+
+### d. Eliminar Datos (Delete)
+
+- **Eliminar un registro específico:**
+
+  ```php
+  $patientModel->delete($id);
+  ```
+
+- **Eliminar registros según condiciones:**
+
+  ```php
+  // Ejemplo: eliminar todos los registros donde el nombre sea 'Juan'
+  $patientModel->where('nombre', 'Juan')->delete();
+  ```
+
+## Consultas con el Query Builder
+
+```bash
+# Preparar el builder
+$db = \Config\Database::connect()
+$builder = $db->table('patient')
+```
+
+### b. Consultas SELECT
+
+```php
+// Seleccionar todos los registros
+$query  = $builder->get()
+$result = $query->getResult()
+```
+
+```php
+// Seleccionar campos específicos
+$builder->select('id, nombre, apellido')
+$query = $builder->get()
+```
+
+```php
+// WHERE
+$builder->where('edad >', 25)
+$query = $builder->get()
+```
+
+```php
+// OR WHERE
+$builder->where('nombre','Ana')->orWhere('nombre','Luis')
+$query = $builder->get()
+```
+
+```php
+# LIKE
+$builder->like('nombre','an')
+$query = $builder->get()
+```
+
+```php
+# ORDER BY y LIMIT
+$builder->orderBy('nombre','ASC')->limit(10,0)
+$query = $builder->get()
+```
+
+```php
+# JOIN
+$builder->select('patient.*, appointments.fecha')
+        ->join('appointments','appointments.patient_id = patient.id')
+        ->where('appointments.fecha >=',date('Y-m-d'))
+$query = $builder->get()
+```
+
+### c. Consultas INSERT
+
+```php
+$data = [
+    'nombre'=>'Carlos','apellido'=>'López',
+    'edad'=>40,'direccion'=>'Ruta 66'
+]
+$builder->insert($data)
+```
+
+```php
+$dataBatch = [
+    ['nombre'=>'Sara','apellido'=>'Pérez','edad'=>25,'direccion'=>'Calle A'],
+    ['nombre'=>'Miguel','apellido'=>'Ruiz','edad'=>32,'direccion'=>'Calle B']
+]
+$builder->insertBatch($dataBatch)
+```
+
+### d. Consultas UPDATE
+
+```php
+$data = ['direccion'=>'Nueva Dirección 202']
+$builder->where('id',3)->update($data)
+```
+
+```php
+$dataBatch = [['id'=>4,'edad'=>45],['id'=>5,'edad'=>38]]
+$builder->updateBatch($dataBatch,'id')
+```
+
+### e. Consultas DELETE
+
+```php
+$builder->where('id',6)->delete()
+```
+
+```bash
+# Vaciar tabla
+$builder->emptyTable()
+```
+
+## Consultas SQL Crudas (Raw Queries)
+
+```php
+$sql   = "SELECT * FROM patient WHERE edad > ?"
+$query = $db->query($sql,[30])
+$result= $query->getResult()
+```
+
+## Agregados
+
+```php
+// SUM
+$builder->selectSum('edad')
+$query = $builder->get()
+$sumEdad = $query->getRow()->edad
+```
+
+```php
+// GROUP BY y HAVING
+$builder->select('edad, COUNT(*) as total')
+        ->groupBy('edad')
+        ->having('total >',1)
+$query = $builder->get()
+```
+
+```php
+// DISTINCT
+$builder->distinct()->select('nombre')
+$query = $builder->get()
+```
+
+## Consideraciones Finales
+
+- Usa **Modelos** para código limpio y organizado.
+- Verifica tu conexión en `app/Config/Database.php` o las variables de entorno.
+- Siempre valida o escapa datos externos para evitar inyecciones SQL.
