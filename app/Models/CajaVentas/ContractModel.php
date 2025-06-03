@@ -6,31 +6,177 @@ use CodeIgniter\Model;
 
 class ContractModel extends Model
 {
-    protected $table            = 'contratos';
-    protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
-    protected $protectFields    = true;
-    protected $allowedFields    = ['paciente_id', 'cotizacion_id', 'fecha_inicio', 'fecha_garantia', 'monto_total', 'moneda', 'estado_garantia'];
+  protected $table            = 'contratos';
+  protected $primaryKey       = 'id';
+  protected $useAutoIncrement = true;
+  protected $returnType       = 'array';
+  protected $useSoftDeletes   = false;
+  protected $protectFields    = true;
+  protected $allowedFields    = ['paciente_id', 'cotizacion_id', 'fecha_inicio', 'fecha_garantia', 'monto_total', 'moneda', 'user_id', 'sede_id'];
 
-    protected bool $allowEmptyInserts = false;
-
-
-    // Dates
-    protected $useTimestamps = true;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+  protected bool $allowEmptyInserts = false;
 
 
-    public function getAllContract() 
-    {
-      return $this->select('contratos.*, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, jobs.descripcion AS trabajo')
-              ->join('pacientes', 'pacientes.id = contratos.paciente_id', 'left')
-              ->join('cotizaciones', 'cotizaciones.id = contratos.cotizacion_id', 'left')
-              ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
-              ->findAll(); 
+  // Dates
+  protected $useTimestamps = true;
+  protected $dateFormat    = 'datetime';
+  protected $createdField  = 'created_at';
+  protected $updatedField  = 'updated_at';
+
+  public function getAllContract()
+  {
+    return $this->select('contratos.*, pacientes.id AS id_paciente, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, jobs.descripcion AS trabajo')
+      ->join('pacientes', 'pacientes.id = contratos.paciente_id', 'left')
+      ->join('cotizaciones', 'cotizaciones.id = contratos.cotizacion_id', 'left')
+      ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
+      ->findAll();
+  }
+
+  public function getAllContractDate(string $fecha, int $sede_id)
+  {
+    return $this->select('contratos.*, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, jobs.descripcion AS trabajo, sedes.sucursal')
+      ->join('pacientes', 'pacientes.id = contratos.paciente_id', 'left')
+      ->join('cotizaciones', 'cotizaciones.id = contratos.cotizacion_id', 'left')
+      ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
+      ->join('sedes', 'sedes.id = contratos.sede_id', 'left')
+      ->where("DATE(contratos.created_at) = '{$fecha}'", null, false)
+      ->where("contratos.sede_id", $sede_id)
+      ->findAll();
+  }
+
+  public function getContractById(int $id_contract)
+  {
+    return $this->select('contratos.*, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, pacientes.dni, pacientes.direccion, pacientes.sede, jobs.descripcion AS trabajo, cotizaciones.peso, cotizaciones.ajustes, servicios.id AS servicios_id')
+      ->join('pacientes', 'pacientes.id = contratos.paciente_id', 'left')
+      ->join('cotizaciones', 'cotizaciones.id = contratos.cotizacion_id', 'left')
+      ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
+      ->join('servicios', 'servicios.id = cotizaciones.servicios_id', 'left')
+      ->find($id_contract);
+  }
+
+  public function getAllPagosById(int $id_contract)
+  {
+    $subquery = $this->db->table('pagos')
+      ->select('id, created_at, ROW_NUMBER() OVER (PARTITION BY referencia_id ORDER BY created_at) as pago_nro')
+      ->where('modulo', 'contrato')
+      ->getCompiledSelect();
+
+    return $this->select('pagos.*, p.pago_nro')
+      ->join('pagos', 'referencia_id = contratos.id', 'left')
+      ->join("($subquery) as p", 'p.id = pagos.id', 'left')
+      ->where('pagos.modulo', 'contrato')
+      ->where('pagos.referencia_id', $id_contract)
+      ->orderBy('pagos.created_at', 'ASC')
+      ->findAll();
+  }
+
+  public function getAllManagment()
+  {
+    return $this->select('contratos.*, pacientes.id AS id_paciente, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, jobs.descripcion AS trabajo')
+      ->join('pacientes', 'pacientes.id = contratos.paciente_id', 'left')
+      ->join('cotizaciones', 'cotizaciones.id = contratos.cotizacion_id', 'left')
+      ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
+      ->findAll();
+  }
+
+  public function getResumenContract(string $hoy, string $id_user, int $id_sede): array
+  {
+    return $this
+      ->select("
+                CONCAT(p.nombres, ' ', p.apellidos) AS paciente,
+                p.cod_paciente,
+                contratos.moneda,
+                jobs.descripcion AS trabajo,
+                contratos.monto_total,
+                COALESCE(SUM(pagos.monto), 0) AS pagado,
+                (contratos.monto_total - COALESCE(SUM(pagos.monto), 0)) AS pendiente,
+                CASE
+                  WHEN (contratos.monto_total - COALESCE(SUM(pagos.monto), 0)) = 0 THEN 'Pagado'
+                  ELSE 'Deuda'
+                END AS estado
+            ")
+      ->join('pacientes p', 'p.id = contratos.paciente_id')
+      ->join('cotizaciones ct', 'ct.id = contratos.cotizacion_id')
+      ->join('jobs', 'jobs.id = ct.jobs_id', 'left')
+      ->join(
+        'pagos',
+        "pagos.modulo = 'contrato' AND pagos.referencia_id = contratos.id",
+        'left'
+      )
+      ->groupBy('contratos.id')
+      ->orderBy('contratos.created_at', 'DESC')
+      ->where("DATE(pagos.created_at) = '{$hoy}'", null, false)
+      ->where('contratos.user_id', $id_user)
+      ->where('contratos.sede_id', $id_sede)
+      ->findAll(5);
+  }
+
+  public function getAllResumenContract()
+  {
+    return $this
+      ->select("
+                contratos.id,
+                CONCAT(p.nombres, ' ', p.apellidos) AS paciente,
+                p.sede,
+                p.cod_paciente,
+                CONCAT(u.nombres, ' ', u.apellidos) AS usuario,
+                contratos.moneda,
+                jobs.descripcion AS trabajo,
+                contratos.monto_total,
+                COALESCE(SUM(pagos.monto), 0) AS pagado,
+                (contratos.monto_total - COALESCE(SUM(pagos.monto), 0)) AS pendiente,
+                CASE
+                  WHEN (contratos.monto_total - COALESCE(SUM(pagos.monto), 0)) = 0 THEN 'Pagado'
+                  ELSE 'Deuda'
+                END AS estado
+            ")
+      ->join('pacientes p', 'p.id = contratos.paciente_id')
+      ->join('cotizaciones ct', 'ct.id = contratos.cotizacion_id')
+      ->join('users u', 'u.id = contratos.user_id')
+      ->join('jobs', 'jobs.id = ct.jobs_id', 'left')
+      ->join(
+        'pagos',
+        "pagos.modulo = 'contrato' AND pagos.referencia_id = contratos.id",
+        'left'
+      )
+      ->groupBy('contratos.id')
+      ->orderBy('contratos.created_at', 'DESC')
+      ->findAll();
+  }
+
+
+  public function getAllContractByDateAndSede($sede, string $fecha)
+  {
+    $builder = $this->select('contratos.*, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, jobs.descripcion AS trabajo, sedes.sucursal AS sede')
+      ->join('pacientes', 'pacientes.id = contratos.paciente_id', 'left')
+      ->join('cotizaciones', 'cotizaciones.id = contratos.cotizacion_id', 'left')
+      ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
+      ->join('sedes', 'sedes.id = contratos.sede_id', 'left')
+      ->where("DATE(contratos.created_at) = '{$fecha}'", null, false);
+
+    if ($sede !== 'todas') {
+      $builder->where("contratos.sede_id", $sede);
     }
+
+    return $builder->findAll();
+  }
+
+
+  public function getAllContractByDateBeetweenAndSede($sede, string $start, string $end)
+  {
+    $builder = $this->select('contratos.*, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, jobs.descripcion AS trabajo, sedes.sucursal AS sede')
+      ->join('pacientes', 'pacientes.id = contratos.paciente_id', 'left')
+      ->join('cotizaciones', 'cotizaciones.id = contratos.cotizacion_id', 'left')
+      ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
+      ->join('sedes', 'sedes.id = contratos.sede_id', 'left')
+      ->where("DATE(contratos.created_at) >= ", $start)
+      ->where("DATE(contratos.created_at) <= ", $end);
+
+    if ($sede !== 'todas') {
+      $builder->where("contratos.sede_id", $sede);
+    }
+
+    return $builder->findAll();
+  }
 
 }

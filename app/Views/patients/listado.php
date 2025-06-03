@@ -2,55 +2,43 @@
 
 <?= $this->section('title'); ?>
 
- Gestion de Pacientes | KYP BIOINGENIERIA
+Gestion de Pacientes | KYP BIOINGENIERIA
 
- <?= $this->endSection(); ?>
+<?= $this->endSection(); ?>
+
+<?= $this->section('toolbar'); ?>
+
+<h1
+  class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+  Mantenimiento de Pacientes
+</h1>
+
+<ul
+  class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+
+  <li class="breadcrumb-item text-muted">Pacientes</li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">Listado</li>
+
+</ul>
+
+<?= $this->endSection(); ?>
+
 
 <?= $this->section('content'); ?>
 
-<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
-    <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 my-6">
-      <!--begin::Title-->
-      <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Mantenimiento de Pacientes</h1>
-      <!--end::Title-->
-      <!--begin::Breadcrumb-->
-      <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Pacientes</li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Listado</li>
-        <!--end::Item-->
-      </ul>
-      <!--end::Breadcrumb-->
-
-
-    </div>
-    <div class="d-flex align-items-center gap-2 gap-lg-3">
-      <!--begin::Add Patient-->
-      <a type="button" class="btn btn-primary" href="<?= base_url('patient/new') ?>">
-        <i class="ki-duotone ki-plus fs-2"></i>Agregar Paciente</a>
-      <!--end::Add Patient-->
-    </div>
-  </div>
-</div>
-
 <!--begin::Card-->
-<div class="card">
+<div class="card mt-5">
   <!--begin::Card header-->
   <div class="card-header border-0 pt-6">
     <!--begin::Card title-->
@@ -129,6 +117,8 @@
           </i>Exportar</button>
         <!--end::Export-->
 
+        <a type="button" class="btn btn-primary" href="<?= base_url('patient/new') ?>">
+          <i class="ki-duotone ki-plus fs-2"></i>Agregar Paciente</a>
       </div>
       <!--end::Toolbar-->
     </div>
@@ -167,6 +157,7 @@
             <td><span class="badge badge-light-primary badge-lg">historial de procesos</span></td>
             <td><span class="badge badge-light-warning badge-lg">garantía de mantenimiento</span></td>
             <td class="text-end">
+
               <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
                 Actions
                 <span class="svg-icon fs-5 m-0">
@@ -178,31 +169,241 @@
                   </svg>
                 </span>
               </a>
-              <!--begin::Menu-->
+
               <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
-                <!--begin::Menu item-->
+
                 <div class="menu-item px-3">
                   <a href="<?= base_url('patient/show/' . $row['id']) ?>" class="menu-link px-3" data-kt-docs-table-filter="edit_row">
                     Editar
                   </a>
                 </div>
-                <!--end::Menu item-->
 
-                <!--begin::Menu item-->
+
+
                 <div class="menu-item px-3">
                   <a href="#" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#eliminarModal" data-bs-url="<?= base_url('api/patient/delete/' . $row['id']) ?>">
                     Eliminar
                   </a>
                 </div>
-                <!--end::Menu item-->
 
-                <!--begin::Menu item-->
+
+
                 <div class="menu-item px-3">
-                  <a href="<?= base_url('patient/generate/'. $row['id']) ?>" target="_blank" class="menu-link px-3">
+                  <a href="<?= base_url('patient/generate/' . $row['id']) ?>" target="_blank" class="menu-link px-3">
                     Ver Ficha
                   </a>
                 </div>
-                <!--end::Menu item-->
+
+                <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start" data-kt-menu-offset="0,5">
+
+                  <a href="#" class="menu-link px-3">
+                    <span class="menu-title">Evaluación</span>
+                    <span class="menu-arrow"></span>
+                  </a>
+
+                  <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start" data-kt-menu-offset="0,5">
+
+                      <a href="#" class="menu-link px-3">
+                        <span class="menu-title">Miembro Superior</span>
+                        <span class="menu-arrow"></span>
+                      </a>
+
+                      <div class="menu-sub menu-sub-dropdown w-200px py-4">
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/mano-parcial') ?>" target="_blank" class="menu-link px-3">
+                            Mano Parcial
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/falange-mecanica') ?>" target="_blank" class="menu-link px-3">
+                            Falange Mecánica
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/transradial') ?>" target="_blank" class="menu-link px-3">
+                            Transradial
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/transhumeral') ?>" target="_blank" class="menu-link px-3">
+                            Transhumeral
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/desarticulado-hombro') ?>" target="_blank" class="menu-link px-3">
+                            Desarticulado de Hombro
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start" data-kt-menu-offset="0,5">
+
+                      <a href="#" class="menu-link px-3">
+                        <span class="menu-title">Miembro Inferior</span>
+                        <span class="menu-arrow"></span>
+                      </a>
+
+                      <div class="menu-sub menu-sub-dropdown w-200px py-4">
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/transfemoral') ?>" target="_blank" class="menu-link px-3">
+                            Transfemoral | Rodilla
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/transtibial') ?>" target="_blank" class="menu-link px-3">
+                            Transtibial | Syme
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/cadera') ?>" target="_blank" class="menu-link px-3">
+                            Cadera
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/pie') ?>" target="_blank" class="menu-link px-3">
+                            Chopart | Linsfrack | Metatarsal
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/bilateral-transfemoral') ?>" target="_blank" class="menu-link px-3">
+                            Bil. Transfemoral
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/bilateral-transtibial') ?>" target="_blank" class="menu-link px-3">
+                            Bil. Transtibial
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="menu-item px-3">
+                      <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/estetica') ?>" target="_blank" class="menu-link px-3">
+                        Estética
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start" data-kt-menu-offset="0,5">
+
+                  <a href="#" class="menu-link px-3">
+                    <span class="menu-title">Medidas</span>
+                    <span class="menu-arrow"></span>
+                  </a>
+
+                  <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start" data-kt-menu-offset="0,5">
+
+                      <a href="#" class="menu-link px-3">
+                        <span class="menu-title">Miembro Superior</span>
+                        <span class="menu-arrow"></span>
+                      </a>
+
+                      <div class="menu-sub menu-sub-dropdown w-200px py-4">
+                        <div class="menu-item px-3">
+                          <a href="<?= base_url('patient/generate_evaluacion/' . $row['id'] . '/mano-parcial') ?>" target="_blank" class="menu-link px-3">
+                            Mano Parcial
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Falange Mecánica
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Transradial
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="# target="_blank" class="menu-link px-3">
+                            Transhumeral
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Desarticulado de Hombro
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="left-start" data-kt-menu-offset="0,5">
+
+                      <a href="#" class="menu-link px-3">
+                        <span class="menu-title">Miembro Inferior</span>
+                        <span class="menu-arrow"></span>
+                      </a>
+
+                      <div class="menu-sub menu-sub-dropdown w-200px py-4">
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Transfemoral | Rodilla
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Transtibial | Syme
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Cadera
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Chopart | Linsfrack
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Metatarsal
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Bil. Transfemoral
+                          </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                          <a href="#" target="_blank" class="menu-link px-3">
+                            Bil. Transtibial
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="menu-item px-3">
+                      <a href="#" target="_blank" class="menu-link px-3">
+                        Estética
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </td>
           </tr>
@@ -274,7 +475,7 @@
 
     const handleSearchPatient = () => {
       const filter = document.querySelector('[data-kt-patient-table-filter="search"]');
-      filter.addEventListener('keyup', function (e) {
+      filter.addEventListener('keyup', function(e) {
         dt.search(e.target.value).draw();
       });
     }

@@ -3,54 +3,50 @@
 
 <?= $this->section('title'); ?>
 
- Gestion de Pacientes | KYP BIOINGENIERIA
+Gestion de Pacientes | KYP BIOINGENIERIA
 
- <?= $this->endSection(); ?>
+<?= $this->endSection(); ?>
+
+<?= $this->section('toolbar'); ?>
+
+<h1
+  class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+  Mantenimiento de Pacientes
+</h1>
+
+<ul
+  class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+
+  <li class="breadcrumb-item text-muted">Pacientes</li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">
+    <a href="<?= base_url('patient') ?>" class="text-muted text-hover-primary">Listado</a>
+  </li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">Registro</li>
+
+</ul>
+
+<?= $this->endSection(); ?>
 
 <?= $this->section('content'); ?>
 
-<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
-    <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 my-6">
-      <!--begin::Title-->
-      <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Mantenimiento de Pacientes</h1>
-      <!--end::Title-->
-      <!--begin::Breadcrumb-->
-      <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Pacientes</li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Registro</li>
-        <!--end::Item-->
-      </ul>
-      <!--end::Breadcrumb-->
 
-
-    </div>
-    <!-- <div class="d-flex align-items-center gap-2 gap-lg-3">
-            
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_user">
-                <i class="ki-duotone ki-plus fs-2"></i>Agregar Paciente</button>
-            
-        </div> -->
-  </div>
-</div>
-
-<div class="card card-flush h-lg-100">
+<div class="card card-flush h-lg-100 mt-5">
   <div class="card-header pt-7">
     <div class="card-title">
       <i class="ki-duotone ki-user-square fs-1 me-2">
@@ -123,13 +119,13 @@
         </div>
 
         <div class="col-md-6 mb-4">
-          <label for="direccion" class="required form-label">Dirección del Paciente</label>
-          <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Dirección del Paciente" />
+          <label for="direccion" class="required form-label">Dirección y Distrito del Paciente</label>
+          <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Ej: Calle B | Los Olivos" />
         </div>
 
         <div class="col-md-3 mb-4">
-          <label for="distrito" class="required form-label">Distrito del Paciente</label>
-          <input type="text" name="distrito" id="distrito" class="form-control" placeholder="Distrito del Paciente" />
+          <label for="nacionalidad" class="required form-label">Nacionalidad del Paciente</label>
+          <input type="text" name="nacionalidad" id="nacionalidad" class="form-control" placeholder="Distrito del Paciente" />
         </div>
 
         <div class="col-md-3 mb-4">
@@ -137,7 +133,20 @@
           <input type="email" name="correo" id="correo" class="form-control" placeholder="Correo del Paciente" />
         </div>
 
-        <div class="col-md-4 mb-4">
+      </div>
+    </div>
+    <!-- end::DATOS PERSONALES -->
+
+
+    <!-- begin::REFERENCIAS -->
+    <div class="mb-8">
+      <label class="form-label fs-6 fw-bold text-gray-700 mb-3">2. Referencias</label>
+
+      <div class="separator separator-dashed my-2 mb-4"></div>
+
+      <div class="row g-4">
+
+        <div class="col-md-3 mb-4">
           <label for="vendedor" class="required form-label">Vendedor(a)</label>
           <input type="text" name="vendedor" id="vendedor" list="vendedor_list" class="form-control" placeholder="" />
           <datalist id="vendedor_list">
@@ -147,22 +156,6 @@
         </div>
 
         <div class="col-md-3 mb-4">
-          <label for="otro_contacto" class="form-label">Otro Contacto del Paciente</label>
-          <input type="text" name="otro_contacto" id="otro_contacto" class="form-control" placeholder="ej. 999999999" />
-        </div>
-      </div>
-    </div>
-    <!-- end::DATOS PERSONALES -->
-
-
-    <!-- begin::DATOS TÉCNICOS -->
-    <div class="mb-8">
-      <label class="form-label fs-6 fw-bold text-gray-700 mb-3">2. Datos Técnicos</label>
-
-      <div class="separator separator-dashed my-2 mb-4"></div>
-
-      <div class="row g-4">
-        <div class="col-md-4 mb-4">
           <label for="canal" class="required form-label">Canal de Referencia</label>
           <select class="form-select" name="canal" id="canal" aria-label="Select example">
             <option disabled selected value="">Seleccionar Genero</option>
@@ -175,14 +168,71 @@
           </select>
         </div>
 
+        <div class="col-md-3 mb-4">
+          <label for="otro_contacto" class="form-label">Otro Contacto del Paciente</label>
+          <input type="text" name="otro_contacto" id="otro_contacto" class="form-control" placeholder="ej. 999999999" />
+        </div>
+
+        <div class="col-md-3 mb-4">
+          <label for="nombres" class="form-label">Nombres del Contacto</label>
+          <input type="text" name="nombre_contacto" id="nombre_contacto" class="form-control" placeholder="Nombres del Contacto" />
+        </div>
+
+      </div>
+
+    </div>
+    <!-- end::REFERENCIAS -->
+
+
+    <!-- begin::DATOS TÉCNICOS -->
+    <div class="mb-8">
+      <label class="form-label fs-6 fw-bold text-gray-700 mb-3">2. Datos Técnicos</label>
+
+      <div class="separator separator-dashed my-2 mb-4"></div>
+
+      <div class="row g-4">
+        
         <div class="col-md-4 mb-4">
           <label for="tiempo_ampu" class="required form-label">Tiempo de Amputación del Paciente</label>
-          <input type="text" name="tiempo_ampu" id="tiempo_ampu" class="form-control" placeholder="Tiempo de Amputación del Paciente" />
+          <select class="form-select" name="tiempo_ampu" id="tiempo_ampu" aria-label="Select example">
+            <option disabled selected value="">Seleccionar Tiempo Amputacion</option>
+            <option value="0 - 4 Meses">0 - 4 Meses</option>
+            <option value="4 - 8 Meses">4 - 8 Meses</option>
+            <option value="8 - 12 Meses">8 - 12 Meses</option>
+            <option value="1 - 3 Años">1 - 3 Años</option>
+            <option value="3 - 5 Años">3 - 5 Años</option>
+            <option value="5 Años a más">5 Años a más</option>
+          </select>
         </div>
 
         <div class="col-md-4 mb-4">
           <label for="motivo" class="required form-label">Motivo de Amputación del Paciente</label>
-          <input type="text" name="motivo" id="motivo" class="form-control" placeholder="Motivo de Amputación del Paciente" />
+          <select class="form-select" name="motivo" id="motivo" aria-label="Select example">
+            <option disabled selected value="">Seleccionar Motivo Amputacion</option>
+            <option value="Congénito">Congénito</option>
+            <option value="Accidente">Accidente</option>
+            <option value="Enfermedad">Enfermedad</option>
+          </select>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <label for="tipPaciente" class="required form-label">Tipo de Paciente</label>
+          <select class="form-select" name="tipPaciente" id="tipPaciente" aria-label="Select example">
+            <option disabled selected value="">Seleccionar Tipo de Paciente</option>
+            <option value="Regular">Regular</option>
+            <option value="Donación">Donación</option>
+            <option value="Recomendado">Recomendado</option>
+            <optgroup label="Hospital del Estado">
+              <option value="Estado | ES SALUD">Estado | ES SALUD</option>
+              <option value="Estado | MINSA">Estado | MINSA</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="col-md-4 mb-4" id="grupoRecom" style="display: none;">
+          <label for="RecomDoc" class="required form-label">Doctor Recomendado</label>
+          <input type="text" name="RecomDoc" id="RecomDoc" class="form-control"
+            placeholder="Doctor Recomendado" readonly />
         </div>
       </div>
     </div>
@@ -394,6 +444,14 @@
           }
         }
       },
+
+      'tipPaciente': {
+        validators: {
+          notEmpty: {
+            message: 'El campo es Obligatorio'
+          }
+        }
+      }
     },
 
     plugins: {
@@ -425,57 +483,79 @@
 
       // 2. Enviamos la petición AJAX
       fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      })
-      .then(async response => {
-        const data = await response.json();
+          method: 'POST',
+          body: new FormData(form),
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(async response => {
+          const data = await response.json();
 
-        // 3. Esperar al menos 2 s antes de quitar el spinner
-        setTimeout(() => {
-          submitButton.removeAttribute('data-kt-indicator');
-          submitButton.disabled = false;
+          // 3. Esperar al menos 2 s antes de quitar el spinner
+          setTimeout(() => {
+            submitButton.removeAttribute('data-kt-indicator');
+            submitButton.disabled = false;
 
-          if (!response.ok || data.status >= 400) {
-            // Error
+            if (!response.ok || data.status >= 400) {
+              // Error
+              Swal.fire({
+                text: data.message || 'Error en el servidor',
+                icon: 'error',
+                buttonsStyling: false,
+                confirmButtonText: 'Entendido',
+                customClass: {
+                  confirmButton: 'btn btn-danger'
+                }
+              });
+            } else {
+              // Éxito
+              Swal.fire({
+                text: data.message,
+                icon: 'success',
+                buttonsStyling: false,
+                confirmButtonText: 'Ok!',
+                customClass: {
+                  confirmButton: 'btn btn-primary'
+                }
+              }).then(() => {
+                window.location.href = '<?= base_url('patient') ?>';
+              });
+            }
+          }, 2000);
+        })
+        .catch(() => {
+          // Si falla la petición
+          setTimeout(() => {
+            submitButton.removeAttribute('data-kt-indicator');
+            submitButton.disabled = false;
             Swal.fire({
-              text: data.message || 'Error en el servidor',
+              text: 'No se pudo conectar al servidor',
               icon: 'error',
               buttonsStyling: false,
-              confirmButtonText: 'Entendido',
-              customClass: { confirmButton: 'btn btn-danger' }
+              confirmButtonText: 'Ok!'
             });
-          } else {
-            // Éxito
-            Swal.fire({
-              text: data.message,
-              icon: 'success',
-              buttonsStyling: false,
-              confirmButtonText: 'Ok!',
-              customClass: { confirmButton: 'btn btn-primary' }
-            }).then(() => {
-              window.location.href = '<?= base_url('patient') ?>';
-            });
-          }
-        }, 2000);
-      })
-      .catch(() => {
-        // Si falla la petición
-        setTimeout(() => {
-          submitButton.removeAttribute('data-kt-indicator');
-          submitButton.disabled = false;
-          Swal.fire({
-            text: 'No se pudo conectar al servidor',
-            icon: 'error',
-            buttonsStyling: false,
-            confirmButtonText: 'Ok!'
-          });
-        }, 2000);
-      });
+          }, 2000);
+        });
     });
   });
 
+  document.addEventListener('DOMContentLoaded', function() {
+    const selectTipo = document.getElementById('tipPaciente');
+    const grupoRecom = document.getElementById('grupoRecom');
+    const inputRecom = document.getElementById('RecomDoc');
+
+    selectTipo.addEventListener('change', function() {
+      if (this.value === 'Recomendado') {
+        grupoRecom.style.display = 'block';
+        inputRecom.removeAttribute('readonly');
+      } else {
+        grupoRecom.style.display = 'none';
+        inputRecom.setAttribute('readonly', 'readonly');
+        inputRecom.value = '';
+      }
+    });
+  });
 </script>
 
 <?= $this->endSection(); ?>

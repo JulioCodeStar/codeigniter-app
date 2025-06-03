@@ -1,63 +1,80 @@
+<?php
+$opcionesTiempo = [
+  ''            => 'Seleccionar Tiempo Amputación',
+  '0 - 4 Meses' => '0 - 4 Meses',
+  '4 - 8 Meses' => '4 - 8 Meses',
+  '8 - 12 Meses' => '8 - 12 Meses',
+  '1 - 3 Años'  => '1 - 3 Años',
+  '3 - 5 Años'  => '3 - 5 Años',
+  '5 Años a más' => '5 Años a más',
+];
+$opcionesMotivo = [
+  ''            => 'Seleccionar Motivo Amputación',
+  'Congénito'   => 'Congénito',
+  'Accidente'   => 'Accidente',
+  'Enfermedad'  => 'Enfermedad',
+];
+$opcionesTipo = [
+  ''                   => 'Seleccionar Tipo de Paciente',
+  'Regular'            => 'Regular',
+  'Donación'           => 'Donación',
+  'Recomendado'        => 'Recomendado',
+  'Estado | ES SALUD'  => 'Estado | ES SALUD',
+  'Estado | MINSA'     => 'Estado | MINSA',
+];
+
+$valorTipo = $get['tip_paciente'] ?? '';
+?>
+
+
 <?= $this->extend('layouts/template'); ?>
 
 <?= $this->section('title'); ?>
 
- Gestion de Pacientes | KYP BIOINGENIERIA
+Gestion de Pacientes | KYP BIOINGENIERIA
 
- <?= $this->endSection(); ?>
+<?= $this->endSection(); ?>
+
+<?= $this->section('toolbar'); ?>
+
+<h1
+  class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+  Mantenimiento de Pacientes
+</h1>
+
+<ul
+  class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+
+  <li class="breadcrumb-item text-muted">Pacientes</li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">
+    <a href="<?= base_url('patient') ?>" class="text-muted text-hover-primary">Listado</a>
+  </li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">Modificar</li>
+
+</ul>
+
+<?= $this->endSection(); ?>
 
 <?= $this->section('content'); ?>
 
-<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
-    <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 my-6">
-      <!--begin::Title-->
-      <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Mantenimiento de Pacientes</h1>
-      <!--end::Title-->
-      <!--begin::Breadcrumb-->
-      <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Pacientes</li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">
-          <a href="<?= base_url('patient') ?>" class="text-muted text-hover-primary">
-            Listado
-          </a>
-        </li>
-        <!--end::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <li class="breadcrumb-item text-muted">Modificar</li>
-      </ul>
-      <!--end::Breadcrumb-->
 
-
-    </div>
-    <!-- <div class="d-flex align-items-center gap-2 gap-lg-3">
-            
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_user">
-                <i class="ki-duotone ki-plus fs-2"></i>Agregar Paciente</button>
-            
-        </div> -->
-  </div>
-</div>
-
-<div class="card card-flush h-lg-100">
+<div class="card card-flush h-lg-100 my-5">
   <div class="card-header pt-7">
     <div class="card-title">
       <i class="ki-duotone ki-user-square fs-1 me-2">
@@ -71,7 +88,7 @@
 
   </div>
   <div class="card-body pt-5">
-    <?= form_open('api/patient/edit/'. $id, ['id' => 'kt_patient_edit', 'class' => 'fv-form fv-row', 'autocomplete' => 'off']) ?>
+    <?= form_open('api/patient/edit/' . $id, ['id' => 'kt_patient_edit', 'class' => 'fv-form fv-row', 'autocomplete' => 'off']) ?>
 
     <input type="hidden" id="id_paciente" name="id_paciente" value="<?= $id ?>" readonly>
     <!-- begin::DATOS PERSONALES -->
@@ -88,17 +105,17 @@
 
         <div class="col-md-3 mb-4">
           <label for="apellidos" class="required form-label">Apellidos del Paciente</label>
-          <input type="text" name="apellidos" id="apellidos" class="form-control" placeholder="Apellidos del Paciente" value="<?= $get['apellidos'] ?>"/>
+          <input type="text" name="apellidos" id="apellidos" class="form-control" placeholder="Apellidos del Paciente" value="<?= $get['apellidos'] ?>" />
         </div>
 
         <div class="col-md-3 mb-4">
           <label for="dni" class="required form-label">Identificación del Paciente</label>
-          <input type="text" name="dni" id="dni" class="form-control" placeholder="DNI - C.E." value="<?= $get['dni'] ?>"/>
+          <input type="text" name="dni" id="dni" class="form-control" placeholder="DNI - C.E." value="<?= $get['dni'] ?>" />
         </div>
 
         <div class="col-md-3 mb-4">
           <label for="edad" class="required form-label">Edad del Paciente</label>
-          <input type="number" name="edad" id="edad" class="form-control" placeholder="Ej. 18" value="<?= $get['edad'] ?>"/>
+          <input type="number" name="edad" id="edad" class="form-control" placeholder="Ej. 18" value="<?= $get['edad'] ?>" />
         </div>
 
         <div class="col-md-3 mb-4">
@@ -112,12 +129,12 @@
 
         <div class="col-md-3 mb-4">
           <label for="contacto" class="required form-label">Contacto del Paciente</label>
-          <input type="text" name="contacto" id="contacto" class="form-control" placeholder="Ej. 999999999" value="<?= $get['contacto'] ?>"/>
+          <input type="text" name="contacto" id="contacto" class="form-control" placeholder="Ej. 999999999" value="<?= $get['contacto'] ?>" />
         </div>
 
         <div class="col-md-3 mb-4">
           <label for="fecha_nac" class="required form-label">Nacimiento del Paciente</label>
-          <input type="date" name="fecha_nac" id="fecha_nac" class="form-control" value="<?= $get['fecha_nacimiento'] ?>"/>
+          <input type="date" name="fecha_nac" id="fecha_nac" class="form-control" value="<?= $get['fecha_nacimiento'] ?>" />
         </div>
 
         <div class="col-md-3 mb-4">
@@ -131,23 +148,34 @@
         </div>
 
         <div class="col-md-6 mb-4">
-          <label for="direccion" class="required form-label">Dirección del Paciente</label>
-          <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Dirección del Paciente" value="<?= $get['direccion'] ?>"/>
+          <label for="direccion" class="required form-label">Dirección y Distrito del Paciente</label>
+          <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Ej: Calle B | Los Olivos" value="<?= $get['direccion'] ?>" />
         </div>
 
         <div class="col-md-3 mb-4">
-          <label for="distrito" class="required form-label">Distrito del Paciente</label>
-          <input type="text" name="distrito" id="distrito" class="form-control" placeholder="Distrito del Paciente" value="<?= $get['distrito'] ?>"/>
+          <label for="distrito" class="required form-label">Nacionalidad del Paciente</label>
+          <input type="text" name="nacionalidad" id="nacionalidad" class="form-control" placeholder="Nacionalidad del Paciente" value="<?= $get['nacionalidad'] ?>" />
         </div>
 
         <div class="col-md-3 mb-4">
           <label for="correo" class="form-label">Correo del Paciente</label>
-          <input type="email" name="correo" id="correo" class="form-control" placeholder="Correo del Paciente" value="<?= $get['email'] ?>"/>
+          <input type="email" name="correo" id="correo" class="form-control" placeholder="Correo del Paciente" value="<?= $get['email'] ?>" />
         </div>
 
-        <div class="col-md-4 mb-4">
+      </div>
+    </div>
+    <!-- end::DATOS PERSONALES -->
+
+    <!-- begin::REFERENCIA -->
+    <div class="mb-8">
+      <label class="form-label fs-6 fw-bold text-gray-700 mb-3">2. Referencias</label>
+
+      <div class="separator separator-dashed my-2 mb-4"></div>
+
+      <div class="row g-4">
+        <div class="col-md-3 mb-4">
           <label for="vendedor" class="required form-label">Vendedor(a)</label>
-          <input type="text" name="vendedor" id="vendedor" list="vendedor_list" class="form-control" placeholder="" value="<?= $get['vendedor'] ?>"/>
+          <input type="text" name="vendedor" id="vendedor" list="vendedor_list" class="form-control" placeholder="" value="<?= $get['vendedor'] ?>" />
           <datalist id="vendedor_list">
             <option value="Yessenia Anaí Cuya Sarango">
             <option value="Misael Fernandez Nizama">
@@ -155,22 +183,6 @@
         </div>
 
         <div class="col-md-3 mb-4">
-          <label for="otro_contacto" class="form-label">Otro Contacto del Paciente</label>
-          <input type="text" name="otro_contacto" id="otro_contacto" class="form-control" placeholder="ej. 999999999" value="<?= $get['otro_contacto'] ?>"/>
-        </div>
-      </div>
-    </div>
-    <!-- end::DATOS PERSONALES -->
-
-
-    <!-- begin::DATOS TÉCNICOS -->
-    <div class="mb-8">
-      <label class="form-label fs-6 fw-bold text-gray-700 mb-3">2. Datos Técnicos</label>
-
-      <div class="separator separator-dashed my-2 mb-4"></div>
-
-      <div class="row g-4">
-        <div class="col-md-4 mb-4">
           <label for="canal" class="required form-label">Canal de Referencia</label>
           <select class="form-select" name="canal" id="canal" aria-label="Select example">
             <option disabled selected value="">Seleccionar Genero</option>
@@ -183,14 +195,83 @@
           </select>
         </div>
 
+        <div class="col-md-3 mb-4">
+          <label for="otro_contacto" class="form-label">Otro Contacto del Paciente</label>
+          <input type="text" name="otro_contacto" id="otro_contacto" class="form-control" placeholder="ej. 999999999" value="<?= $get['otro_contacto'] ?>" />
+        </div>
+
+        <div class="col-md-3 mb-4">
+          <label for="nombres" class="form-label">Nombres del Contacto</label>
+          <input type="text" name="nombre_contacto" id="nombre_contacto" class="form-control" placeholder="Nombres del Contacto" value="<?= $get['nombre_contacto'] ?>" />
+        </div>
+      </div>
+    </div>
+
+    <!-- end::REFERENCIA -->
+
+    <!-- begin::DATOS TÉCNICOS -->
+    <div class="mb-8">
+      <label class="form-label fs-6 fw-bold text-gray-700 mb-3">2. Datos Técnicos</label>
+
+      <div class="separator separator-dashed my-2 mb-4"></div>
+
+      <div class="row g-4">
+
+
         <div class="col-md-4 mb-4">
-          <label for="tiempo_ampu" class="required form-label">Tiempo de Amputación del Paciente</label>
-          <input type="text" name="tiempo_ampu" id="tiempo_ampu" class="form-control" placeholder="Tiempo de Amputación del Paciente" value="<?= $get['time_ampu'] ?>"/>
+          <?= form_label('Tiempo de Amputación del Paciente', 'tiempo_ampu', ['class' => 'required form-label']) ?>
+          <?= form_dropdown(
+            'tiempo_ampu',
+            $opcionesTiempo,
+            $get['time_ampu'] ?? '',
+            [
+              'class'      => 'form-select',
+              'id'         => 'tiempo_ampu',
+            ]
+          ) ?>
         </div>
 
         <div class="col-md-4 mb-4">
-          <label for="motivo" class="required form-label">Motivo de Amputación del Paciente</label>
-          <input type="text" name="motivo" id="motivo" class="form-control" placeholder="Motivo de Amputación del Paciente" value="<?= $get['motivo_amputacion'] ?>"/>
+          <?= form_label('Motivo de Amputación del Paciente', 'motivo', ['class' => 'required form-label']) ?>
+          <?= form_dropdown(
+            'motivo',
+            $opcionesMotivo,
+            $get['motivo_amputacion'] ?? '',
+            [
+              'class'      => 'form-select',
+              'id'         => 'motivo',
+            ]
+          ) ?>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <?= form_label('Tipo de Paciente', 'tipPaciente', ['class' => 'required form-label']) ?>
+          <?= form_dropdown(
+            'tipPaciente',
+            $opcionesTipo,
+            $get['tip_paciente'] ?? '',
+            [
+              'class'      => 'form-select',
+              'id'         => 'tipPaciente',
+            ]
+          ) ?>
+        </div>
+
+        <?php
+        // Decide si mostrar o no el bloque de Doctor Recomendado
+        $mostrarRecom = $valorTipo === 'Recomendado';
+        ?>
+        <div
+          class="col-md-4 mb-4"
+          id="grupoRecom"
+          style="<?= $mostrarRecom ? 'display: block;' : 'display: none;' ?>">
+          <?= form_label('Doctor Recomendado', 'RecomDoc', ['class' => 'required form-label']) ?>
+          <?= form_input([
+            'name'     => 'RecomDoc',
+            'id'       => 'RecomDoc',
+            'class'    => 'form-control',
+            'value'    => $get['recon_doc'] ?? '',
+          ]) ?>
         </div>
       </div>
     </div>
@@ -206,12 +287,12 @@
       <div class="row g-4">
         <div class="col-md-6 mb-4">
           <label for="afecciones" class="form-label">Afecciones del Paciente</label>
-          <input type="text" name="afecciones" id="afecciones" class="form-control" placeholder="Afecciones del Paciente" value="<?= $get['afecciones'] ?>"/>
+          <input type="text" name="afecciones" id="afecciones" class="form-control" placeholder="Afecciones del Paciente" value="<?= $get['afecciones'] ?>" />
         </div>
 
         <div class="col-md-6 mb-4">
           <label for="alergias" class="form-label">Alergias del Paciente</label>
-          <input type="text" name="alergias" id="alergias" class="form-control" placeholder="Alergias del Paciente" value="<?= $get['alergias'] ?>"/>
+          <input type="text" name="alergias" id="alergias" class="form-control" placeholder="Alergias del Paciente" value="<?= $get['alergias'] ?>" />
         </div>
       </div>
 
@@ -227,7 +308,7 @@
       <div class="row g-4">
         <div class="col-md-12 mb-4">
           <label for="observacion" class="form-label">Observaciones</label>
-          <textarea name="observacion" value="<?= $get['observaciones'] ?> id="observacion" class="form-control" style="height: 100px;"></textarea>
+          <textarea name="observacion" value="<?= $get['observaciones'] ?> id=" observacion" class="form-control" style="height: 100px;"></textarea>
         </div>
       </div>
     </div>
@@ -433,54 +514,77 @@
 
       // 2. Enviamos la petición AJAX
       fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      })
-      .then(async response => {
-        const data = await response.json();
+          method: 'POST',
+          body: new FormData(form),
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(async response => {
+          const data = await response.json();
 
-        // 3. Esperar al menos 2 s antes de quitar el spinner
-        setTimeout(() => {
-          submitButton.removeAttribute('data-kt-indicator');
-          submitButton.disabled = false;
+          // 3. Esperar al menos 2 s antes de quitar el spinner
+          setTimeout(() => {
+            submitButton.removeAttribute('data-kt-indicator');
+            submitButton.disabled = false;
 
-          if (!response.ok || data.status >= 400) {
-            // Error
+            if (!response.ok || data.status >= 400) {
+              // Error
+              Swal.fire({
+                text: data.message || 'Error en el servidor',
+                icon: 'error',
+                buttonsStyling: false,
+                confirmButtonText: 'Entendido',
+                customClass: {
+                  confirmButton: 'btn btn-danger'
+                }
+              });
+            } else {
+              // Éxito
+              Swal.fire({
+                text: data.message,
+                icon: 'success',
+                buttonsStyling: false,
+                confirmButtonText: 'Ok!',
+                customClass: {
+                  confirmButton: 'btn btn-primary'
+                }
+              }).then(() => {
+                window.location.href = '<?= base_url('patient') ?>';
+              });
+            }
+          }, 2000);
+        })
+        .catch(() => {
+          // Si falla la petición
+          setTimeout(() => {
+            submitButton.removeAttribute('data-kt-indicator');
+            submitButton.disabled = false;
             Swal.fire({
-              text: data.message || 'Error en el servidor',
+              text: 'No se pudo conectar al servidor',
               icon: 'error',
               buttonsStyling: false,
-              confirmButtonText: 'Entendido',
-              customClass: { confirmButton: 'btn btn-danger' }
+              confirmButtonText: 'Ok!'
             });
-          } else {
-            // Éxito
-            Swal.fire({
-              text: data.message,
-              icon: 'success',
-              buttonsStyling: false,
-              confirmButtonText: 'Ok!',
-              customClass: { confirmButton: 'btn btn-primary' }
-            }).then(() => {
-              window.location.href = '<?= base_url('patient') ?>';
-            });
-          }
-        }, 2000);
-      })
-      .catch(() => {
-        // Si falla la petición
-        setTimeout(() => {
-          submitButton.removeAttribute('data-kt-indicator');
-          submitButton.disabled = false;
-          Swal.fire({
-            text: 'No se pudo conectar al servidor',
-            icon: 'error',
-            buttonsStyling: false,
-            confirmButtonText: 'Ok!'
-          });
-        }, 2000);
-      });
+          }, 2000);
+        });
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const selectTipo = document.getElementById('tipPaciente');
+    const grupoRecom = document.getElementById('grupoRecom');
+    const inputRecom = document.getElementById('RecomDoc');
+
+    selectTipo.addEventListener('change', function() {
+      if (this.value === 'Recomendado') {
+        grupoRecom.style.display = 'block';
+        inputRecom.removeAttribute('readonly');
+      } else {
+        grupoRecom.style.display = 'none';
+        inputRecom.setAttribute('readonly', 'readonly');
+        inputRecom.value = '';
+      }
     });
   });
 </script>

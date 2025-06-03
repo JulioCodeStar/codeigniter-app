@@ -4,9 +4,14 @@
   <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
     <!--begin::Logo image-->
     <a href="<?= base_url('/') ?>">
-      <img alt="Logo" src="<?= base_url('assets/media/logos/default.svg') ?>" class="h-25px app-sidebar-logo-default theme-light-show" />
-      <img alt="Logo" src="<?= base_url('assets/media/logos/default-dark.svg') ?>" class="h-25px app-sidebar-logo-default theme-dark-show" />
-      <img alt="Logo" src="<?= base_url('assets/media/logos/default-small.svg') ?>" class="h-20px app-sidebar-logo-minimize" />
+      <img
+        alt="Logo"
+        src="<?= base_url('assets/media/logos/logo-default.svg') ?>"
+        class="app-sidebar-logo-default" style="height: 40px;" />
+      <img
+        alt="Logo"
+        src="<?= base_url('assets/media/logos/logo-mobile.svg') ?>"
+        class="app-sidebar-logo-minimize" style="height: 35px;" />
     </a>
     <!--end::Logo image-->
     <!--begin::Sidebar toggle-->
@@ -73,11 +78,11 @@
             </span>
             <!--end:Menu link-->
             <!--begin:Menu sub-->
-            <div class="menu-sub menu-sub-accordion">
+            <div class="menu-sub menu-sub-accordion <?= set_active_menu('users|users/roles', 'parent') ?>">
               <!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link" href="authentication/extended/multi-steps-sign-up.html">
+                <a class="menu-link <?= set_active_menu('users', 'link') ?>" href="<?= base_url('users') ?>">
                   <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                   </span>
@@ -89,11 +94,37 @@
               <!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link" href="authentication/general/welcome.html">
+                <a class="menu-link <?= set_active_menu('users/roles', 'link') ?>" href="<?= base_url('users/roles') ?>">
                   <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                   </span>
-                  <span class="menu-title">Roles & Permisos</span>
+                  <span class="menu-title">Roles</span>
+                </a>
+                <!--end:Menu link-->
+              </div>
+              <!--end:Menu item-->
+
+              <!--begin:Menu item-->
+              <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link <?= set_active_menu('users/permisos', 'link') ?>" href="<?= base_url('users/permisos') ?>" href="">
+                  <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                  </span>
+                  <span class="menu-title">Permisos</span>
+                </a>
+                <!--end:Menu link-->
+              </div>
+              <!--end:Menu item-->
+
+              <!--begin:Menu item-->
+              <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link" href="">
+                  <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                  </span>
+                  <span class="menu-title">Caja de Accesos</span>
                 </a>
                 <!--end:Menu link-->
               </div>
@@ -115,7 +146,7 @@
           <!--end:Managment Patients Items-->
 
           <!--begin:Menu Patients item-->
-          <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('patient|invoice', 'parent') ?>">
+          <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('patient|invoice|contract|accesorios|citas|managment', 'parent') ?>">
             <!--begin:Menu link-->
             <span class="menu-link">
               <span class="menu-icon">
@@ -129,7 +160,7 @@
             </span>
             <!--end:Menu link-->
             <!--begin:Menu sub-->
-            <div class="menu-sub menu-sub-accordion <?= set_active_menu(['patient', 'invoice'], 'sub') ?>">
+            <div class="menu-sub menu-sub-accordion <?= set_active_menu(['patient|invoice|contract|accesorios'], 'sub') ?>">
               <!--begin:Menu item-->
               <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('patient', 'parent') ?>">
                 <!--begin:Menu link-->
@@ -187,7 +218,7 @@
                   <!--begin:Menu item-->
                   <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link <?= set_active_menu(['invoice'], 'link') ?>" href="<?= base_url('invoice') ?>">
+                    <a class="menu-link <?= set_active_menu('invoice', 'link') ?>" href="<?= base_url('invoice') ?>">
                       <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                       </span>
@@ -199,7 +230,7 @@
                   <!--begin:Menu item-->
                   <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link <?= set_active_menu(['invoice', 'new'], 'link') ?>" href="<?= base_url('invoice/new') ?>">
+                    <a class="menu-link <?= set_active_menu('invoice/new', 'link') ?>" href="<?= base_url('invoice/new') ?>">
                       <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                       </span>
@@ -289,6 +320,46 @@
                 <!--end:Menu sub-->
               </div>
               <!--end:Menu item-->
+
+              <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link <?= set_active_menu('contract|contract/pagos', 'link') ?>" href="<?= base_url('contract') ?>">
+                  <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                  </span>
+                  <span class="menu-title">Contratos</span>
+                </a>
+              </div>
+
+              <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link <?= set_active_menu('accesorios', 'link') ?>" href="<?= base_url('accesorios') ?>">
+                  <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                  </span>
+                  <span class="menu-title">Ventas Accesorios</span>
+                </a>
+              </div>
+
+              <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link <?= set_active_menu('citas', 'link') ?>" href="<?= base_url('citas') ?>">
+                  <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                  </span>
+                  <span class="menu-title">Citas</span>
+                </a>
+              </div>
+
+              <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link <?= set_active_menu('managment', 'link') ?>" href="<?= base_url('managment') ?>">
+                  <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                  </span>
+                  <span class="menu-title">Mantenimiento</span>
+                </a>
+              </div>
             </div>
             <!--end:Menu sub-->
           </div>
@@ -383,9 +454,6 @@
             <!--end:Menu sub-->
           </div>
           <!--end:Menu item-->
-
-
-
 
 
         </div>

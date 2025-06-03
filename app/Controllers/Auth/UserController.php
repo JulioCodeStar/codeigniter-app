@@ -7,8 +7,18 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class UserController extends BaseController
 {
-    public function index(): string
-    {
-        return view('');
-    }
+  public function index()
+  {
+    return view('auth/Users/index');
+  }
+
+  public function roles()
+  {
+    return view('auth/roles/index');
+  }
+
+  public function permisos() 
+  {
+    return view('auth/permisos/index');  
+  }
 }

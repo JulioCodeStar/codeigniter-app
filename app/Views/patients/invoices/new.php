@@ -2,52 +2,50 @@
 
 <?= $this->section('title'); ?>
 
- Gestion de Pacientes | KYP BIOINGENIERIA
+Gestion de Pacientes | KYP BIOINGENIERIA
 
- <?= $this->endSection(); ?>
+<?= $this->endSection(); ?>
+
+<?= $this->section('toolbar'); ?>
+
+<h1
+  class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+  Mantenimiento de Pacientes
+</h1>
+
+<ul
+  class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+
+  <li class="breadcrumb-item text-muted">Pacientes</li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">Cotizaciones</li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">
+    <a href="<?= base_url('invoice') ?>" class="text-muted text-hover-primary">Listado</a>
+  </li>
+
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
+
+  <li class="breadcrumb-item text-muted">Registro</li>
+
+</ul>
+
+<?= $this->endSection(); ?>
 
 <?= $this->section('content'); ?>
 
-<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
-    <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 my-6">
-      <!--begin::Title-->
-      <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Mantenimiento de Pacientes</h1>
-      <!--end::Title-->
-      <!--begin::Breadcrumb-->
-      <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Pacientes</li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">
-          <a href="<?= base_url('invoice') ?>" class="text-muted text-hover-primary">
-            Cotización
-          </a>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Registro</li>
-        <!--end::Item-->
-      </ul>
-      <!--end::Breadcrumb-->
 
-
-    </div>
-  </div>
-</div>
-
-<?= form_open('api/invoice/create', ['id' => 'kt_invoice_form', 'class' => 'fv-row', 'autocomplete' => 'off']) ?>
+<?= form_open('api/invoice/create', ['id' => 'kt_invoice_form', 'class' => 'fv-row mt-5', 'autocomplete' => 'off']) ?>
 <div class="d-flex flex-column flex-lg-row">
   <!--begin::Content-->
   <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
@@ -201,11 +199,10 @@
                       <div class="fs-5 mb-10 required">Subtotal</div>
                       <div class="form-check form-switch mb-4">
                         <input class="form-check-input" type="checkbox" id="igv" name="igv">
-                        <label class="form-check-label" for="igv">Agregar IGV (18%)</label>
+                        <label class="form-check-label fs-7" for="igv">IGV (18%)</label>
                       </div>
-                      <div class="d-flex align-items-center gap-2 ">
-                        <label class="form-label mb-0">Descuento (%)</label>
-                        <input type="number" id="descuento" name="descuento" class="form-control form-control-sm w-100px" placeholder="%" min="0" max="100" step="0.01">
+                      <div class="">
+                        <label class="form-label mb-0">Descuento: </label>
                       </div>
                     </div>
                   </th>
@@ -215,8 +212,7 @@
                     </div>
                     <div class="text-muted small mb-6">IGV: <span id="monto-igv">0.00</span></div>
                     <input type="hidden" readonly name="igv_coti" id="igv_coti">
-                    <div class="text-muted small">Descuento: <span id="monto-descuento">0.00</span></div>
-                    <input type="hidden" readonly name="descuento_coti" id="descuento_coti">
+                    <input type="number" id="descuento" name="descuento" class="form-control form-control-sm w-100px" placeholder="" min="0" max="100" step="0.01">
                   </th>
                 </tr>
                 <tr class="align-top fw-bold text-gray-700">
@@ -290,6 +286,24 @@
     <div class="card" data-kt-sticky="true" data-kt-sticky-name="invoice" data-kt-sticky-offset="{default: false, lg: '200px'}" data-kt-sticky-width="{lg: '250px', lg: '300px'}" data-kt-sticky-left="auto" data-kt-sticky-top="150px" data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
       <!--begin::Card body-->
       <div class="card-body p-10">
+
+        <div class="mb-10 fv-row">
+          <label class="form-label fw-bold fs-6 text-gray-700 required">Evaluación</label>
+          <!--end::Label-->
+          <!--begin::Select-->
+          <select name="apto" id="apto" aria-label="Select a Timezone" data-control="select2" data-placeholder="Seleccionar Evaluación" class="form-select form-select-solid">
+            <option disabled selected value=""></option>
+            <option value="Apto">
+              Apto
+            </option>
+            <option value="No Apto">
+              No Apto
+            </option>
+          </select>
+        </div>
+
+        <div class="separator separator-dashed mb-8"></div>
+
         <!--begin::Input group-->
         <div class="mb-10 fv-row">
           <!--begin::Label-->
@@ -452,8 +466,6 @@
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-
         const tbody = document.querySelector('[data-kt-element="items"] tbody');
 
         // Limpiar filas anteriores
@@ -474,28 +486,28 @@
           }
 
           row.innerHTML = `
-          <td class="pe-7 d-flex flex-column gap-2">
-            <input type="text" class="form-control form-control-solid me-2" name="title[]" value="${comp.description || ''}" placeholder="Item name" />
-            <input list="coti_list_${comp.id}" type="text" class="form-control form-control-solid" name="description[]" placeholder="Description" />
-            <datalist id="coti_list_${comp.id}">
-              ${datalistOptions}
-            </datalist>
-          </td>
-          <td class="ps-0">
-            <input class="form-control form-control-solid" type="number" min="1" name="cantidad[]" value="${comp.cantidad}" data-kt-element="quantity" />
-          </td>
-          <td colspan="2" class="pt-5 text-end">
-            <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-kt-element="remove-item">
-              <i class="ki-duotone ki-trash fs-3">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-                <span class="path5"></span>
-              </i>
-            </button>
-          </td>
-        `;
+            <td class="pe-7 d-flex flex-column gap-2">
+              <input type="text" class="form-control form-control-solid me-2" name="title[]" value="${comp.description || ''}" placeholder="Item name" />
+              <input list="coti_list_${comp.id}" type="text" class="form-control form-control-solid" name="description[]" placeholder="Description" />
+              <datalist id="coti_list_${comp.id}">
+                ${datalistOptions}
+              </datalist>
+            </td>
+            <td class="ps-0">
+              <input class="form-control form-control-solid" type="number" min="1" name="cantidad[]" value="${comp.cantidad}" data-kt-element="quantity" />
+            </td>
+            <td colspan="2" class="pt-5 text-end">
+              <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" data-kt-element="remove-item">
+                <i class="ki-duotone ki-trash fs-3">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+              </button>
+            </td>
+         `;
 
           tbody.appendChild(row);
         });
@@ -505,18 +517,15 @@
 
   function calcularTotalDesdeSubtotal() {
     const subtotal = parseFloat(document.getElementById('subtotal').value) || 0;
-    const descuentoPorcentaje = parseFloat(document.getElementById('descuento').value) || 0;
+    const descuento = parseFloat(document.getElementById('descuento').value) || 0;
     const aplicaIgv = document.getElementById('igv').checked;
 
     const igv = aplicaIgv ? subtotal * 0.18 : 0;
-    const descuento = subtotal * (descuentoPorcentaje / 100);
     const total = subtotal + igv - descuento;
 
     // Mostrar resultados
     document.getElementById('monto-igv').innerText = igv.toFixed(2);
     document.getElementById('igv_coti').value = igv.toFixed(2);
-    document.getElementById('monto-descuento').innerText = descuento.toFixed(2);
-    document.getElementById('descuento_coti').value = descuento.toFixed(2);
     document.getElementById('total').innerText = total.toFixed(2);
     document.getElementById('total_coti').value = total.toFixed(2);
   }
@@ -628,11 +637,6 @@
             decimalSeparator: '.', // Usa '.' como separador decimal
             thousandsSeparator: ',' // Opcional (para miles)
           },
-          between: {
-            min: 0,
-            max: 100,
-            message: 'El descuento debe estar entre 0% y 100%'
-          }
         }
       },
 
@@ -664,6 +668,14 @@
           }
         }
       },
+
+      'apto': {
+        alidators: {
+          notEmpty: {
+            message: "El campo es Obligatorio"
+          }
+        }
+      }
 
     },
 

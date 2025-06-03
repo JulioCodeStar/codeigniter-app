@@ -14,102 +14,120 @@ class UserRolesPermisosSeeder extends Seeder
         // Instanciamos el modelo para insertar usuarios y ejecutar los beforeInsert.
         $userModel = new Users();
 
-        // Creamos 10 usuarios de ejemplo
+        $userIds = [];
+
         for ($i = 1; $i <= 10; $i++) {
             $user = [
                 'nombres'    => "Usuario{$i}",
                 'apellidos'  => "Apellido{$i}",
                 'email'      => "usuario{$i}@example.com",
-                'password'   => 'Root1234', // se aplicará hash en el beforeInsert
+                'password'   => 'Root1234',
                 'is_active'  => 1,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
 
             $userModel->insert($user);
+            $userIds[] = $userModel->getInsertID(); // Guarda el ID insertado
         }
 
         // Inserción de roles
         $roles = [
             [
-                'nombre'      => 'Admin',
+                'nombre'      => 'Administrador',
                 'descripcion' => 'Rol de administrador',
                 'created_at'  => $now,
             ],
             [
-                'nombre'      => 'Usuario',
-                'descripcion' => 'Rol de usuario regular',
+                'nombre'      => 'Recepcionista',
+                'descripcion' => 'Rol de recepcionistas',
                 'created_at'  => $now,
             ],
+            [
+                'nombre'      => 'Ventas',
+                'descripcion' => 'Rol de ventas',
+                'created_at'  => $now,
+            ]
         ];
         $this->db->table('roles')->insertBatch($roles);
 
         // Inserción de permisos
         $permisos = [
-            [
-                'nombres'     => 'create',
-                'descripcion' => 'Permite crear contenido',
-                'created_at'  => $now,
-            ],
-            [
-                'nombres'     => 'edit',
-                'descripcion' => 'Permite editar contenido',
-                'created_at'  => $now,
-            ],
-            [
-                'nombres'     => 'delete',
-                'descripcion' => 'Permite eliminar contenido',
-                'created_at'  => $now,
-            ],
+            // Pacientes
+            ['nombres' => 'gestion_pacientes.pacientes.listado', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'pacientes', 'accion' => 'listado'],
+            ['nombres' => 'gestion_pacientes.pacientes.create', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'pacientes', 'accion' => 'create'],
+            ['nombres' => 'gestion_pacientes.pacientes.update', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'pacientes', 'accion' => 'update'],
+            ['nombres' => 'gestion_pacientes.pacientes.delete', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'pacientes', 'accion' => 'delete'],
+
+            // Cotizaciones
+            ['nombres' => 'gestion_pacientes.cotizaciones.listado', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'cotizaciones', 'accion' => 'listado'],
+            ['nombres' => 'gestion_pacientes.cotizaciones.create', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'cotizaciones', 'accion' => 'create'],
+            ['nombres' => 'gestion_pacientes.cotizaciones.update', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'cotizaciones', 'accion' => 'update'],
+            ['nombres' => 'gestion_pacientes.cotizaciones.delete', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'cotizaciones', 'accion' => 'delete'],
+
+            // Otros accesos
+            ['nombres' => 'gestion_pacientes.historial', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'historial', 'accion' => 'view'],
+            ['nombres' => 'gestion_pacientes.contratos', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'contratos', 'accion' => 'view'],
+            ['nombres' => 'gestion_pacientes.ventas_accesorios', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'ventas_accesorios', 'accion' => 'view'],
+            ['nombres' => 'gestion_pacientes.citas', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'citas', 'accion' => 'view'],
+            ['nombres' => 'gestion_pacientes.mantenimiento', 'seccion' => 'gestion_pacientes', 'sub_seccion' => 'mantenimiento', 'accion' => 'view'],
         ];
         $this->db->table('permisos')->insertBatch($permisos);
 
-        // Recuperamos los registros insertados para establecer relaciones.
-        $usersData    = $this->db->table('users')->get()->getResult();
-        $rolesData    = $this->db->table('roles')->get()->getResult();
-        $permisosData = $this->db->table('permisos')->get()->getResult();
+        $adminId = $this->db->table('roles')->where('nombre', 'Administrador')->get()->getRow()->id;
+        $recepId = $this->db->table('roles')->where('nombre', 'Recepcionista')->get()->getRow()->id;
+        $vendId  = $this->db->table('roles')->where('nombre', 'Ventas')->get()->getRow()->id;
 
-        // Asignamos relaciones en la tabla pivote user_roles:
-        // Asignamos el rol "Admin" a los primeros 2 usuarios y "Usuario" al resto.
-        $userRoles = [];
-        foreach ($usersData as $index => $user) {
-            if ($index < 2) {
-                // Primeros 2 usuarios como Admin
-                $userRoles[] = [
-                    'user_id' => $user->id,
-                    'role_id' => $rolesData[0]->id, // Admin
-                ];
-            } else {
-                // Resto como Usuario
-                $userRoles[] = [
-                    'user_id' => $user->id,
-                    'role_id' => $rolesData[1]->id, // Usuario
-                ];
+        // Obtener todos los permisos
+        $permisos = $this->db->table('permisos')->get()->getResultArray();
+
+        // Para admin → todos los permisos
+        $adminPerms = array_map(fn($p) => [
+            'role_id' => $adminId,
+            'permisos_id' => $p['id']
+        ], $permisos);
+
+        // Para recepcionista → algunos permisos
+        $recepPerms = [];
+        foreach ($permisos as $p) {
+            if (in_array($p['nombres'], [
+                'gestion_pacientes.pacientes.listado',
+                'gestion_pacientes.pacientes.create',
+                'gestion_pacientes.cotizaciones.listado',
+                'gestion_pacientes.cotizaciones.create'
+            ])) {
+                $recepPerms[] = ['role_id' => $recepId, 'permisos_id' => $p['id']];
             }
         }
-        $this->db->table('user_roles')->insertBatch($userRoles);
 
-        // Asignamos permisos en la tabla pivote role_permisos:
-        // Al rol "Admin" se le asignan todos los permisos,
-        // y al rol "Usuario" solo se le asignan 'create' y 'edit'.
-        $rolePermisos = [];
-
-        // Para el rol Admin: todos los permisos.
-        foreach ($permisosData as $permiso) {
-            $rolePermisos[] = [
-                'role_id'     => $rolesData[0]->id,
-                'permisos_id' => $permiso->id,
-            ];
+        // Para vendedor → otros permisos
+        $vendPerms = [];
+        foreach ($permisos as $p) {
+            if (in_array($p['nombres'], [
+                'gestion_pacientes.cotizaciones.listado',
+                'gestion_pacientes.cotizaciones.create',
+                'gestion_pacientes.contratos'
+            ])) {
+                $vendPerms[] = ['role_id' => $vendId, 'permisos_id' => $p['id']];
+            }
         }
-        // Para el rol Usuario: solo 'create' y 'edit'
-        $rolePermisos[] = [
-            'role_id'     => $rolesData[1]->id,
-            'permisos_id' => $permisosData[0]->id, // create
+
+        $this->db->table('role_permisos')->insertBatch([...$adminPerms, ...$recepPerms, ...$vendPerms]);
+
+        // Asignación de roles a usuarios
+        $userRoles = [
+            ['user_id' => $userIds[0], 'role_id' => $adminId],
+            ['user_id' => $userIds[1], 'role_id' => $recepId],
+            ['user_id' => $userIds[2], 'role_id' => $vendId],
+            ['user_id' => $userIds[3], 'role_id' => $recepId],
+            ['user_id' => $userIds[4], 'role_id' => $vendId],
+            ['user_id' => $userIds[5], 'role_id' => $recepId],
+            ['user_id' => $userIds[6], 'role_id' => $vendId],
+            ['user_id' => $userIds[7], 'role_id' => $adminId],
+            ['user_id' => $userIds[8], 'role_id' => $recepId],
+            ['user_id' => $userIds[9], 'role_id' => $adminId],
         ];
-        $rolePermisos[] = [
-            'role_id'     => $rolesData[1]->id,
-            'permisos_id' => $permisosData[1]->id, // edit
-        ];
-        $this->db->table('role_permisos')->insertBatch($rolePermisos);
+        
+        $this->db->table('user_roles')->insertBatch($userRoles);
     }
 }

@@ -42,16 +42,19 @@ class PatientController extends BaseController
         'fecha_nacimiento'     => $this->request->getPost('fecha_nac'),
         'sede'                 => $this->request->getPost('sede'),
         'direccion'            => $this->request->getPost('direccion'),
-        'distrito'             => $this->request->getPost('distrito'),
+        'nacionalidad'         => $this->request->getPost('nacionalidad'),
         'email'                => $this->request->getPost('correo'),
         'vendedor'             => $this->request->getPost('vendedor'),
         'otro_contacto'        => $this->request->getPost('otro_contacto'),
+        'nombre_contacto'      => $this->request->getPost('nombre_contacto'),
         'canal'                => $this->request->getPost('canal'),
         'time_ampu'            => $this->request->getPost('tiempo_ampu'),
         'motivo_amputacion'    => $this->request->getPost('motivo'),
         'afecciones'           => $this->request->getPost('afecciones'),
         'alergias'             => $this->request->getPost('alergias'),
         'observaciones'        => $this->request->getPost('observacion'),
+        'tip_paciente'         => $this->request->getPost('tipPaciente'),
+        'recon_doc'            => $this->request->getPost('RecomDoc'),
       ];
 
       // 2. Insertar
@@ -81,7 +84,7 @@ class PatientController extends BaseController
           ->setStatusCode(500)
           ->setJSON([
             'status'  => 500,
-            'message' => 'Error al crear paciente',
+            'message' => 'Error al crear paciente: ' . $e->getMessage(),
           ]);
       }
 
@@ -116,16 +119,19 @@ class PatientController extends BaseController
         'fecha_nacimiento'     => $this->request->getPost('fecha_nac'),
         'sede'                 => $this->request->getPost('sede'),
         'direccion'            => $this->request->getPost('direccion'),
-        'distrito'             => $this->request->getPost('distrito'),
+        'nacionalidad'         => $this->request->getPost('nacionalidad'),
         'email'                => $this->request->getPost('correo'),
         'vendedor'             => $this->request->getPost('vendedor'),
         'otro_contacto'        => $this->request->getPost('otro_contacto'),
+        'nombre_contacto'      => $this->request->getPost('nombre_contacto'),
         'canal'                => $this->request->getPost('canal'),
         'time_ampu'            => $this->request->getPost('tiempo_ampu'),
         'motivo_amputacion'    => $this->request->getPost('motivo'),
         'afecciones'           => $this->request->getPost('afecciones'),
         'alergias'             => $this->request->getPost('alergias'),
         'observaciones'        => $this->request->getPost('observacion'),
+        'tip_paciente'         => $this->request->getPost('tipPaciente'),
+        'recon_doc'            => $this->request->getPost('RecomDoc'),
       ];
 
       // 2. Insertar
@@ -231,7 +237,81 @@ class PatientController extends BaseController
     $mpdf->WriteHTML($consentimiento);
 
     // Salida
-    $mpdf->Output('ficha_tecnica_' . $patient['nombres'] . '_'. $patient['apellidos'] . '.pdf', 'I');
+    $mpdf->Output('ficha_tecnica_' . $patient['nombres'] . '_' . $patient['apellidos'] . '.pdf', 'I');
+    exit;
+  }
+
+  /* FICHA DE EVALUACIÓN */
+  public function ficha_evaluacion(string $id, string $type)
+  {
+    $mpdf = new \Mpdf\Mpdf([
+      'mode' => 'utf-8',
+      'format' => 'A4',
+      'margin_top' => 15,
+      'margin_header' => 10,
+      'margin_footer' => 10
+    ]);
+
+    $patient = $this->patientModel->find($id);
+
+    $data = [
+      'paciente' => $patient,
+      'codigo' => $patient['cod_paciente'],
+      'fecha' => fecha_dmy($patient['created_at']),
+      'logo' => base_url('assets/media/img/encabezado.png'),
+      'background' => base_url('assets/media/img/AmputadoPie.png')
+    ];
+
+    // Mapeo de tipos a vistas
+    $viewMap = [
+      'estetica' => 'pdf/services/estetica',
+      'mano-parcial' => 'pdf/services/superior/mano-parcial',
+      'falange-mecanica' => 'pdf/services/superior/falange-mecanica',
+      'transradial' => 'pdf/services/superior/transradial',
+      'transhumeral' => 'pdf/services/superior/transhumeral',
+      'desarticulado-hombro' => 'pdf/services/superior/hombro',
+      'transfemoral' => 'pdf/services/inferior/transfemoral',
+      'transtibial' => 'pdf/services/inferior/transtibial',
+      'cadera' => 'pdf/services/inferior/cadera',
+      'pie' => 'pdf/services/inferior/pie',
+      'bilateral-transfemoral' => 'pdf/services/inferior/bilateral-transfemoral',
+      'bilateral-transtibial' => 'pdf/services/inferior/bilateral-transtibial',
+    ];
+
+    // Selección de vista con validación
+    if (!array_key_exists($type, $viewMap)) {
+      throw new \Exception("Tipo de ficha inválido: $type");
+    }
+    $type_ficha = $viewMap[$type];
+
+    // Cargar vistas
+    $ficha = view($type_ficha, $data);
+
+    // Configurar encabezado
+    $header = '
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 30%; text-align: left;">
+                <small style="font-weight: bold;">Código: ' . $data['codigo'] . '</small>
+            </td>
+            <td style="width: 40%; text-align: center;">
+                <img src="' . $data['logo'] . '" style="height: 40px;">
+            </td>
+            <td style="width: 30%; text-align: right;">
+                <small style="font-style: italic; font-weight: bold;">Front Desk</small>
+                <br>
+                <small>Fecha: ' . fecha_dmy(date('Y-m-d')) . '</small>
+            </td>
+        </tr>
+    </table>';
+
+    $mpdf->SetHTMLHeader($header);
+
+    // Generar PDF
+    $mpdf->WriteHTML($ficha);
+
+    // Salida
+    $mpdf->Output('ficha_evaluacion_' . $type . '_' . $patient['nombres'] . '_' . $patient['apellidos'] . '.pdf', 'I');
     exit;
   }
 }

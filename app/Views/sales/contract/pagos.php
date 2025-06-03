@@ -57,10 +57,8 @@ Pagos - KYP BIOINGENIERIA
   <div
     class="flex-lg-row-fluid me-lg-15 order-2 order-lg-1 mb-10 mb-lg-0">
     <!--begin::Form-->
-    <form
-      class="form"
-      action="#"
-      id="kt_subscriptions_create_new">
+    <div
+      class="form">
       <!--begin::Customer-->
       <div class="card card-flush pt-3 mb-5 mb-lg-10">
         <!--begin::Card header-->
@@ -82,10 +80,10 @@ Pagos - KYP BIOINGENIERIA
 
           <!--begin::Customer change button-->
           <div class="mb-10">
-            <select name="paciente_id" id="paciente_id" aria-label="Select a Patient" data-control="select2" data-placeholder="Seleccionar Paciente" class="form-select form-select-solid">
+            <select name="paciente" id="paciente" aria-label="Select a Patient" data-control="select2" data-placeholder="Seleccionar Paciente" class="form-select form-select-solid">
               <option value=""></option>
               <?php foreach ($contract as $row) { ?>
-                <option value="<?= $row['paciente_id'] ?>"><?= $row['cod_paciente'] . ' - ' . mb_strtoupper($row['nombres'] . ' ' . $row['apellidos'] . ' - ' . $row['trabajo']) ?></option>
+                <option value="<?= $row['id'] ?>"><?= $row['cod_paciente'] . ' - ' . mb_strtoupper($row['nombres'] . ' ' . $row['apellidos'] . ' - ' . $row['trabajo']) ?></option>
               <?php } ?>
             </select>
           </div>
@@ -98,7 +96,7 @@ Pagos - KYP BIOINGENIERIA
 
 
 
-      <!--begin::Payment method-->
+      <!--begin::Pagos-->
       <div
         class="card card-flush pt-3 mb-5 mb-lg-10"
         data-kt-subscriptions-form="pricing">
@@ -106,16 +104,95 @@ Pagos - KYP BIOINGENIERIA
         <div class="card-header">
           <!--begin::Card title-->
           <div class="card-title">
-            <h2 class="fw-bold">Payment Method</h2>
+            <h2 class="fw-bold">Historial de Pagos</h2>
           </div>
           <!--begin::Card title-->
           <!--begin::Card toolbar-->
           <div class="card-toolbar">
             <a
               href="#"
-              class="btn btn-light-primary"
+              class="btn btn-light-primary disabled"
               data-bs-toggle="modal"
-              data-bs-target="#kt_modal_new_card">New Method</a>
+              data-bs-target="#kt_modal_new_pagos">Nuevo Pago</a>
+
+            <div class="modal fade" tabindex="-1" id="kt_modal_new_pagos">
+              <div class="modal-dialog modal-dialog-centered mw-650px">
+                <?= form_open('api/sales/contract/pagos/create', ['id' => 'kt_form_pagos', 'class' => 'fv-row modal-content', 'autocomplete' => 'off']) ?>
+
+                <div class="modal-header">
+                  <h3 class="modal-title">Agregar Nuevo Pago</h3>
+
+                  <!--begin::Close-->
+                  <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                  </div>
+                  <!--end::Close-->
+                </div>
+
+                <div class="modal-body">
+
+                  <input type="hidden" id="id_contract" name="id_contract" readonly>
+                  <input type="hidden" id="id_paciente" name="id_paciente" readonly>
+                  <input type="hidden" id="moneda" name="moneda" readonly>
+
+                  <div class="row g-4">
+
+                    <div class="col-md-6 mb-4 fv-row">
+                      <label for="fecha" class="required form-label">Fecha</label>
+                      <input type="date" name="fecha" id="fecha" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+
+                    </div>
+
+                    <div class="col-md-6 mb-4 fv-row">
+                      <select class="form-select" id="metodo" name="metodo" aria-label="Select example">
+                        <option disabled selected value="">Seleccionar Método</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Pago con Tarjeta">Pago con Tarjeta</option>
+                        <option value="Billetera Digital">Billetera Digital</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6 mb-4 fv-row">
+                      <select class="form-select" id="submetodo" name="submetodo" aria-label="Select example">
+                        <option disabled selected value="">Seleccionar Método</option>>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6 mb-4 fv-row">
+                      <label for="bono" class="required form-label">Adelanto</label>
+                      <input type="text" name="bono" id="bono" class="form-control" placeholder="Monto Adelanto" />
+                    </div>
+
+                    <div class="col-md-12 mb-4">
+                      <label for="obs" class="form-label">Observaciones</label>
+                      <textarea name="observacion" id="observacion" class="form-control" style="height: 100px;"></textarea>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" id="kt_btn_submit_pagos">
+                    <i class="ki-duotone ki-triangle fs-3">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                    </i>
+                    <span class="indicator-label">
+                      Guardar
+                    </span>
+                    <span class="indicator-progress">
+                      Guardando... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                  </button>
+                </div>
+                <?= form_close() ?>
+              </div>
+            </div>
           </div>
           <!--end::Card toolbar-->
         </div>
@@ -123,594 +200,19 @@ Pagos - KYP BIOINGENIERIA
         <!--begin::Card body-->
         <div class="card-body pt-0">
           <!--begin::Options-->
-          <div id="kt_create_new_payment_method">
-            <!--begin::Option-->
-            <div class="py-1">
-              <!--begin::Header-->
-              <div class="py-3 d-flex flex-stack flex-wrap">
-                <!--begin::Toggle-->
-                <div
-                  class="d-flex align-items-center collapsible toggle"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#kt_create_new_payment_method_1">
-                  <!--begin::Arrow-->
-                  <div
-                    class="btn btn-sm btn-icon btn-active-color-primary ms-n3 me-2">
-                    <i
-                      class="ki-duotone ki-minus-square toggle-on text-primary fs-2">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <i
-                      class="ki-duotone ki-plus-square toggle-off fs-2">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                      <span class="path3"></span>
-                    </i>
-                  </div>
-                  <!--end::Arrow-->
-                  <!--begin::Logo-->
-                  <img
-                    src="assets/media/svg/card-logos/mastercard.svg"
-                    class="w-40px me-3"
-                    alt="" />
-                  <!--end::Logo-->
-                  <!--begin::Summary-->
-                  <div class="me-3">
-                    <div
-                      class="d-flex align-items-center fw-bold">
-                      Mastercard
-                      <div
-                        class="badge badge-light-primary ms-5">
-                        Primary
-                      </div>
-                    </div>
-                    <div class="text-muted">
-                      Expires Dec 2024
-                    </div>
-                  </div>
-                  <!--end::Summary-->
-                </div>
-                <!--end::Toggle-->
-                <!--begin::Input-->
-                <div class="d-flex my-3 ms-9">
-                  <!--begin::Radio-->
-                  <label
-                    class="form-check form-check-custom form-check-solid me-5">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="payment_method"
-                      checked="checked" />
-                  </label>
-                  <!--end::Radio-->
-                </div>
-                <!--end::Input-->
-              </div>
-              <!--end::Header-->
-              <!--begin::Body-->
-              <div
-                id="kt_create_new_payment_method_1"
-                class="collapse show fs-6 ps-10">
-                <!--begin::Details-->
-                <div class="d-flex flex-wrap py-5">
-                  <!--begin::Col-->
-                  <div class="flex-equal me-5">
-                    <table
-                      class="table table-flush fw-semibold gy-1">
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Name
-                        </td>
-                        <td class="text-gray-800">
-                          Emma Smith
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Number
-                        </td>
-                        <td class="text-gray-800">
-                          **** 9673
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Expires
-                        </td>
-                        <td class="text-gray-800">12/2024</td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Type
-                        </td>
-                        <td class="text-gray-800">
-                          Mastercard credit card
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Issuer
-                        </td>
-                        <td class="text-gray-800">VICBANK</td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          ID
-                        </td>
-                        <td class="text-gray-800">
-                          id_4325df90sdf8
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                  <!--end::Col-->
-                  <!--begin::Col-->
-                  <div class="flex-equal">
-                    <table
-                      class="table table-flush fw-semibold gy-1">
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Billing address
-                        </td>
-                        <td class="text-gray-800">AU</td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Phone
-                        </td>
-                        <td class="text-gray-800">
-                          No phone provided
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Email
-                        </td>
-                        <td class="text-gray-800">
-                          <a
-                            href="#"
-                            class="text-gray-900 text-hover-primary">smith@kpmg.com</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Origin
-                        </td>
-                        <td class="text-gray-800">
-                          Australia
-                          <div
-                            class="symbol symbol-20px symbol-circle ms-2">
-                            <img
-                              src="assets/media/flags/australia.svg" />
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          CVC check
-                        </td>
-                        <td class="text-gray-800">
-                          Passed
-                          <i
-                            class="ki-duotone ki-check-circle fs-2 text-success">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                  <!--end::Col-->
-                </div>
-                <!--end::Details-->
-              </div>
-              <!--end::Body-->
-            </div>
-            <!--end::Option-->
-            <div class="separator separator-dashed"></div>
-            <!--begin::Option-->
-            <div class="py-1">
-              <!--begin::Header-->
-              <div class="py-3 d-flex flex-stack flex-wrap">
-                <!--begin::Toggle-->
-                <div
-                  class="d-flex align-items-center collapsible toggle collapsed"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#kt_create_new_payment_method_2">
-                  <!--begin::Arrow-->
-                  <div
-                    class="btn btn-sm btn-icon btn-active-color-primary ms-n3 me-2">
-                    <i
-                      class="ki-duotone ki-minus-square toggle-on text-primary fs-2">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <i
-                      class="ki-duotone ki-plus-square toggle-off fs-2">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                      <span class="path3"></span>
-                    </i>
-                  </div>
-                  <!--end::Arrow-->
-                  <!--begin::Logo-->
-                  <img
-                    src="assets/media/svg/card-logos/visa.svg"
-                    class="w-40px me-3"
-                    alt="" />
-                  <!--end::Logo-->
-                  <!--begin::Summary-->
-                  <div class="me-3">
-                    <div
-                      class="d-flex align-items-center fw-bold">
-                      Visa
-                    </div>
-                    <div class="text-muted">
-                      Expires Feb 2022
-                    </div>
-                  </div>
-                  <!--end::Summary-->
-                </div>
-                <!--end::Toggle-->
-                <!--begin::Input-->
-                <div class="d-flex my-3 ms-9">
-                  <!--begin::Radio-->
-                  <label
-                    class="form-check form-check-custom form-check-solid me-5">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="payment_method" />
-                  </label>
-                  <!--end::Radio-->
-                </div>
-                <!--end::Input-->
-              </div>
-              <!--end::Header-->
-              <!--begin::Body-->
-              <div
-                id="kt_create_new_payment_method_2"
-                class="collapse fs-6 ps-10">
-                <!--begin::Details-->
-                <div class="d-flex flex-wrap py-5">
-                  <!--begin::Col-->
-                  <div class="flex-equal me-5">
-                    <table
-                      class="table table-flush fw-semibold gy-1">
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Name
-                        </td>
-                        <td class="text-gray-800">
-                          Melody Macy
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Number
-                        </td>
-                        <td class="text-gray-800">
-                          **** 4499
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Expires
-                        </td>
-                        <td class="text-gray-800">02/2022</td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Type
-                        </td>
-                        <td class="text-gray-800">
-                          Visa credit card
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Issuer
-                        </td>
-                        <td class="text-gray-800">ENBANK</td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          ID
-                        </td>
-                        <td class="text-gray-800">
-                          id_w2r84jdy723
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                  <!--end::Col-->
-                  <!--begin::Col-->
-                  <div class="flex-equal">
-                    <table
-                      class="table table-flush fw-semibold gy-1">
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Billing address
-                        </td>
-                        <td class="text-gray-800">UK</td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Phone
-                        </td>
-                        <td class="text-gray-800">
-                          No phone provided
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Email
-                        </td>
-                        <td class="text-gray-800">
-                          <a
-                            href="#"
-                            class="text-gray-900 text-hover-primary">melody@altbox.com</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Origin
-                        </td>
-                        <td class="text-gray-800">
-                          United Kingdom
-                          <div
-                            class="symbol symbol-20px symbol-circle ms-2">
-                            <img
-                              src="assets/media/flags/united-kingdom.svg" />
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          CVC check
-                        </td>
-                        <td class="text-gray-800">
-                          Passed
-                          <i
-                            class="ki-duotone ki-check fs-2 text-success"></i>
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                  <!--end::Col-->
-                </div>
-                <!--end::Details-->
-              </div>
-              <!--end::Body-->
-            </div>
-            <!--end::Option-->
-            <div class="separator separator-dashed"></div>
-            <!--begin::Option-->
-            <div class="py-1">
-              <!--begin::Header-->
-              <div class="py-3 d-flex flex-stack flex-wrap">
-                <!--begin::Toggle-->
-                <div
-                  class="d-flex align-items-center collapsible toggle collapsed"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#kt_create_new_payment_method_3">
-                  <!--begin::Arrow-->
-                  <div
-                    class="btn btn-sm btn-icon btn-active-color-primary ms-n3 me-2">
-                    <i
-                      class="ki-duotone ki-minus-square toggle-on text-primary fs-2">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                    <i
-                      class="ki-duotone ki-plus-square toggle-off fs-2">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                      <span class="path3"></span>
-                    </i>
-                  </div>
-                  <!--end::Arrow-->
-                  <!--begin::Logo-->
-                  <img
-                    src="assets/media/svg/card-logos/american-express.svg"
-                    class="w-40px me-3"
-                    alt="" />
-                  <!--end::Logo-->
-                  <!--begin::Summary-->
-                  <div class="me-3">
-                    <div
-                      class="d-flex align-items-center fw-bold">
-                      American Express
-                      <div
-                        class="badge badge-light-danger ms-5">
-                        Expired
-                      </div>
-                    </div>
-                    <div class="text-muted">
-                      Expires Aug 2021
-                    </div>
-                  </div>
-                  <!--end::Summary-->
-                </div>
-                <!--end::Toggle-->
-                <!--begin::Input-->
-                <div class="d-flex my-3 ms-9">
-                  <!--begin::Radio-->
-                  <label
-                    class="form-check form-check-custom form-check-solid me-5">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="payment_method" />
-                  </label>
-                  <!--end::Radio-->
-                </div>
-                <!--end::Input-->
-              </div>
-              <!--end::Header-->
-              <!--begin::Body-->
-              <div
-                id="kt_create_new_payment_method_3"
-                class="collapse fs-6 ps-10">
-                <!--begin::Details-->
-                <div class="d-flex flex-wrap py-5">
-                  <!--begin::Col-->
-                  <div class="flex-equal me-5">
-                    <table
-                      class="table table-flush fw-semibold gy-1">
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Name
-                        </td>
-                        <td class="text-gray-800">
-                          Max Smith
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Number
-                        </td>
-                        <td class="text-gray-800">
-                          **** 5337
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Expires
-                        </td>
-                        <td class="text-gray-800">08/2021</td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Type
-                        </td>
-                        <td class="text-gray-800">
-                          American express credit card
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Issuer
-                        </td>
-                        <td class="text-gray-800">USABANK</td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          ID
-                        </td>
-                        <td class="text-gray-800">
-                          id_89457jcje63
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                  <!--end::Col-->
-                  <!--begin::Col-->
-                  <div class="flex-equal">
-                    <table
-                      class="table table-flush fw-semibold gy-1">
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Billing address
-                        </td>
-                        <td class="text-gray-800">US</td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Phone
-                        </td>
-                        <td class="text-gray-800">
-                          No phone provided
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Email
-                        </td>
-                        <td class="text-gray-800">
-                          <a
-                            href="#"
-                            class="text-gray-900 text-hover-primary">max@kt.com</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          Origin
-                        </td>
-                        <td class="text-gray-800">
-                          United States of America
-                          <div
-                            class="symbol symbol-20px symbol-circle ms-2">
-                            <img
-                              src="assets/media/flags/united-states.svg" />
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          class="text-muted min-w-125px w-125px">
-                          CVC check
-                        </td>
-                        <td class="text-gray-800">
-                          Failed
-                          <i
-                            class="ki-duotone ki-cross fs-2 text-danger">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                          </i>
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                  <!--end::Col-->
-                </div>
-                <!--end::Details-->
-              </div>
-              <!--end::Body-->
-            </div>
-            <!--end::Option-->
+          <div id="kt_all_pagos">
+
+
+
           </div>
           <!--end::Options-->
         </div>
         <!--end::Card body-->
       </div>
-      <!--end::Payment method-->
+      <!--end::Pagos-->
 
 
-    </form>
+    </div>
     <!--end::Form-->
   </div>
   <!--end::Content-->
@@ -732,7 +234,7 @@ Pagos - KYP BIOINGENIERIA
       <div class="card-header">
         <!--begin::Card title-->
         <div class="card-title">
-          <h2>Summary</h2>
+          <h2>Resumen</h2>
         </div>
         <!--end::Card title-->
       </div>
@@ -741,26 +243,19 @@ Pagos - KYP BIOINGENIERIA
       <div class="card-body pt-0 fs-6">
         <!--begin::Section-->
         <div class="mb-7">
-          <!--begin::Title-->
-          <h5 class="mb-3">Customer details</h5>
-          <!--end::Title-->
-          <!--begin::Details-->
+          <!--begin::Titulo-->
+          <h5 class="mb-3">Detalles Paciente</h5>
+          <!--end::Titulo-->
+          <!--begin::Detalles-->
           <div class="d-flex align-items-center mb-1">
-            <!--begin::Name-->
-            <a
-              href="apps/customers/view.html"
-              class="fw-bold text-gray-800 text-hover-primary me-2">Sean Bean</a>
-            <!--end::Name-->
-            <!--begin::Status-->
-            <span class="badge badge-light-success">Active</span>
-            <!--end::Status-->
+            <!--begin::Nombres y Apellidos -->
+            <a class="fw-bold text-gray-800 text-hover-primary me-2" id="name">Nombres y Apellidos</a>
+            <!--end::Nombres y Apellidos-->
           </div>
           <!--end::Details-->
-          <!--begin::Email-->
-          <a
-            href="#"
-            class="fw-semibold text-gray-600 text-hover-primary">sean@dellito.com</a>
-          <!--end::Email-->
+          <!--begin::Servicio-->
+          <a class="fw-semibold text-gray-600 text-hover-primary" id="service">Servicio</a>
+          <!--end::Servicio-->
         </div>
         <!--end::Section-->
         <!--begin::Seperator-->
@@ -769,18 +264,27 @@ Pagos - KYP BIOINGENIERIA
         <!--begin::Section-->
         <div class="mb-7">
           <!--begin::Title-->
-          <h5 class="mb-3">Product details</h5>
+          <h5 class="mb-3">Montos y Deudas</h5>
           <!--end::Title-->
-          <!--begin::Details-->
-          <div class="mb-0">
+
+          <div class="mb-3">
             <!--begin::Plan-->
-            <span class="badge badge-light-info me-2">Basic Bundle</span>
+            <span class="badge badge-light-info me-2">Monto Total</span>
             <!--end::Plan-->
             <!--begin::Price-->
-            <span class="fw-semibold text-gray-600">$149.99 / Year</span>
+            <span class="fw-semibold text-gray-600" id="monto_total"></span>
             <!--end::Price-->
           </div>
-          <!--end::Details-->
+
+          <div class="mb-0">
+            <!--begin::Plan-->
+            <span class="badge badge-light-danger me-2">Deuda</span>
+            <!--end::Plan-->
+            <!--begin::Price-->
+            <span class="fw-semibold text-gray-600" id="deuda"></span>
+            <!--end::Price-->
+          </div>
+
         </div>
         <!--end::Section-->
         <!--begin::Seperator-->
@@ -789,23 +293,19 @@ Pagos - KYP BIOINGENIERIA
         <!--begin::Section-->
         <div class="mb-10">
           <!--begin::Title-->
-          <h5 class="mb-3">Payment Details</h5>
+          <h5 class="mb-3">Fecha del Contrato</h5>
           <!--end::Title-->
           <!--begin::Details-->
           <div class="mb-0">
             <!--begin::Card info-->
             <div
-              class="fw-semibold text-gray-600 d-flex align-items-center">
-              Mastercard
-              <img
-                src="assets/media/svg/card-logos/mastercard.svg"
-                class="w-35px ms-2"
-                alt="" />
+              class="fw-semibold text-gray-600 d-flex align-items-center" id="fecha_inicio">
+              Fecha:
             </div>
             <!--end::Card info-->
             <!--begin::Card expiry-->
-            <div class="fw-semibold text-gray-600">
-              Expires Dec 2024
+            <div class="fw-semibold text-gray-600" id="garantia">
+              Garantía
             </div>
             <!--end::Card expiry-->
           </div>
@@ -827,7 +327,300 @@ Pagos - KYP BIOINGENIERIA
 <?= $this->section('scripts_sales'); ?>
 
 <script>
+  $(document).ready(function() {
+    $("#paciente").on('change', function() {
+      const id_contract = $(this).val();
 
+      if (id_contract) {
+        $.ajax({
+          url: `<?= base_url('api/sales/contract/getDataContract/') ?>${id_contract}`,
+          type: 'GET',
+          dataType: 'json',
+          success: function(response) {
+            $("#name").html(`${response.nombres} ${response.apellidos}`);
+            $("#service").html(`${response.trabajo}`);
+            $("#monto_total").html(`${response.moneda} ${response.monto_total}`);
+            $("#deuda").html(
+              response.deuda === 'pagado' ?
+              '<span class="badge badge-light-success">Pagado</span>' :
+              `${response.moneda} ${response.deuda}`
+            );
+            $("#fecha_inicio").html(`fecha: ${response.fecha_inicio}`);
+            $("#garantia").html(`Garantía: <span class="badge badge-light-success me-2"> ${response.garantia}</span>`);
+            $('a[data-bs-target="#kt_modal_new_pagos"]').removeClass('disabled');
+
+            $("#id_contract").val(response.id);
+            $("#id_paciente").val(response.paciente_id);
+            $("#moneda").val(response.moneda);
+
+            let htmlContent = '';
+            response.pagos.forEach((row, index) => {
+              htmlContent += `
+                <div class="py-1">
+                  <div class="py-3 d-flex flex-stack flex-wrap">
+                    
+                    <div
+                      class="d-flex align-items-center collapsible toggle"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#kt_all_pagos_${index + 1}">
+                      
+                      <div
+                        class="btn btn-sm btn-icon btn-active-color-primary ms-n3 me-2">
+                        <i
+                          class="ki-duotone ki-minus-square toggle-on text-primary fs-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                        <i
+                          class="ki-duotone ki-plus-square toggle-off fs-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                          <span class="path3"></span>
+                        </i>
+                      </div>
+                      
+                      
+                      <div class="me-3">
+                        <div
+                          class="d-flex align-items-center fw-bold">
+                          ${row.tip_pago}
+                          <div
+                            class="badge badge-light-primary ms-5">
+                            Pago ${index + 1 }
+                          </div>
+                        </div>
+                      </div>
+            
+                    </div>
+                    
+                  </div>
+                  <div id="kt_all_pagos_${index + 1}" class="collapse show fs-6 ps-10">
+                    <div class="d-flex flex-wrap py-5">
+                      
+                      <div class="flex-equal me-5">
+                        <table
+                          class="table table-flush fw-semibold">
+                          <tr class="pb-3">
+                            <td
+                              class="text-muted min-w-125px w-125px">
+                              Nombres
+                            </td>
+                            <td class="text-gray-800">
+                              ${response.nombres} ${response.apellidos}
+                            </td>
+                          </tr>
+                          <tr class="pb-3">
+                            <td
+                              class="text-muted min-w-125px w-125px">
+                              Monto
+                            </td>
+                            <td class="text-gray-800">
+                              <span class="badge badge-light-warning">${row.moneda} ${row.monto}</span>
+                            </td>
+                          </tr>
+                          <tr class="pb-3">
+                            <td
+                              class="text-muted min-w-125px w-125px">
+                              Fecha
+                            </td>
+                            <td class="text-gray-800">${row.created_at}</td>
+                          </tr>
+                          <tr class="pb-3">
+                            <td
+                              class="text-muted min-w-125px w-125px">
+                              Método de Pago
+                            </td>
+                            <td class="text-gray-800">
+                              ${row.tip_pago}
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                      
+                      
+                      <div class="flex-equal">
+                       <label class="text-muted">Observaciones</label>
+                       <p class="">${row.observaciones || ''}</p>
+                      </div>
+                      
+                    </div>
+
+                    <div class="text-muted">
+                      <a href="<?= base_url('sales/contract/generate/pagos/') ?>${row.referencia_id}/${row.pago_nro}" target="_blank" class="fw-bold text-gray-600 text-hover-primary me-2">Ver Recibo</a>
+                    </div>
+                    
+                  </div>
+                </div>
+
+                <div class="separator separator-dashed"></div>
+              `;
+            });
+
+            $("#kt_all_pagos").html(htmlContent);
+          },
+          error: function(xhr, status, error) {
+            console.error(error);
+          }
+        });
+      } else {
+        $("#kt_all_pagos").html("");
+      }
+    });
+  });
+
+
+  const opcionesSub = {
+    'Efectivo': ['Efectivo'],
+    'Transferencia': ['Interbank', 'BCP'],
+    'Pago con Tarjeta': ['Visa', 'Mastercard'],
+    'Billetera Digital': ['Yape', 'Plin']
+  };
+
+  const metodoEl = document.getElementById('metodo');
+  const submetEl = document.getElementById('submetodo');
+
+  metodoEl.addEventListener('change', () => {
+    const sel = metodoEl.value;
+    const items = opcionesSub[sel] || [];
+
+    let html = '<option disabled selected value="">Seleccionar Submétodo</option>';
+
+    if (items.length) {
+      items.forEach(opt => {
+        html += `<option value="${opt}">${opt}</option>`;
+      });
+      submetEl.disabled = false;
+    } else {
+      html += '<option disabled value="">No hay opciones</option>';
+      submetEl.disabled = true;
+    }
+
+    submetEl.innerHTML = html;
+  });
+
+  const form = document.querySelector("#kt_form_pagos");
+
+  const validator = FormValidation.formValidation(form, {
+    fields: {
+      'fecha': {
+        validators: {
+          notEmpty: {
+            message: "El campo es Obligatorio"
+          }
+        }
+      },
+
+      'metodo': {
+        validators: {
+          notEmpty: {
+            message: "El campo es Obligatorio"
+          }
+        }
+      },
+
+      'submetodo': {
+        validators: {
+          notEmpty: {
+            message: "El campo es Obligatorio"
+          }
+        }
+      },
+
+      'bono': {
+        validators: {
+          numeric: {
+            message: 'Ingrese un monto válido',
+            decimalSeparator: '.'
+          },
+          notEmpty: {
+            message: "El campo es Obligatoria"
+          }
+        }
+      }
+    },
+
+    plugins: {
+      trigger: new FormValidation.plugins.Trigger(),
+      bootstrap: new FormValidation.plugins.Bootstrap5({
+        rowSelector: '.fv-row',
+        eleInvalidClass: '',
+        eleValidClass: ''
+      })
+    }
+  });
+
+  const submitButton = document.querySelector('#kt_btn_submit_pagos');
+  submitButton.addEventListener('click', function() {
+
+    if (!validator) {
+      return;
+    }
+
+    validator.validate().then(function(status) {
+      console.log(status);
+
+      if (status !== 'Valid') {
+        return;
+      }
+
+      submitButton.setAttribute('data-kt-indicator', 'on');
+      submitButton.disabled = true;
+
+      fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(async response => {
+          const data = await response.json();
+
+          setTimeout(() => {
+            submitButton.removeAttribute('data-kt-indicator');
+            submitButton.disabled = false;
+
+            if (!response.ok || data.status >= 400) {
+              Swal.fire({
+                text: data.message || 'Error en el servidor',
+                icon: 'error',
+                buttonsStyling: false,
+                confirmButtonText: 'Entendido',
+                customClass: {
+                  confirmButton: 'btn btn-danger'
+                }
+              });
+            } else {
+              // Éxito
+              Swal.fire({
+                text: data.message,
+                icon: 'success',
+                buttonsStyling: false,
+                confirmButtonText: 'Ok!',
+                customClass: {
+                  confirmButton: 'btn btn-primary'
+                }
+              }).then(() => {
+                window.location.href = `<?= base_url('/') ?>${data.redirect}`
+              });
+            }
+          }, 2000)
+        })
+        .catch(() => {
+          // Si falla la petición
+          setTimeout(() => {
+            submitButton.removeAttribute('data-kt-indicator');
+            submitButton.disabled = false;
+            Swal.fire({
+              text: 'No se pudo conectar al servidor',
+              icon: 'error',
+              buttonsStyling: false,
+              confirmButtonText: 'Ok!'
+            });
+          }, 2000);
+        })
+    });
+  })
 </script>
 
 <?= $this->endSection(); ?>

@@ -6,49 +6,37 @@ Gestion de Pacientes | KYP BIOINGENIERIA
 
 <?= $this->endSection(); ?>
 
+<?= $this->section('toolbar'); ?>
+
+  <h1
+    class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+    Mantenimiento de Pacientes
+  </h1>
+
+  <ul
+    class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+
+    <li class="breadcrumb-item text-muted">Pacientes</li>
+
+    <li class="breadcrumb-item">
+      <span class="bullet bg-gray-500 w-5px h-2px"></span>
+    </li>
+
+    <li class="breadcrumb-item text-muted">Cotizaciones</li>
+
+    <li class="breadcrumb-item">
+      <span class="bullet bg-gray-500 w-5px h-2px"></span>
+    </li>
+
+    <li class="breadcrumb-item text-muted">Listado</li>
+
+  </ul>
+
+<?= $this->endSection(); ?>
+
 <?= $this->section('content'); ?>
-<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
-    <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 my-6">
-      <!--begin::Title-->
-      <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Mantenimiento de Pacientes</h1>
-      <!--end::Title-->
-      <!--begin::Breadcrumb-->
-      <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Pacientes</li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Cotizaciones</li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item">
-          <span class="bullet bg-gray-500 w-5px h-2px"></span>
-        </li>
-        <!--end::Item-->
-        <!--begin::Item-->
-        <li class="breadcrumb-item text-muted">Listado</li>
-        <!--end::Item-->
-      </ul>
-      <!--end::Breadcrumb-->
 
-
-    </div>
-    <div class="d-flex align-items-center gap-2 gap-lg-3">
-      <!--begin::Add Patient-->
-      <a type="button" class="btn btn-primary" href="<?= base_url('invoice/new') ?>">
-        <i class="ki-duotone ki-plus fs-2"></i>Agregar Cotizacion</a>
-      <!--end::Add Patient-->
-    </div>
-  </div>
-</div>
-
-<div class="card">
+<div class="card mt-5">
   <!--begin::Card header-->
   <div class="card-header border-0 pt-6">
     <!--begin::Card title-->
@@ -126,6 +114,9 @@ Gestion de Pacientes | KYP BIOINGENIERIA
             <span class="path2"></span>
           </i>Exportar</button>
         <!--end::Export-->
+
+        <a type="button" class="btn btn-primary" href="<?= base_url('invoice/new') ?>">
+          <i class="ki-duotone ki-plus fs-2"></i>Agregar Cotización</a>
 
       </div>
       <!--end::Toolbar-->

@@ -171,7 +171,8 @@
               <tr>
                 <td style="padding: 4px 0;">
                   <strong>Transferencias:</strong><br>
-                  ▸ Interbank<br>
+                  ▸ Interbank (Soles) 898-3003906137 - CCI: 003-898-003003906137-46<br>
+                  ▸ BCP (A consultar)
                 </td>
               </tr>
               <tr>
@@ -215,7 +216,7 @@
               <?php if ($get['aplica_descuento'] == 1): ?>
                 <tr>
                   <td style="padding: 6px 8px; border-bottom: 1px solid #dee2e6;">
-                    <strong>Descuento (10%):</strong>
+                    <strong>Descuento:</strong>
                   </td>
                   <td style="padding: 6px 8px; border-bottom: 1px solid #dee2e6; text-align: right;">
                     - <?= ($get['moneda'] == 'PEN') ? 'S/. ' : '$ ' ?> <?= moneda($get['descuento']) ?>

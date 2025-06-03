@@ -15,11 +15,17 @@ use CodeIgniter\API\ResponseTrait;
 class InvoiceController extends BaseController
 {
   use ResponseTrait;
-  protected $invoiceModel;
+  protected $invoiceModel, $pacienteModel, $serviceModel, $jobModel, $componentsModel, $itemsModel, $listModel;
 
   function __construct()
   {
-    $this->invoiceModel = new InvoiceModel();
+    $this->invoiceModel     = new InvoiceModel();
+    $this->pacienteModel    = new PatientModel();
+    $this->serviceModel     = new ServiceModel();
+    $this->jobModel         = new JobModel();
+    $this->componentsModel  = new ComponentsModel();
+    $this->itemsModel       = new ComponentListModel();
+    $this->listModel        = new InvoiceListModel();
   }
 
   /* VIEW Listado de Cotizaciones */
@@ -33,36 +39,27 @@ class InvoiceController extends BaseController
   /* VIEW Registrar Cotización */
   public function new()
   {
-    $pacienteModel  = new PatientModel();
-    $serviceModel   = new ServiceModel();
-
-
-    $data['paciente'] = $pacienteModel->orderBy('cod_paciente', 'DESC')->findAll();
-    $data['service']  = $serviceModel->orderBy('id', 'ASC')->findAll();
+    $data['paciente'] = $this->pacienteModel->orderBy('cod_paciente', 'DESC')->findAll();
+    $data['service']  = $this->serviceModel->orderBy('id', 'ASC')->findAll();
     return view('patients/invoices/new', $data);
   }
 
   public function getServiceJob(int $id)
   {
-    $jobModel = new JobModel();
-    $trabajo  = $jobModel->where('servicios_id', $id)->findAll();
-
+    $trabajo  = $this->jobModel->where('servicios_id', $id)->findAll();
     return $this->respond($trabajo);
   }
 
   public function getcomponentsIfJob(int $id)
   {
-    $componentsModel = new ComponentsModel();
-    $itemsModel      = new ComponentListModel();
+    $components      = $this->componentsModel->where('job_id', $id)->findAll();
 
-    $components      = $componentsModel->where('job_id', $id)->findAll();
-
-    foreach ($components as &$component) {
-      $items = $itemsModel->where('component_id', $component['id'])->findAll();
-
-      // Extraer solo el campo `items` de cada fila
-      $component['items'] = array_column($items, 'items');
+    foreach ($components as &$comp) {
+      $comp['items'] = $comp['items'] !== null
+        ? json_decode($comp['items'], true)
+        : [];
     }
+    unset($comp);
 
     return $this->respond($components);
   }
@@ -83,8 +80,7 @@ class InvoiceController extends BaseController
         'moneda'                => $this->request->getPost('moneda'),
         'monto'                 => $this->request->getPost('subtotal'),
         'aplica_descuento'      => $if_descuento,
-        'porce_descuento'      => $this->request->getPost('descuento'),
-        'descuento'             => $this->request->getPost('descuento_coti'),
+        'descuento'             => $this->request->getPost('descuento'),
         'igv'                   => $if_igv,
         'igv_valor'             => $this->request->getPost('igv_coti'),
         'monto_final'           => $this->request->getPost('total_coti'),
@@ -92,6 +88,7 @@ class InvoiceController extends BaseController
         'diagnostico'           => $this->request->getPost('diagnostico'),
         'fecha_now'             => $this->request->getPost('fecha_now'),
         'fecha_exp'             => $this->request->getPost('fecha_exp'),
+        'aprobacion'            => $this->request->getPost('apto'),
       ];
 
       $query = $this->invoiceModel->insert($data, true);
@@ -101,11 +98,9 @@ class InvoiceController extends BaseController
         $descriptions = $this->request->getPost('description'); // array
         $cantidades = $this->request->getPost('cantidad');
 
-        $itemsModel = new InvoiceListModel();
-
         for ($i = 0; $i < count($descriptions); $i++) {
           if (trim($descriptions[$i]) && $cantidades[$i] > 0) {
-            $itemsModel->insert([
+            $this->listModel->insert([
               'cotizacion_id' => $query,
               'title'         => $titles[$i] ?? null,
               'descripcion'   => $descriptions[$i],
@@ -161,7 +156,6 @@ class InvoiceController extends BaseController
   {
 
     $datos      = $this->invoiceModel->getInvoiceById($id);
-    $listModel  = new InvoiceListModel();
 
     $medidas = [
       'Miembro Inferior' => [
@@ -182,6 +176,9 @@ class InvoiceController extends BaseController
         'Prueba de Succión',
         'Encaje Final'
       ],
+      'Accesorios' => [
+        'Proceso de Venta'
+      ]
     ];
 
     // Configurar mPDF
@@ -202,7 +199,7 @@ class InvoiceController extends BaseController
         </td>
         <td width="70%" style="text-align: right;">
             RUC: 20600880081<br>
-            Cal. Max Palma Arrúe Nro. 1117<br>
+            Cal. Max Palma Arrúe Nro. 119, Los Olivos - Lima<br>
             administracion@kypbioingenieria.com <br>
             <strong>www.kypbioingenieria.com</strong>
         </td>
@@ -212,7 +209,7 @@ class InvoiceController extends BaseController
     $data = [
       'template_header' => $template_header,
       'get'             => $datos,
-      'list'            => $listModel->where('cotizacion_id', $id)->findAll(),
+      'list'            => $this->listModel->where('cotizacion_id', $id)->findAll(),
       'medidas'         => $medidas
     ];
 
@@ -225,17 +222,11 @@ class InvoiceController extends BaseController
   /* View Modificar Cotización */
   public function show(int $id)
   {
-    $pacienteModel  = new PatientModel();
-    $serviceModel   = new ServiceModel();
-    $jobsModel      = new JobModel();
-
-    $listModel      = new InvoiceListModel();
-
-    $data['paciente'] = $pacienteModel->orderBy('cod_paciente', 'DESC')->findAll();
-    $data['service']  = $serviceModel->orderBy('id', 'ASC')->findAll();
+    $data['paciente'] = $this->pacienteModel->orderBy('cod_paciente', 'DESC')->findAll();
+    $data['service']  = $this->serviceModel->orderBy('id', 'ASC')->findAll();
     $data['get']      = $this->invoiceModel->getInvoiceById($id);
-    $data['job']      = $jobsModel->where('servicios_id', $data['get']['id_servicio'])->findAll();
-    $data['list']     = $listModel->where('cotizacion_id', $id)->findAll();
+    $data['job']      = $this->jobModel->where('servicios_id', $data['get']['id_servicio'])->findAll();
+    $data['list']     = $this->listModel->where('cotizacion_id', $id)->findAll();
     return view('patients/invoices/show', $data);
   }
 
@@ -255,8 +246,7 @@ class InvoiceController extends BaseController
         'moneda'                => $this->request->getPost('moneda'),
         'monto'                 => $this->request->getPost('subtotal'),
         'aplica_descuento'      => $if_descuento,
-        'porce_descuento'       => $this->request->getPost('descuento'),
-        'descuento'             => $this->request->getPost('descuento_coti'),
+        'descuento'             => $this->request->getPost('descuento'),
         'igv'                   => $if_igv,
         'igv_valor'             => $this->request->getPost('igv_coti'),
         'monto_final'           => $this->request->getPost('total_coti'),
@@ -264,6 +254,7 @@ class InvoiceController extends BaseController
         'diagnostico'           => $this->request->getPost('diagnostico'),
         'fecha_now'             => $this->request->getPost('fecha_now'),
         'fecha_exp'             => $this->request->getPost('fecha_exp'),
+        'aprobacion'            => $this->request->getPost('apto'),
       ];
 
       $query = $this->invoiceModel->update($id, $data);
@@ -273,12 +264,11 @@ class InvoiceController extends BaseController
         $descriptions = $this->request->getPost('description'); // array
         $cantidades = $this->request->getPost('cantidad');
 
-        $itemsModel = new InvoiceListModel();
-        $itemsModel->where('cotizacion_id', $id)->delete();
+        $this->listModel->where('cotizacion_id', $id)->delete();
 
         for ($i = 0; $i < count($descriptions); $i++) {
           if (trim($descriptions[$i]) && $cantidades[$i] > 0) {
-            $itemsModel->insert([
+            $this->listModel->insert([
               'cotizacion_id' => $id,
               'title'         => $titles[$i] ?? null,
               'descripcion'   => $descriptions[$i],

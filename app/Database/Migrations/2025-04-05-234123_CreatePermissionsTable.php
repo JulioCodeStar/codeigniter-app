@@ -18,8 +18,17 @@ class CreatePermissionsTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 50,
             ],
-            'descripcion' => [
-                'type' => 'TEXT',
+            'seccion' => [
+                'type' => 'VARCHAR',
+                'constraint' => 50,
+            ],
+            'sub_seccion' => [
+                'type' => 'VARCHAR',
+                'constraint' => 50,
+            ],
+            'accion' => [
+                'type' => 'VARCHAR',
+                'constraint' => 50,
             ],
             'created_at' => [
                 'type' => 'DATETIME',

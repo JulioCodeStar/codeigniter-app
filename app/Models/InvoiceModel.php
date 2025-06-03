@@ -30,7 +30,8 @@ class InvoiceModel extends Model
     'ajustes',
     'diagnostico',
     'fecha_now',
-    'fecha_exp'
+    'fecha_exp',
+    'aprobacion'
   ];
 
   protected bool $allowEmptyInserts = false;
@@ -84,37 +85,71 @@ class InvoiceModel extends Model
       ->findAll();
   }
 
-  public function getInvoiceById(int $id) 
+  public function getInvoiceById(int $id)
   {
     return $this->select('cotizaciones.*, pacientes.id AS id_paciente, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, pacientes.direccion, pacientes.contacto, servicios.descripcion AS servicio, servicios.id AS id_servicio, jobs.descripcion AS trabajo, jobs.id AS id_trabajo')
-    ->join('pacientes', 'pacientes.id = cotizaciones.paciente_id', 'left')
-    ->join('servicios', 'servicios.id = cotizaciones.servicios_id', 'left')
-    ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
-    ->find($id);
+      ->join('pacientes', 'pacientes.id = cotizaciones.paciente_id', 'left')
+      ->join('servicios', 'servicios.id = cotizaciones.servicios_id', 'left')
+      ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
+      ->find($id);
   }
 
-  public function getInvoiceByPatient(string $id) 
+  public function getInvoiceByPatient(string $id)
   {
     return $this->select('cotizaciones.*, pacientes.id AS id_paciente, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, pacientes.direccion, pacientes.contacto, servicios.descripcion AS servicio, servicios.id AS id_servicio, jobs.descripcion AS trabajo, jobs.id AS id_trabajo')
-    ->join('pacientes', 'pacientes.id = cotizaciones.paciente_id', 'left')
-    ->join('servicios', 'servicios.id = cotizaciones.servicios_id', 'left')
-    ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
-    ->where('pacientes.id', $id)
-    ->findAll();
+      ->join('pacientes', 'pacientes.id = cotizaciones.paciente_id', 'left')
+      ->join('servicios', 'servicios.id = cotizaciones.servicios_id', 'left')
+      ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
+      ->where('pacientes.id', $id)
+      ->findAll();
   }
 
-  public function getInvoiceGroupAll()
+  public function getInvoiceGroupAll(): array
+  {
+    // Sub-query que devuelve sólo el ID de la última cotización de cada paciente
+    $subquery = $this->db
+      ->table('cotizaciones')
+      ->select('MAX(id) AS id', false)
+      ->where('servicios_id !=', 4)
+      ->groupBy('paciente_id')
+      ->getCompiledSelect();
+
+    // Query principal: filtramos cotizaciones cuyo ID esté en ese subquery
+    return $this
+      ->select("
+            cotizaciones.id,
+            cotizaciones.paciente_id,
+            pacientes.id          AS id_paciente,
+            pacientes.nombres,
+            pacientes.apellidos,
+            pacientes.cod_paciente,
+            servicios.descripcion AS servicio,
+            jobs.descripcion      AS trabajo,
+            cotizaciones.created_at
+        ")
+      ->join('pacientes', 'pacientes.id = cotizaciones.paciente_id', 'left')
+      ->join('servicios', 'servicios.id = cotizaciones.servicios_id', 'left')
+      ->join('jobs',      'jobs.id = cotizaciones.jobs_id',      'left')
+      ->where('cotizaciones.servicios_id !=', 4)
+      // raw WHERE IN con el subquery de IDs
+      ->where("cotizaciones.id IN ({$subquery})", null, false)
+      ->orderBy('cotizaciones.created_at', 'DESC')
+      ->findAll();
+  }
+
+
+  public function getInvoiceGroupAllVentas()
   {
     $subquery = $this->db->table('cotizaciones')
-        ->select('MAX(id) AS id')
-        ->groupBy('paciente_id');
+      ->select('MAX(id) AS id')
+      ->groupBy('paciente_id');
 
     return $this->select('cotizaciones.*, pacientes.id AS id_paciente, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, servicios.descripcion AS servicio, jobs.descripcion AS trabajo')
       ->join('pacientes', 'pacientes.id = cotizaciones.paciente_id', 'left')
       ->join('servicios', 'servicios.id = cotizaciones.servicios_id', 'left')
       ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
+      ->where('cotizaciones.servicios_id =', 4)
       ->whereIn('cotizaciones.id', $subquery)
       ->findAll();
   }
-
 }

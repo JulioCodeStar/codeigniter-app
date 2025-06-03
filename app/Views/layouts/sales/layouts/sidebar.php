@@ -86,7 +86,7 @@
             <!-- begin:ACCESORIOS -->
             <div class="menu-item">
               <!--begin:Menu link-->
-              <a class="menu-link" href="">
+              <a class="menu-link <?= set_active_menu('sales/accesorios|sales/accesorios/new|sales/accesorios/pagos', 'link') ?>" href="<?= base_url('sales/accesorios') ?>">
                 <span class="menu-icon">
                   <i class="ki-duotone ki-tag fs-1">
                     <span class="path1"></span>
@@ -120,7 +120,7 @@
             <!-- begin:CITAS -->
             <div class="menu-item">
               <!--begin:Menu link-->
-              <a class="menu-link" href="">
+              <a class="menu-link <?= set_active_menu('sales/citas', 'link') ?>" href="<?= base_url('sales/citas') ?>">
                 <span class="menu-icon">
                   <i class="ki-duotone ki-note-2 fs-1">
                     <span class="path1"></span>
@@ -133,12 +133,12 @@
               </a>
               <!--end:Menu link-->
             </div>
-            <!-- end:CONTRATOS -->
+            <!-- end:CITAS -->
 
             <!-- begin:MANTENIMIENTO -->
             <div class="menu-item">
               <!--begin:Menu link-->
-              <a class="menu-link" href="">
+              <a class="menu-link <?= set_active_menu('sales/managment', 'link') ?>" href="<?= base_url('sales/managment') ?>">
                 <span class="menu-icon">
                   <i class="ki-duotone ki-chart fs-1">
                     <span class="path1"></span>
@@ -153,16 +153,32 @@
 
           <?php endif; ?>
 
-          <!-- begin:REPORTES -->
+
+          <!-- begin:SEGUIMIENTO -->
           <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link <?= set_active_menu('', 'link') ?>" href="">
+            <a class="menu-link <?= set_active_menu('sales/seguimiento', 'link') ?>" href="<?= base_url('sales/seguimiento') ?>">
               <span class="menu-icon">
-                <i class="ki-duotone ki-book fs-1">
+                <i class="ki-duotone ki-chart-line-down-2 fs-1">
                   <span class="path1"></span>
                   <span class="path2"></span>
                   <span class="path3"></span>
-                  <span class="path4"></span>
+                </i>
+              </span>
+              <span class="menu-title">Seguimiento</span>
+            </a>
+            <!--end:Menu link-->
+          </div>
+          <!-- end:SEGUIMIENTO -->
+
+          <!-- begin:REPORTES -->
+          <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link <?= set_active_menu('sales/reports', 'link') ?>" href="<?= base_url('sales/reports') ?>">
+              <span class="menu-icon">
+                <i class="ki-duotone ki-chart-pie-simple fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
                 </i>
               </span>
               <span class="menu-title">Reportes</span>
@@ -170,6 +186,8 @@
             <!--end:Menu link-->
           </div>
           <!-- end:REPORTES -->
+
+
 
         </div>
         <!--end::Menu-->

@@ -31,9 +31,7 @@
     type="text/css" />
   <link href="<?= base_url('assets/css/style.bundle.css') ?>" rel="stylesheet" type="text/css" />
   <!--end::Global Stylesheets Bundle-->
-  <script>
-    // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
-  </script>
+  <meta name="csrf-token" content="<?= csrf_hash() ?>" />
 </head>
 <!--end::Head-->
 <!--begin::Body-->

@@ -13,7 +13,7 @@ class PatientModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id', 'cod_paciente', 'nombres', 'apellidos', 'dni', 'genero', 'edad', 'contacto', 'fecha_nacimiento', 'direccion', 'sede', 'distrito', 'email', 'vendedor', 'otro_contacto', 'canal', 'time_ampu', 'motivo_amputacion', 'afecciones', 'alergias', 'observaciones'];
+    protected $allowedFields    = ['id', 'cod_paciente', 'nombres', 'apellidos', 'dni', 'genero', 'edad', 'contacto', 'fecha_nacimiento', 'direccion', 'sede', 'nacionalidad', 'email', 'vendedor', 'otro_contacto', 'nombre_contacto', 'canal', 'time_ampu', 'motivo_amputacion', 'afecciones', 'alergias', 'observaciones', 'tip_paciente', 'recon_doc'];
 
     protected bool $allowEmptyInserts = false;
 
