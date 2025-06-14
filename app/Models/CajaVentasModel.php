@@ -12,13 +12,8 @@ class CajaVentasModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_id', 'sede_id', 'is_active'];
+    protected $allowedFields    = ['user_id', 'sede_id', 'is_active', 'created_at'];
 
     protected bool $allowEmptyInserts = false;
-
-    // Dates
-    protected $useTimestamps = true;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
 
 }

@@ -13,7 +13,7 @@ class Users extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id', 'nombres', 'apellidos', 'email', 'password', 'is_active'];
+    protected $allowedFields    = ['id', 'nombres', 'apellidos', 'email', 'password', 'is_active', 'is_admin'];
 
     protected bool $allowEmptyInserts = false;
 
@@ -51,4 +51,15 @@ class Users extends Model
 
         return null;
     }
+
+    public function getUsersRoles()
+    {
+        return $this->select('users.id, users.nombres, users.apellidos, users.email, users.is_active, users.is_admin, users.created_at, roles.nombre AS rol')
+        ->join('user_roles', 'user_roles.user_id = users.id', 'left')
+        ->join('roles', 'roles.id = user_roles.role_id', 'left')
+        ->orderBy('users.created_at', 'ASC')
+        ->findAll();
+    }
+
+    
 }

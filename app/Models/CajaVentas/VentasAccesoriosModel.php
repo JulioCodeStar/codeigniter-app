@@ -148,7 +148,6 @@ class VentasAccesoriosModel extends Model
                 ventas_accesorios.id,
                 CONCAT(p.nombres, ' ', p.apellidos) AS paciente,
                 p.cod_paciente,
-                CONCAT(u.nombres, ' ', u.apellidos) AS usuario,
                 ventas_accesorios.moneda,
                 jobs.descripcion AS trabajo,
                 ventas_accesorios.monto_total,
@@ -161,7 +160,6 @@ class VentasAccesoriosModel extends Model
             ")
       ->join('pacientes p', 'p.id = ventas_accesorios.paciente_id')
       ->join('cotizaciones ct', 'ct.id = ventas_accesorios.cotizacion_id')
-      ->join('users u', 'u.id = ventas_accesorios.user_id')
       ->join('jobs', 'jobs.id = ct.jobs_id', 'left')
       ->join(
         'pagos',
@@ -205,5 +203,61 @@ class VentasAccesoriosModel extends Model
     }
 
     return $builder->findAll();
+  }
+
+  public function getReporteVentasAccesorios(string $start, string $end, $sedeId = null): array
+  {
+    $builder = $this->db->table('ventas_accesorios c')
+      ->select([
+        'c.fecha_inicio   AS fecha',
+        'CONCAT(p.nombres, " ", p.apellidos) AS paciente',
+        'p.dni',
+        'p.vendedor',
+        'srv.descripcion  AS servicio',
+        'jb.descripcion   AS trabajo',
+        'ct.igv_valor     AS igv',
+        'ct.monto         AS subtotal',
+        'ct.descuento     AS descuento',
+        'ct.encargado     AS encargado',
+        'c.monto_total    AS total',
+        'IF(ct.igv = 1, "con igv", "sin igv") AS observacion',
+        'sd.sucursal      AS sede',
+        // Lista de items
+        'GROUP_CONCAT(DISTINCT cl.descripcion SEPARATOR ", ") AS items',
+        // pago acumulado
+        'COALESCE(
+          (SELECT SUM(monto) 
+           FROM pagos 
+           WHERE modulo = "venta" 
+           AND referencia_id = c.id),
+          0
+        ) AS pagado',
+        '(c.monto_total - COALESCE(
+          (SELECT SUM(monto) 
+           FROM pagos 
+           WHERE modulo = "venta" 
+           AND referencia_id = c.id),
+          0
+        )) AS pendiente',
+      ])
+      ->join('pacientes   p', 'p.id  = c.paciente_id')
+      ->join('cotizaciones ct', 'ct.id = c.cotizacion_id')
+      ->join('servicios    srv', 'srv.id = ct.servicios_id')
+      ->join('jobs        jb',  'jb.id  = ct.jobs_id')
+      ->join('sedes       sd',  'sd.id = c.sede_id')
+      // Unir con lista de cotizaciones
+      ->join('cotizaciones_list cl', 'cl.cotizacion_id = ct.id')
+      ->where('c.fecha_inicio >=', $start)
+      ->where('c.fecha_inicio <=', $end);
+
+    if ($sedeId !== 'todas') {
+      $builder->where('c.sede_id', $sedeId);
+    }
+
+    return $builder
+      ->groupBy(['c.id', 'p.nombres', 'p.apellidos', 'p.dni', 'p.vendedor', 'srv.descripcion', 'jb.descripcion', 'ct.igv_valor', 'ct.monto', 'ct.descuento', 'ct.encargado', 'c.monto_total', 'sd.sucursal', 'ct.igv'])
+      ->orderBy('c.fecha_inicio', 'DESC')
+      ->get()
+      ->getResultArray();
   }
 }

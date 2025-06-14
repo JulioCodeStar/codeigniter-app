@@ -303,4 +303,94 @@ class PagosModel extends Model
       ->where('pagos.id', $id)
       ->findAll();
   }
+
+  /**
+   * Devuelve los pagos del rango $start → $end
+   * Filtra por $modulo ('contrato' | 'venta') y por sede (id o 'todas')
+   *
+   * @param string      $start   Y-m-d
+   * @param string      $end     Y-m-d
+   * @param string      $modulo  contrato | venta
+   * @param int|string  $sede    id de sede o 'todas'
+   */
+  public function getPagosReporte(string $start, string $end, string $modulo, $sede = 'todas'): array
+  {
+    // Builder sobre la tabla principal del modelo (pagos)
+    $builder = $this->builder()
+      ->select([
+        'pagos.*',
+        'pacientes.nombres',
+        'pacientes.apellidos',
+        'pacientes.dni',
+        'pacientes.cod_paciente',
+        'sedes.sucursal AS sede',
+      ])
+      ->join('pacientes', 'pacientes.id = pagos.paciente_id', 'left')
+      ->join('sedes',     'sedes.id     = pagos.sede_id',     'left');
+
+    /* ----------------------------------------------------------------
+     *  Joins ESPECÍFICOS según el módulo
+     * ---------------------------------------------------------------- */
+    if ($modulo === 'contrato') {
+      $builder
+        ->join('contratos c',      'c.id      = pagos.referencia_id', 'left')
+        ->join('cotizaciones cot', 'cot.id    = c.cotizacion_id',     'left')
+        ->join('servicios s',      's.id      = cot.servicios_id',    'left')
+        ->join('jobs j',           'j.id      = cot.jobs_id',         'left')
+        ->select([
+          's.descripcion AS servicio',
+          'j.descripcion AS trabajo',
+        ]);
+    } elseif ($modulo === 'venta') {
+      $builder
+        ->join('ventas_accesorios va', 'va.id = pagos.referencia_id', 'left')
+        ->join('cotizaciones cot', 'cot.id = va.cotizacion_id', 'left')
+        ->join('servicios s', 's.id = cot.servicios_id', 'left')
+        ->join('jobs j', 'j.id = cot.jobs_id', 'left')
+        ->select([
+          'cot.servicios_id as servicio_id',
+          'j.descripcion AS trabajo',
+          's.descripcion as servicio',
+        ]);
+    }
+
+    /* ----------------------------------------------------------------
+     *  Filtros
+     * ---------------------------------------------------------------- */
+    $builder->where('pagos.modulo', $modulo)
+      ->where('DATE(pagos.created_at) >=', $start)
+      ->where('DATE(pagos.created_at) <=', $end);
+
+    if ($sede !== 'todas') {
+      $builder->where('pagos.sede_id', $sede);
+    }
+
+    /* ----------------------------------------------------------------
+     *  Resultado
+     * ---------------------------------------------------------------- */
+    return $builder->get()->getResultArray();   // o ->findAll() si prefieres
+  }
+
+  public function getCitasManagmentReporte(string $start, string $end, string $modulo, $sede): array
+  {
+    $builder = $this->builder()
+      ->select([
+        'pagos.*',
+        'CONCAT(pacientes.nombres, " ", pacientes.apellidos) AS paciente',
+        'pacientes.dni',
+        'pacientes.cod_paciente',
+        'sedes.sucursal AS sede',
+      ])
+      ->join('pacientes', 'pacientes.id = pagos.paciente_id', 'left')
+      ->join('sedes',     'sedes.id     = pagos.sede_id',     'left')
+      ->where('pagos.modulo', $modulo)
+      ->where('DATE(pagos.created_at) >=', $start)
+      ->where('DATE(pagos.created_at) <=', $end);
+
+    if ($sede !== 'todas') {
+      $builder->where('pagos.sede_id', $sede);
+    }
+
+    return $builder->get()->getResultArray();
+  }
 }

@@ -5,6 +5,7 @@ namespace App\Libraries;
 use App\Models\CajaVentas\ContractModel;
 use App\Models\CajaVentas\PagosModel;
 use App\Models\CajaVentas\VentasAccesoriosModel;
+use CodeIgniter\I18n\Time;
 
 trait SeguimientoHelpers
 {
@@ -106,7 +107,6 @@ trait SeguimientoHelpers
   {
     $query = $model
       ->selectSum($campo, 'total')
-      ->where('user_id', $this->id_user)
       ->where('moneda', $moneda)
       ->where("DATE({$model->table}.created_at)", $this->hoy);
 
@@ -127,7 +127,6 @@ trait SeguimientoHelpers
   private function getCountPagos($modulo = null, $moneda = null, $id_sede)
   {
     $query = $this->pagosModel
-      ->where('user_id', $this->id_user)
       ->where("DATE(pagos.created_at)", $this->hoy);
 
     if ($id_sede !== 'todas') {
@@ -152,7 +151,6 @@ trait SeguimientoHelpers
     $dt = ($model == 'contrato') ? $this->contratosModel : $this->ventasModel;
 
     $query = $dt
-      ->where('user_id', $this->id_user)
       ->where("DATE(created_at) >=", $this->hoy);
 
     if ($id_sede !== 'todas') {
@@ -243,7 +241,6 @@ trait SeguimientoHelpers
   {
     $query = $model
       ->selectSum($campo, 'total')
-      ->where('user_id', $this->id_user)
       ->where('moneda', $moneda)
       ->where("DATE({$model->table}.created_at) >=", $start)
       ->where("DATE({$model->table}.created_at) <=", $end);
@@ -265,7 +262,6 @@ trait SeguimientoHelpers
   private function getCountPagosBeetween($modulo = null, $moneda = null, $id_sede, string $start, string $end)
   {
     $query = $this->pagosModel
-      ->where('user_id', $this->id_user)
       ->where("DATE(pagos.created_at) >=", $start)
       ->where("DATE(pagos.created_at) <=", $end);
 
@@ -292,7 +288,6 @@ trait SeguimientoHelpers
     $dt = ($model == 'contrato') ? $this->contratosModel : $this->ventasModel;
 
     $query = $dt
-      ->where('user_id', $this->id_user)
       ->where("DATE(created_at) >=", $start)
       ->where("DATE(created_at) <=", $end);
 

@@ -19,6 +19,11 @@ Reportes | Caja Ventas - KYP Bioingeniería
 
   <!-- IZQUIERDA: Select + Datepicker -->
   <div class="col-auto d-flex align-items-center gap-3">
+    <?php
+    $sedesPermitidas = sedes_permitidas_reporte();
+    $tieneTodas = count($sedesPermitidas) === count($sede);
+    ?>
+
     <div class="w-200px">
       <select
         class="form-select"
@@ -27,14 +32,21 @@ Reportes | Caja Ventas - KYP Bioingeniería
         data-control="select2"
         data-placeholder="Seleccione Sede">
         <option disabled value="" selected>Seleccione Sede</option>
+
         <?php foreach ($sede as $row): ?>
-          <option value="<?= $row['id'] ?>">
-            <?= esc($row['sucursal']) ?>
-          </option>
+          <?php if (in_array($row['id'], $sedesPermitidas)): ?>
+            <option value="<?= $row['id'] ?>">
+              <?= esc($row['sucursal']) ?>
+            </option>
+          <?php endif; ?>
         <?php endforeach; ?>
-        <option value="todas">Todas las Sedes</option>
+
+        <?php if ($tieneTodas): ?>
+          <option value="todas">Todas las Sedes</option>
+        <?php endif; ?>
       </select>
     </div>
+
 
     <div class="position-relative d-flex align-items-center w-300px fv-row">
       <input
@@ -54,9 +66,8 @@ Reportes | Caja Ventas - KYP Bioingeniería
 
   <!-- DERECHA: Botones -->
   <div class="col-auto d-flex align-items-center gap-3">
-    <a
-      href="<?= base_url('api/sales/reports/generate') ?>"
-      target="_blank"
+    <button
+      type="button"
       class="btn btn-success fw-bold"
       id="kt_btn_exportar">
       <i class="ki-duotone ki-file-added fs-3">
@@ -68,7 +79,7 @@ Reportes | Caja Ventas - KYP Bioingeniería
         Generando...
         <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
       </span>
-    </a>
+    </button>
 
     <button
       type="button"
@@ -757,6 +768,65 @@ Reportes | Caja Ventas - KYP Bioingeniería
       };
 
       setTimeout(executeFetch, 2000);
+    });
+  });
+
+  const generateExcel = document.querySelector('#kt_btn_exportar');
+  generateExcel.addEventListener('click', function() {
+    if (!validator) {
+      return;
+    }
+
+    validator.validate().then(function(status) {
+      if (status !== 'Valid') {
+        return;
+      }
+
+      generateExcel.setAttribute('data-kt-indicator', 'on');
+      generateExcel.disabled = true;
+
+      const executeFetchExcel = async () => {
+        try {
+          const response = await fetch("<?= base_url('api/sales/reports/generate') ?>", {
+            method: 'POST',
+            body: new FormData(frm),
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-TOKEN': getCsrfToken()
+            }
+          });
+
+          if (response.status === 403) {
+            await updateCsrfToken();
+            return executeFetchExcel(); // reintenta
+          }
+
+          if (!response.ok) throw new Error('Servidor respondió ' + response.status);
+
+          // ① Recibimos el binario
+          const blob = await response.blob();
+
+          // ② Creamos URL temporal
+          const url = window.URL.createObjectURL(blob);
+
+          // ③ Disparamos la descarga
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `reporte_contratos_${Date.now()}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+
+        } catch (err) {
+          console.error(err);
+        } finally {
+          generateExcel.removeAttribute('data-kt-indicator');
+          generateExcel.disabled = false;
+        }
+      };
+
+      setTimeout(executeFetchExcel, 2000);
     });
   });
 

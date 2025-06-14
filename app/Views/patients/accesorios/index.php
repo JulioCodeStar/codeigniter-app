@@ -173,7 +173,7 @@ Gestion de Pacientes | KYP BIOINGENIERIA
                 <!--end::Menu item-->
 
                 <div class="menu-item px-3">
-                  <a href="<?= base_url('sales/accesorios/generate/') . $row['id'] ?>" target="_blank" class="menu-link px-3">
+                  <a href="<?= base_url('api/accesorios/generate/') . $row['id'] ?>" target="_blank" class="menu-link px-3">
                     Pdf
                   </a>
                 </div>

@@ -33,6 +33,21 @@ class PatientController extends BaseController
     try {
       // 1. Recolectar datos
       $data = [
+        'tip_paciente'         => $this->request->getPost('tipPaciente'),
+        'financia_protesis'    => $this->request->getPost('financiacion'),
+        'entidad_financiera'   => $this->request->getPost('entidad_financiera'),
+        'contacto_financiera'  => $this->request->getPost('contacto_financiera'),
+        'telefono_financiera'  => $this->request->getPost('telefono_financiera'),
+        'nombre_hospital'      => $this->request->getPost('nombre_hospital'),
+        'mayor_edad'           => $this->request->getPost('mayor_edad'),
+        'nombres_apoderado'    => $this->request->getPost('nombres_apoderado'),
+        'apellidos_apoderado'  => $this->request->getPost('apellidos_apoderado'),
+        'dni_apoderado'        => $this->request->getPost('dni_apoderado'),
+        'vinculo_apoderado'    => $this->request->getPost('vinculo_apoderado'),
+        'presenta_ampu'        => $this->request->getPost('presencia_amputacion'),
+        'usa_protesis'         => $this->request->getPost('usa_protesis'),
+        'enfermedad'           => $this->request->getPost('enfermedad'),
+        'expectativa'          => $this->request->getPost('expectativa'),
         'nombres'              => $this->request->getPost('nombres'),
         'apellidos'            => $this->request->getPost('apellidos'),
         'dni'                  => $this->request->getPost('dni'),
@@ -50,11 +65,7 @@ class PatientController extends BaseController
         'canal'                => $this->request->getPost('canal'),
         'time_ampu'            => $this->request->getPost('tiempo_ampu'),
         'motivo_amputacion'    => $this->request->getPost('motivo'),
-        'afecciones'           => $this->request->getPost('afecciones'),
-        'alergias'             => $this->request->getPost('alergias'),
         'observaciones'        => $this->request->getPost('observacion'),
-        'tip_paciente'         => $this->request->getPost('tipPaciente'),
-        'recon_doc'            => $this->request->getPost('RecomDoc'),
       ];
 
       // 2. Insertar
@@ -110,6 +121,21 @@ class PatientController extends BaseController
     try {
       // 1. Recolectar datos
       $data = [
+        'tip_paciente'         => $this->request->getPost('tipPaciente'),
+        'financia_protesis'    => $this->request->getPost('financiacion'),
+        'entidad_financiera'   => $this->request->getPost('entidad_financiera'),
+        'contacto_financiera'  => $this->request->getPost('contacto_financiera'),
+        'telefono_financiera'  => $this->request->getPost('telefono_financiera'),
+        'nombre_hospital'      => $this->request->getPost('nombre_hospital'),
+        'mayor_edad'           => $this->request->getPost('mayor_edad'),
+        'nombres_apoderado'    => $this->request->getPost('nombres_apoderado'),
+        'apellidos_apoderado'  => $this->request->getPost('apellidos_apoderado'),
+        'dni_apoderado'        => $this->request->getPost('dni_apoderado'),
+        'vinculo_apoderado'    => $this->request->getPost('vinculo_apoderado'),
+        'presenta_ampu'        => $this->request->getPost('presenta_ampu'),
+        'usa_protesis'         => $this->request->getPost('usa_protesis'),
+        'enfermedad'           => $this->request->getPost('enfermedad'),
+        'expectativa'          => $this->request->getPost('expectativa'),
         'nombres'             => $this->request->getPost('nombres'),
         'apellidos'           => $this->request->getPost('apellidos'),
         'dni'                  => $this->request->getPost('dni'),
@@ -127,11 +153,7 @@ class PatientController extends BaseController
         'canal'                => $this->request->getPost('canal'),
         'time_ampu'            => $this->request->getPost('tiempo_ampu'),
         'motivo_amputacion'    => $this->request->getPost('motivo'),
-        'afecciones'           => $this->request->getPost('afecciones'),
-        'alergias'             => $this->request->getPost('alergias'),
         'observaciones'        => $this->request->getPost('observacion'),
-        'tip_paciente'         => $this->request->getPost('tipPaciente'),
-        'recon_doc'            => $this->request->getPost('RecomDoc'),
       ];
 
       // 2. Insertar

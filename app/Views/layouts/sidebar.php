@@ -103,271 +103,149 @@
                 <!--end:Menu link-->
               </div>
               <!--end:Menu item-->
-
-              <!--begin:Menu item-->
-              <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link <?= set_active_menu('users/permisos', 'link') ?>" href="<?= base_url('users/permisos') ?>" href="">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Permisos</span>
-                </a>
-                <!--end:Menu link-->
-              </div>
-              <!--end:Menu item-->
-
-              <!--begin:Menu item-->
-              <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link" href="">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Caja de Accesos</span>
-                </a>
-                <!--end:Menu link-->
-              </div>
-              <!--end:Menu item-->
             </div>
             <!--end:Menu sub-->
           </div>
           <!--end:Menu item-->
 
 
-          <!--begin:Managment Patients Items-->
-          <div class="menu-item pt-5">
-            <!--begin:Menu content-->
-            <div class="menu-content">
-              <span class="menu-heading fw-bold text-uppercase fs-7">Mantenimiento Pacientes</span>
+          <?php if (show_if_permission(permisos_pacientes())): ?>
+            <!--begin:Managment Patients Title-->
+            <div class="menu-item pt-5">
+              <div class="menu-content">
+                <span class="menu-heading fw-bold text-uppercase fs-7">Mantenimiento Pacientes</span>
+              </div>
             </div>
-            <!--end:Menu content-->
-          </div>
-          <!--end:Managment Patients Items-->
+            <!--end:Managment Patients Title-->
 
-          <!--begin:Menu Patients item-->
-          <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('patient|invoice|contract|accesorios|citas|managment', 'parent') ?>">
-            <!--begin:Menu link-->
-            <span class="menu-link">
-              <span class="menu-icon">
-                <i class="ki-duotone ki-user fs-2">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                </i>
+            <!--begin:Pacientes Section-->
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('patient|invoice|contract|accesorios|citas|managment|consentimiento', 'parent') ?>">
+              <span class="menu-link">
+                <span class="menu-icon">
+                  <i class="ki-duotone ki-user fs-2"><span class="path1"></span><span class="path2"></span></i>
+                </span>
+                <span class="menu-title">Pacientes</span>
+                <span class="menu-arrow"></span>
               </span>
-              <span class="menu-title">Pacientes</span>
-              <span class="menu-arrow"></span>
-            </span>
-            <!--end:Menu link-->
-            <!--begin:Menu sub-->
-            <div class="menu-sub menu-sub-accordion <?= set_active_menu(['patient|invoice|contract|accesorios'], 'sub') ?>">
-              <!--begin:Menu item-->
-              <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('patient', 'parent') ?>">
-                <!--begin:Menu link-->
-                <span class="menu-link">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Gestión de Pacientes</span>
-                  <span class="menu-arrow"></span>
-                </span>
-                <!--end:Menu link-->
-                <!--begin:Menu sub-->
-                <div class="menu-sub menu-sub-accordion menu-active-bg <?= set_active_menu('patient', 'sub') ?>">
-                  <!--begin:Menu item-->
-                  <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link <?= set_active_menu(['patient'], 'link') ?>" href="<?= base_url('patient') ?>">
-                      <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                      </span>
-                      <span class="menu-title">Listado</span>
-                    </a>
-                    <!--end:Menu link-->
+
+              <div class="menu-sub menu-sub-accordion <?= set_active_menu(['patient|invoice|contract|accesorios|citas|managment|consentimiento'], 'sub') ?>">
+
+                <!-- Gestión de Pacientes -->
+                <?php if (show_if_permission(['gestion_pacientes.pacientes.listado', 'gestion_pacientes.pacientes.create'])): ?>
+                  <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('patient', 'parent') ?>">
+                    <span class="menu-link">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Gestión de Pacientes</span>
+                      <span class="menu-arrow"></span>
+                    </span>
+                    <div class="menu-sub menu-sub-accordion menu-active-bg <?= set_active_menu('patient', 'sub') ?>">
+                      <?php if (show_if_permission('gestion_pacientes.pacientes.listado')): ?>
+                        <div class="menu-item">
+                          <a class="menu-link <?= set_active_menu('patient', 'link') ?>" href="<?= base_url('patient') ?>">
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                            <span class="menu-title">Listado</span>
+                          </a>
+                        </div>
+                      <?php endif; ?>
+
+                      <?php if (show_if_permission('gestion_pacientes.pacientes.create')): ?>
+                        <div class="menu-item">
+                          <a class="menu-link <?= set_active_menu('patient/new', 'link') ?>" href="<?= base_url('patient/new') ?>">
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                            <span class="menu-title">Nuevo Registro</span>
+                          </a>
+                        </div>
+                      <?php endif; ?>
+                    </div>
                   </div>
-                  <!--end:Menu item-->
-                  <!--begin:Menu item-->
-                  <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link <?= set_active_menu(['patient', 'new'], 'link') ?>" href="<?= base_url('patient/new') ?>">
-                      <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                      </span>
-                      <span class="menu-title">Nuevo Registro</span>
-                    </a>
-                    <!--end:Menu link-->
+                <?php endif; ?>
+
+                <!-- Cotizaciones -->
+                <?php if (show_if_permission(['gestion_pacientes.cotizaciones.listado', 'gestion_pacientes.cotizaciones.create'])): ?>
+                  <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('invoice', 'parent') ?>">
+                    <span class="menu-link">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Cotizaciones</span>
+                      <span class="menu-arrow"></span>
+                    </span>
+                    <div class="menu-sub menu-sub-accordion menu-active-bg <?= set_active_menu('invoice', 'sub') ?>">
+                      <?php if (show_if_permission('gestion_pacientes.cotizaciones.listado')): ?>
+                        <div class="menu-item">
+                          <a class="menu-link <?= set_active_menu('invoice', 'link') ?>" href="<?= base_url('invoice') ?>">
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                            <span class="menu-title">Listado</span>
+                          </a>
+                        </div>
+                      <?php endif; ?>
+
+                      <?php if (show_if_permission('gestion_pacientes.cotizaciones.create')): ?>
+                        <div class="menu-item">
+                          <a class="menu-link <?= set_active_menu('invoice/new', 'link') ?>" href="<?= base_url('invoice/new') ?>">
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                            <span class="menu-title">Nueva Cotización</span>
+                          </a>
+                        </div>
+                      <?php endif; ?>
+                    </div>
                   </div>
-                  <!--end:Menu item-->
+                <?php endif; ?>
+
+                <!-- Contratos -->
+                <?php if (show_if_permission('gestion_pacientes.contratos')): ?>
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('contract|contract/pagos', 'link') ?>" href="<?= base_url('contract') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Contratos</span>
+                    </a>
+                  </div>
+                <?php endif; ?>
+
+                <!-- Ventas Accesorios -->
+                <?php if (show_if_permission('gestion_pacientes.ventas_accesorios')): ?>
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('accesorios', 'link') ?>" href="<?= base_url('accesorios') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Ventas Accesorios</span>
+                    </a>
+                  </div>
+                <?php endif; ?>
+
+                <!-- Citas -->
+                <?php if (show_if_permission('gestion_pacientes.citas')): ?>
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('citas', 'link') ?>" href="<?= base_url('citas') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Citas</span>
+                    </a>
+                  </div>
+                <?php endif; ?>
+
+                <!-- Mantenimiento -->
+                <?php if (show_if_permission('gestion_pacientes.mantenimiento')): ?>
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('managment', 'link') ?>" href="<?= base_url('managment') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Mantenimiento</span>
+                    </a>
+                  </div>
+                <?php endif; ?>
+
+                <!-- Carta de Consentimiento -->
+                <div class="menu-item">
+                  <a class="menu-link <?= set_active_menu('consentimiento', 'link') ?>" href="<?= base_url('consentimiento') ?>">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title">Carta de Consentimiento</span>
+                  </a>
                 </div>
-                <!--end:Menu sub-->
-              </div>
-              <!--end:Menu item-->
-              <!--begin:Menu item-->
-              <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('invoice', 'parent') ?>">
-                <!--begin:Menu link-->
-                <span class="menu-link">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Cotizaciones</span>
-                  <span class="menu-arrow"></span>
-                </span>
-                <!--end:Menu link-->
-                <!--begin:Menu sub-->
-                <div class="menu-sub menu-sub-accordion menu-active-bg <?= set_active_menu('invoice', 'sub') ?>">
-                  <!--begin:Menu item-->
-                  <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link <?= set_active_menu('invoice', 'link') ?>" href="<?= base_url('invoice') ?>">
-                      <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                      </span>
-                      <span class="menu-title">Listado</span>
-                    </a>
-                    <!--end:Menu link-->
-                  </div>
-                  <!--end:Menu item-->
-                  <!--begin:Menu item-->
-                  <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link <?= set_active_menu('invoice/new', 'link') ?>" href="<?= base_url('invoice/new') ?>">
-                      <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                      </span>
-                      <span class="menu-title">Nueva Cotización</span>
-                    </a>
-                    <!--end:Menu link-->
-                  </div>
-                  <!--end:Menu item-->
-                </div>
-                <!--end:Menu sub-->
-              </div>
-              <!--end:Menu item-->
-              <!--begin:Menu item-->
-              <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-                <!--begin:Menu link-->
-                <span class="menu-link">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Historial</span>
-                  <span class="menu-arrow"></span>
-                </span>
-                <!--end:Menu link-->
-                <!--begin:Menu sub-->
-                <div class="menu-sub menu-sub-accordion menu-active-bg">
-                  <!--begin:Menu item-->
-                  <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="authentication/layouts/creative/sign-in.html">
-                      <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                      </span>
-                      <span class="menu-title">Sign-in</span>
-                    </a>
-                    <!--end:Menu link-->
-                  </div>
-                  <!--end:Menu item-->
-                  <!--begin:Menu item-->
-                  <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="authentication/layouts/creative/sign-up.html">
-                      <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                      </span>
-                      <span class="menu-title">Sign-up</span>
-                    </a>
-                    <!--end:Menu link-->
-                  </div>
-                  <!--end:Menu item-->
-                  <!--begin:Menu item-->
-                  <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="authentication/layouts/creative/two-factor.html">
-                      <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                      </span>
-                      <span class="menu-title">Two-Factor</span>
-                    </a>
-                    <!--end:Menu link-->
-                  </div>
-                  <!--end:Menu item-->
-                  <!--begin:Menu item-->
-                  <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="authentication/layouts/creative/reset-password.html">
-                      <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                      </span>
-                      <span class="menu-title">Reset Password</span>
-                    </a>
-                    <!--end:Menu link-->
-                  </div>
-                  <!--end:Menu item-->
-                  <!--begin:Menu item-->
-                  <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="authentication/layouts/creative/new-password.html">
-                      <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                      </span>
-                      <span class="menu-title">New Password</span>
-                    </a>
-                    <!--end:Menu link-->
-                  </div>
-                  <!--end:Menu item-->
-                </div>
-                <!--end:Menu sub-->
-              </div>
-              <!--end:Menu item-->
-
-              <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link <?= set_active_menu('contract|contract/pagos', 'link') ?>" href="<?= base_url('contract') ?>">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Contratos</span>
-                </a>
-              </div>
-
-              <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link <?= set_active_menu('accesorios', 'link') ?>" href="<?= base_url('accesorios') ?>">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Ventas Accesorios</span>
-                </a>
-              </div>
-
-              <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link <?= set_active_menu('citas', 'link') ?>" href="<?= base_url('citas') ?>">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Citas</span>
-                </a>
-              </div>
-
-              <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link <?= set_active_menu('managment', 'link') ?>" href="<?= base_url('managment') ?>">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Mantenimiento</span>
-                </a>
               </div>
             </div>
-            <!--end:Menu sub-->
-          </div>
-          <!--end:Menu Patients item-->
+            <!--end:Pacientes Section-->
+          <?php endif; ?>
 
 
+          <!--begin:Caja Ventas item-->
           <div class="menu-item">
-            <!--begin:Menu link-->
+
             <a class="menu-link" target="_blank" href="<?= base_url('sales/auth/login') ?>">
               <span class="menu-icon">
                 <i class="ki-duotone ki-cheque fs-2">
@@ -382,62 +260,120 @@
               </span>
               <span class="menu-title">Caja Ventas</span>
             </a>
-            <!--end:Menu link-->
+
+          </div>
+          <!--end:Caja Ventas item-->
+
+
+
+
+          <!--begin:Managment Logística Title-->
+          <div class="menu-item pt-5">
+            <div class="menu-content">
+              <span class="menu-heading fw-bold text-uppercase fs-7">Mantenimiento Logística</span>
+            </div>
           </div>
 
-
-          <!--begin:Menu item-->
-          <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+          <!--begin:Logística item-->
+          <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('logistica', 'parent') ?>">
             <!--begin:Menu link-->
             <span class="menu-link">
               <span class="menu-icon">
-                <i class="ki-duotone ki-abstract-39 fs-2">
+                <i class="ki-duotone ki-chart fs-2">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </span>
-              <span class="menu-title">Social</span>
+              <span class="menu-title">Logística</span>
               <span class="menu-arrow"></span>
             </span>
-            <!--end:Menu link-->
-            <!--begin:Menu sub-->
-            <div class="menu-sub menu-sub-accordion">
-              <!--begin:Menu item-->
-              <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link" href="pages/social/feeds.html">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Feeds</span>
-                </a>
-                <!--end:Menu link-->
+            <!--end:Logística link-->
+            <!--begin:Logística sub-->
+            <div class="menu-sub menu-sub-accordion <?= set_active_menu('logistica', 'sub') ?>">
+              <!--begin:Orden Compra item-->
+              <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('logistica/orden-compra|logistica/proveedor', 'sub') ?>">
+                <span class="menu-link">
+                  <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                  <span class="menu-title">Orden Compra</span>
+                  <span class="menu-arrow"></span>
+                </span>
+                <div class="menu-sub menu-sub-accordion menu-active-bg">
+
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('logistica/proveedor', 'link') ?>" href="<?= base_url('logistica/proveedor') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Proveedores</span>
+                    </a>
+                  </div>
+
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('logistica/orden-compra', 'link') ?>" href="<?= base_url('logistica/orden-compra') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Listado</span>
+                    </a>
+                  </div>
+
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('logistica/orden-compra/new', 'link') ?>" href="<?= base_url('logistica/orden-compra/new') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Nuevo Registro</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-              <!--end:Menu item-->
-              <!--begin:Menu item-->
-              <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link" href="pages/social/activity.html">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Activty</span>
-                </a>
-                <!--end:Menu link-->
+              <!--end:Orden Compra item-->
+
+              <!--begin:Orden Trabajo item-->
+              <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('logistica/orden-trabajo', 'sub') ?>">
+                <span class="menu-link">
+                  <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                  <span class="menu-title">Orden Trabajo</span>
+                  <span class="menu-arrow"></span>
+                </span>
+                <div class="menu-sub menu-sub-accordion menu-active-bg">
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('logistica/orden-trabajo', 'link') ?>" href="<?= base_url('logistica/orden-trabajo') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Listado</span>
+                    </a>
+                  </div>
+
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('logistica/orden-trabajo/new', 'link') ?>" href="<?= base_url('logistica/orden-trabajo/new') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Nuevo Registro</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-              <!--end:Menu item-->
-              <!--begin:Menu item-->
-              <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link" href="pages/social/followers.html">
-                  <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                  </span>
-                  <span class="menu-title">Followers</span>
-                </a>
-                <!--end:Menu link-->
+              <!--end:Orden Trabajo item-->
+
+              <!--begin:Orden Importación item-->
+              <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('logistica/orden-importacion', 'sub') ?>">
+                <span class="menu-link">
+                  <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                  <span class="menu-title">Orden Importación</span>
+                  <span class="menu-arrow"></span>
+                </span>
+                <div class="menu-sub menu-sub-accordion menu-active-bg">
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('logistica/orden-importacion', 'link') ?>" href="<?= base_url('logistica/orden-importacion') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Listado</span>
+                    </a>
+                  </div>
+
+                  <div class="menu-item">
+                    <a class="menu-link <?= set_active_menu('logistica/orden-importacion/new', 'link') ?>" href="<?= base_url('logistica/orden-importacion/new') ?>">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Nuevo Registro</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-              <!--end:Menu item-->
+              <!--end:Orden Importación item-->
+              
+
               <!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link-->
@@ -451,9 +387,10 @@
               </div>
               <!--end:Menu item-->
             </div>
-            <!--end:Menu sub-->
+            <!--end:Logística sub-->
           </div>
-          <!--end:Menu item-->
+          <!--end:Logística item-->
+          <!--end:Managment Logística Title-->
 
 
         </div>

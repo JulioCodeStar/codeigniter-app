@@ -119,7 +119,6 @@ class ContractModel extends Model
                 CONCAT(p.nombres, ' ', p.apellidos) AS paciente,
                 p.sede,
                 p.cod_paciente,
-                CONCAT(u.nombres, ' ', u.apellidos) AS usuario,
                 contratos.moneda,
                 jobs.descripcion AS trabajo,
                 contratos.monto_total,
@@ -132,7 +131,6 @@ class ContractModel extends Model
             ")
       ->join('pacientes p', 'p.id = contratos.paciente_id')
       ->join('cotizaciones ct', 'ct.id = contratos.cotizacion_id')
-      ->join('users u', 'u.id = contratos.user_id')
       ->join('jobs', 'jobs.id = ct.jobs_id', 'left')
       ->join(
         'pagos',
@@ -169,8 +167,8 @@ class ContractModel extends Model
       ->join('cotizaciones', 'cotizaciones.id = contratos.cotizacion_id', 'left')
       ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
       ->join('sedes', 'sedes.id = contratos.sede_id', 'left')
-      ->where("DATE(contratos.created_at) >= ", $start)
-      ->where("DATE(contratos.created_at) <= ", $end);
+      ->where("DATE(contratos.fecha_inicio) >= ", $start)
+      ->where("DATE(contratos.fecha_inicio) <= ", $end);
 
     if ($sede !== 'todas') {
       $builder->where("contratos.sede_id", $sede);
@@ -179,4 +177,49 @@ class ContractModel extends Model
     return $builder->findAll();
   }
 
+  /* REPORTES EN EXCEL */
+  public function getReporteContratos(string $start, string $end, $sedeId = null): array
+  {
+    $builder = $this->db->table('contratos c')
+      ->select([
+        'c.fecha_inicio   AS fecha',
+        'CONCAT(p.nombres, " ", p.apellidos) AS paciente',
+        'p.dni',
+        'p.vendedor',
+        'srv.descripcion  AS servicio',
+        'jb.descripcion   AS trabajo',
+        'ct.igv_valor     AS igv',
+        'ct.monto         AS subtotal',
+        'ct.descuento     AS descuento',
+        'ct.encargado     AS encargado',
+        'c.monto_total    AS total',
+        'IF(ct.igv = 1, "con igv", "sin igv") AS observacion',
+        'sd.sucursal      AS sede',
+        // pago acumulado
+        'COALESCE(pg.pagado, 0)              AS pagado',
+        '(c.monto_total - COALESCE(pg.pagado, 0)) AS pendiente',
+      ])
+      ->join('pacientes   p', 'p.id  = c.paciente_id')
+      ->join('cotizaciones ct', 'ct.id = c.cotizacion_id')
+      ->join('servicios    srv', 'srv.id = ct.servicios_id')
+      ->join('jobs        jb',  'jb.id  = ct.jobs_id')
+      ->join('sedes       sd',  'sd.id = c.sede_id')
+      // sub-query de pagos
+      ->join(
+        '(SELECT referencia_id, SUM(monto) pagado
+              FROM pagos
+              WHERE modulo = "contrato"
+              GROUP BY referencia_id) pg',
+        'pg.referencia_id = c.id',
+        'left'
+      )
+      ->where('c.fecha_inicio >=', $start)
+      ->where('c.fecha_inicio <=', $end);
+
+    if ($sedeId !== 'todas') {
+      $builder->where('c.sede_id', $sedeId);
+    }
+
+    return $builder->orderBy('c.fecha_inicio', 'DESC')->get()->getResultArray();
+  }
 }

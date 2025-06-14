@@ -38,6 +38,7 @@ class Filters extends BaseFilters
         'alreadyLogged' => \App\Filters\AlreadyLoggedInFilter::class,
         'alreadyLoggedSales' => \App\Filters\alreadyLoggedSales::class,
         'authsales'     => \App\Filters\AuthFilterSales::class,
+        'permission'    => \App\Filters\PermissionFilter::class,
     ];
 
     /**

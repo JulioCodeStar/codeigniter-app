@@ -148,7 +148,7 @@ Gestion de Pacientes - Citas | KYP BIOINGENIERIA
               <?= fecha_dmy($row['created_at']) ?>
             </td>
             <td class="text-center">
-              <a href="<?= base_url('sales/citas/generate/') . $row['id'] ?>" target="_blank" class="btn btn-icon btn-primary btn-sm">
+              <a href="<?= base_url('api/citas/generate/') . $row['id'] ?>" target="_blank" class="btn btn-icon btn-primary btn-sm">
                 <i class="ki-duotone ki-note-2 fs-4">
                   <span class="path1"></span>
                   <span class="path2"></span>

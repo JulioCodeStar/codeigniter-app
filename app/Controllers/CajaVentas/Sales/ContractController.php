@@ -165,6 +165,7 @@ class ContractController extends BaseController
     $viewMap = [
       1 => 'pdf/contract/superior/contract',
       2 => 'pdf/contract/inferior/contract',
+      3 => 'pdf/contract/estetica/contract',
     ];
 
     if (!array_key_exists($contract['servicios_id'], $viewMap)) {

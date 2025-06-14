@@ -451,11 +451,14 @@
                       </div>
                       <!--end::Avatar-->
                       <!--begin::Username-->
-                      <div class="d-flex flex-column">
-                        <div class="fw-bold d-flex align-items-center fs-5">
-                          Robert Fox
+                      <div class="d-flex flex-column min-w-0 text-truncate"><!-- 👈 min-w-0 permite que el flex-item se encoja -->
+                        <div class="fw-bold fs-5 text-truncate">
+                          <?= esc(session('nombres') . ' ' . session('apellidos')) ?>
                         </div>
-                        <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">robert@kt.com</a>
+                        <a href="#"
+                          class="fw-semibold text-muted text-hover-primary fs-7 text-truncate">
+                          <?= esc(session('email')) ?>
+                        </a>
                       </div>
                       <!--end::Username-->
                     </div>

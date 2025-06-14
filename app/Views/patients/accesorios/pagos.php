@@ -159,7 +159,7 @@ Pagos Ventas Accesorios - KYP BIOINGENIERIA
                   </div>
 
                   <div class="text-muted">
-                        <a href="<?= base_url('sales/accesorios/generate/pagos/' . $row['referencia_id'] . '/' . $row['pago_nro']) ?>" target="_blank" class="fw-bold text-gray-600 text-hover-primary me-2">Ver Recibo</a>
+                        <a href="<?= base_url('api/accesorios/generate/pagos/' . $row['referencia_id'] . '/' . $row['pago_nro']) ?>" target="_blank" class="fw-bold text-gray-600 text-hover-primary me-2">Ver Recibo</a>
                       </div>
 
                 </div>

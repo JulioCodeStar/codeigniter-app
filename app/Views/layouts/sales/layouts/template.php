@@ -119,12 +119,12 @@
             id="kt_app_header_wrapper">
             <!--begin::Menu wrapper-->
             <div class="app-navbar flex-shrink-0">
-              
+
             </div>
             <!--end::Menu wrapper-->
             <!--begin::Navbar-->
             <div class="app-navbar flex-shrink-0">
-              
+
               <!--begin::Activities-->
               <div class="app-navbar-item ms-1 ms-md-4">
                 <!--begin::Drawer toggle-->
@@ -142,9 +142,9 @@
                 <!--end::Drawer toggle-->
               </div>
               <!--end::Activities-->
-              
-              
-              
+
+
+
               <!--begin::Theme mode-->
               <div class="app-navbar-item ms-1 ms-md-4">
                 <!--begin::Menu toggle-->
@@ -272,22 +272,24 @@
                       </div>
                       <!--end::Avatar-->
                       <!--begin::Username-->
-                      <div class="d-flex flex-column">
-                        <div class="fw-bold d-flex align-items-center fs-5">
-                          <?= session('caja_user')['nombre'] ?>
+                      <div class="d-flex flex-column min-w-0"><!-- 👈 min-w-0 permite que el flex-item se encoja -->
+                        <div class="fw-bold fs-5 text-truncate">
+                          <?= esc(session('caja_user')['nombre']) ?>
                         </div>
-                        <a
-                          href="#"
-                          class="fw-semibold text-muted text-hover-primary fs-7"><?= session('caja_user')['email'] ?></a>
+                        <a href="#"
+                          class="fw-semibold text-muted text-hover-primary fs-7 text-truncate">
+                          <?= esc(session('caja_user')['email']) ?>
+                        </a>
                       </div>
                       <!--end::Username-->
+
                     </div>
                   </div>
                   <!--end::Menu item-->
                   <!--begin::Menu separator-->
                   <div class="separator my-2"></div>
                   <!--end::Menu separator-->
-                  
+
                   <!--begin::Menu item-->
                   <div class="menu-item px-5">
                     <a
@@ -333,7 +335,7 @@
         <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
           <!--begin::Content wrapper-->
           <div class="d-flex flex-column flex-column-fluid">
-            
+
             <!--begin::Content-->
             <div id="kt_app_content" class="app-content flex-column-fluid">
               <!--begin::Content container-->

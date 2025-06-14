@@ -178,8 +178,6 @@ Gestion de Pacientes | KYP BIOINGENIERIA
                   </a>
                 </div>
 
-
-
                 <div class="menu-item px-3">
                   <a href="#" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#eliminarModal" data-bs-url="<?= base_url('api/patient/delete/' . $row['id']) ?>">
                     Eliminar

@@ -153,7 +153,7 @@
 
           <?php endif; ?>
 
-
+          <?php if(user_has_permission_sales('caja_ventas.seguimiento.acceso')): ?>
           <!-- begin:SEGUIMIENTO -->
           <div class="menu-item">
             <!--begin:Menu link-->
@@ -170,7 +170,9 @@
             <!--end:Menu link-->
           </div>
           <!-- end:SEGUIMIENTO -->
+          <?php endif; ?>
 
+          <?php if(user_has_permission_sales('caja_ventas.reportes.acceso')): ?>
           <!-- begin:REPORTES -->
           <div class="menu-item">
             <!--begin:Menu link-->
@@ -186,7 +188,7 @@
             <!--end:Menu link-->
           </div>
           <!-- end:REPORTES -->
-
+          <?php endif; ?>
 
 
         </div>

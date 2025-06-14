@@ -84,14 +84,6 @@ class CreatePatientsTable extends Migration
                 'constraint' => 255,
                 'null' => true,
             ],
-            'afecciones' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
-            'alergias' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
             'observaciones' => [
                 'type' => 'TEXT',
                 'null' => true,
