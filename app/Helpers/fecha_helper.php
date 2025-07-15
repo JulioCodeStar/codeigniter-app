@@ -46,3 +46,20 @@ if (!function_exists('fecha_spanish')) {
     }
   }
 }
+
+if (!function_exists('fecha_hora')) {
+  /**
+   * Formatea una fecha y hora en español: Ej. 24-06-2025 12:00
+   * @param string $fecha Fecha en cualquier formato válido
+   * @return string
+   */
+  function fecha_hora($fecha)
+  {
+    try {
+      $date = new DateTime($fecha);
+      return $date->format('d/m/Y H:i A');
+    } catch (Exception $e) {
+      return 'Fecha inválida';
+    }
+  }
+}

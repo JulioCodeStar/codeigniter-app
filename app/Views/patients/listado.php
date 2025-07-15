@@ -8,29 +8,29 @@ Gestion de Pacientes | KYP BIOINGENIERIA
 
 <?= $this->section('toolbar'); ?>
 
-<h1
-  class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
-  Mantenimiento de Pacientes
-</h1>
+  <h1
+    class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+    Mantenimiento de Pacientes
+  </h1>
 
-<ul
-  class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+  <ul
+    class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 
-  <li class="breadcrumb-item text-muted">Pacientes</li>
+    <li class="breadcrumb-item text-muted">Pacientes</li>
 
-  <li class="breadcrumb-item">
-    <span class="bullet bg-gray-500 w-5px h-2px"></span>
-  </li>
+    <li class="breadcrumb-item">
+      <span class="bullet bg-gray-500 w-5px h-2px"></span>
+    </li>
 
-  <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
+    <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
 
-  <li class="breadcrumb-item">
-    <span class="bullet bg-gray-500 w-5px h-2px"></span>
-  </li>
+    <li class="breadcrumb-item">
+      <span class="bullet bg-gray-500 w-5px h-2px"></span>
+    </li>
 
-  <li class="breadcrumb-item text-muted">Listado</li>
+    <li class="breadcrumb-item text-muted">Listado</li>
 
-</ul>
+  </ul>
 
 <?= $this->endSection(); ?>
 
@@ -183,8 +183,6 @@ Gestion de Pacientes | KYP BIOINGENIERIA
                     Eliminar
                   </a>
                 </div>
-
-
 
                 <div class="menu-item px-3">
                   <a href="<?= base_url('patient/generate/' . $row['id']) ?>" target="_blank" class="menu-link px-3">

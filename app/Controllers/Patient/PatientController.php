@@ -36,17 +36,17 @@ class PatientController extends BaseController
         'tip_paciente'         => $this->request->getPost('tipPaciente'),
         'financia_protesis'    => $this->request->getPost('financiacion'),
         'entidad_financiera'   => $this->request->getPost('entidad_financiera'),
-        'contacto_financiera'  => $this->request->getPost('contacto_financiera'),
-        'telefono_financiera'  => $this->request->getPost('telefono_financiera'),
-        'nombre_hospital'      => $this->request->getPost('nombre_hospital'),
+        'contacto_financiera'  => $this->request->getPost('contacto_financiero'),
+        'telefono_financiera'  => $this->request->getPost('telefono_financiero'),
+        'nombre_hospital'      => $this->request->getPost('hospital'),
         'mayor_edad'           => $this->request->getPost('mayor_edad'),
-        'nombres_apoderado'    => $this->request->getPost('nombres_apoderado'),
-        'apellidos_apoderado'  => $this->request->getPost('apellidos_apoderado'),
+        'nombres_apoderado'    => $this->request->getPost('nombre_apoderado'),
+        'apellidos_apoderado'  => $this->request->getPost('apellido_apoderado'),
         'dni_apoderado'        => $this->request->getPost('dni_apoderado'),
         'vinculo_apoderado'    => $this->request->getPost('vinculo_apoderado'),
         'presenta_ampu'        => $this->request->getPost('presencia_amputacion'),
         'usa_protesis'         => $this->request->getPost('usa_protesis'),
-        'enfermedad'           => $this->request->getPost('enfermedad'),
+        'enfermedad'           => $this->request->getPost('enfermedad_preexistente'),
         'expectativa'          => $this->request->getPost('expectativa'),
         'nombres'              => $this->request->getPost('nombres'),
         'apellidos'            => $this->request->getPost('apellidos'),
@@ -124,20 +124,20 @@ class PatientController extends BaseController
         'tip_paciente'         => $this->request->getPost('tipPaciente'),
         'financia_protesis'    => $this->request->getPost('financiacion'),
         'entidad_financiera'   => $this->request->getPost('entidad_financiera'),
-        'contacto_financiera'  => $this->request->getPost('contacto_financiera'),
-        'telefono_financiera'  => $this->request->getPost('telefono_financiera'),
-        'nombre_hospital'      => $this->request->getPost('nombre_hospital'),
+        'contacto_financiera'  => $this->request->getPost('contacto_financiero'),
+        'telefono_financiera'  => $this->request->getPost('telefono_financiero'),
+        'nombre_hospital'      => $this->request->getPost('hospital'),
         'mayor_edad'           => $this->request->getPost('mayor_edad'),
-        'nombres_apoderado'    => $this->request->getPost('nombres_apoderado'),
-        'apellidos_apoderado'  => $this->request->getPost('apellidos_apoderado'),
+        'nombres_apoderado'    => $this->request->getPost('nombre_apoderado'),
+        'apellidos_apoderado'  => $this->request->getPost('apellido_apoderado'),
         'dni_apoderado'        => $this->request->getPost('dni_apoderado'),
         'vinculo_apoderado'    => $this->request->getPost('vinculo_apoderado'),
-        'presenta_ampu'        => $this->request->getPost('presenta_ampu'),
+        'presenta_ampu'        => $this->request->getPost('presencia_amputacion'),
         'usa_protesis'         => $this->request->getPost('usa_protesis'),
-        'enfermedad'           => $this->request->getPost('enfermedad'),
+        'enfermedad'           => $this->request->getPost('enfermedad_preexistente'),
         'expectativa'          => $this->request->getPost('expectativa'),
-        'nombres'             => $this->request->getPost('nombres'),
-        'apellidos'           => $this->request->getPost('apellidos'),
+        'nombres'              => $this->request->getPost('nombres'),
+        'apellidos'            => $this->request->getPost('apellidos'),
         'dni'                  => $this->request->getPost('dni'),
         'edad'                 => $this->request->getPost('edad'),
         'genero'               => $this->request->getPost('genero'),
@@ -151,7 +151,7 @@ class PatientController extends BaseController
         'otro_contacto'        => $this->request->getPost('otro_contacto'),
         'nombre_contacto'      => $this->request->getPost('nombre_contacto'),
         'canal'                => $this->request->getPost('canal'),
-        'time_ampu'            => $this->request->getPost('tiempo_ampu'),
+        'time_ampu'            => $this->request->getPost('time_ampu'),
         'motivo_amputacion'    => $this->request->getPost('motivo'),
         'observaciones'        => $this->request->getPost('observacion'),
       ];
@@ -244,9 +244,9 @@ class PatientController extends BaseController
                 <img src="' . $data['logo'] . '" style="height: 40px;">
             </td>
             <td style="width: 30%; text-align: right;">
-                <small style="font-style: italic; font-weight: bold;">Front Desk</small>
+                <small style="font-style: italic; font-weight: bold;">Área: Front Desk</small>
                 <br>
-                <small>Registro: ' . fecha_dmy($data['fecha']) . '</small>
+                <small>Registro: ' . fecha_hora($data['fecha']) . '</small>
             </td>
         </tr>
     </table>';

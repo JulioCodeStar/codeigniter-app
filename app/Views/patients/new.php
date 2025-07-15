@@ -99,15 +99,15 @@ Gestion de Pacientes | KYP BIOINGENIERIA
         </div>
 
         <div class="col-md-4 mb-4" id="grupoRegular3" style="display: none;">
-          <label for="contacto_financiero" class="required form-label">Contacto Financiero</label>
+          <label for="contacto_financiero" class="required form-label">Contacto de la Entidad</label>
           <input type="text" name="contacto_financiero" id="contacto_financiero" class="form-control"
-            placeholder="Contacto Financiero" />
+            placeholder="Contacto de la Entidad" />
         </div>
 
         <div class="col-md-4 mb-4" id="grupoRegular4" style="display: none;">
-          <label for="telefono_financiero" class="required form-label">Telefono Financiero</label>
+          <label for="telefono_financiero" class="required form-label">Telefono de la Entidad</label>
           <input type="text" name="telefono_financiero" id="telefono_financiero" class="form-control"
-            placeholder="Telefono Financiero" />
+            placeholder="Telefono de la Entidad" />
         </div>
         
 

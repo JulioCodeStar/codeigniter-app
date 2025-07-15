@@ -52,7 +52,7 @@ class InvoiceController extends BaseController
 
   public function getcomponentsIfJob(int $id)
   {
-    $components      = $this->componentsModel->where('job_id', $id)->findAll();
+    $components      = $this->componentsModel->where('job_id', $id)->orderBy('order', 'ASC')->findAll();
 
     foreach ($components as &$comp) {
       $comp['items'] = $comp['items'] !== null

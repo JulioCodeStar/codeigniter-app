@@ -200,20 +200,52 @@ Gestion de Usuarios | KYP BIOINGENIERIA
                 <div id="sedes_container" class="fv-row mb-7 d-none">
                   <label class="fw-semibold fs-6 mb-2">Sedes habilitadas</label>
                   <div class="d-flex flex-wrap gap-3">
-                    <div class="form-check form-check-custom form-check-solid me-5">
-                      <input class="form-check-input" type="checkbox" name="sedes[]" value="1" id="sede_lima" />
-                      <label class="form-check-label" for="sede_lima">Lima</label>
-                    </div>
-                    <div class="form-check form-check-custom form-check-solid me-5">
-                      <input class="form-check-input" type="checkbox" name="sedes[]" value="2" id="sede_arequipa" />
-                      <label class="form-check-label" for="sede_arequipa">Arequipa</label>
-                    </div>
-                    <div class="form-check form-check-custom form-check-solid">
-                      <input class="form-check-input" type="checkbox" name="sedes[]" value="3" id="sede_chiclayo" />
-                      <label class="form-check-label" for="sede_chiclayo">Chiclayo</label>
-                    </div>
+                    <?php foreach ($sedes as $sede) : ?>
+                      <div class="form-check form-check-custom form-check-solid me-5">
+                        <input class="form-check-input" type="checkbox" name="sedes[]" value="<?= $sede['id'] ?>" id="sede_<?= mb_strtolower($sede['sucursal']) ?>" />
+                        <label class="form-check-label" for="sede_<?= mb_strtolower($sede['sucursal']) ?>"><?= $sede['sucursal'] ?></label>
+                      </div>
+                    <?php endforeach; ?>
                   </div>
                 </div>
+
+                <div class="separator separator-dashed my-5"></div>
+
+                <!-- Switch para Gestión de Producción -->
+                <div class="fv-row mb-7">
+                  <label class="form-check form-switch form-check-custom form-check-solid">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="gestion_produccion"
+                      id="gestion_produccion"
+                      value="1" />
+                    <span class="form-check-label">Gestión de Producción</span>
+                  </label>
+                </div>
+
+                <!-- Container con las 3 áreas, oculto por defecto -->
+                <div id="gestion_container" class="fv-row mb-7 d-none">
+                  <label class="fw-semibold fs-6 mb-2">Área habilitada</label>
+                  <div class="d-flex flex-wrap gap-3">
+                    <?php
+                    foreach ($area_production as $a):
+                    ?>
+                      <div class="form-check form-check-custom form-check-solid me-5">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="area[]"
+                          id="<?= $a ?>"
+                          value="<?= esc($a) ?>" />
+                        <label class="form-check-label" for="<?= $a ?>">
+                          <?= esc($a) ?>
+                        </label>
+                      </div>
+                    <?php endforeach; ?>
+                  </div>
+                </div>
+
 
                 <!--end::Input group-->
               </div>
@@ -565,6 +597,41 @@ Gestion de Usuarios | KYP BIOINGENIERIA
                 </div>
               <?php endforeach; ?>
             </div>
+
+            <?php
+            function slug(string $str)
+            {
+              // minusculas, sin tildes, espacios → guiones
+              $map = ['Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ñ' => 'n', 'Ñ' => 'n'];
+              $clean = strtr($str, $map);
+              $clean = preg_replace('/[^A-Za-z0-9 ]/', '', $clean);
+              return str_replace(' ', '-', strtolower($clean));
+            }
+            ?>
+
+            <div class="my-7">
+              <label class="fs-6 fw-bold mb-3">Acceso a Producción</label>
+              <div class="form-check form-check-custom form-check-solid">
+                <input class="form-check-input" type="checkbox" name="acceso_produccion" id="edit_acceso_produccion" />
+                <label class="form-check-label" for="edit_acceso_produccion">
+                  Habilitar acceso
+                </label>
+              </div>
+
+              <div id="edit_areas_wrapper" class="mt-4" style="display: none;">
+                <label class="fs-7 fw-semibold">Áreas permitidas:</label>
+                <?php foreach ($area_production as $area):
+                  $slug = slug($area);
+                ?>
+                  <div class="form-check form-check-custom form-check-solid">
+                    <input class="form-check-input" type="checkbox" name="area[]" value="<?= esc($area) ?>" id="edit_area_<?= $slug ?>" />
+                    <label class="form-check-label" for="edit_area_<?= $slug ?>">
+                      <?= esc($area) ?>
+                    </label>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            </div>
           </div>
           <!--end::Input group-->
         </div>
@@ -829,9 +896,28 @@ Gestion de Usuarios | KYP BIOINGENIERIA
             const checkbox = editarModal.querySelector(`#edit_sede_${sedeId}`);
             if (checkbox) checkbox.checked = true;
           });
+
         } else {
           editarModal.querySelector('#edit_acceso_caja').checked = false;
           editarModal.querySelector('#edit_sedes_wrapper').style.display = 'none';
+        }
+
+        // Acceso a producción
+        if (result.data.produccion && result.data.produccion.activo) {
+          editarModal.querySelector('#edit_acceso_produccion').checked = true;
+          editarModal.querySelector('#edit_areas_wrapper').style.display = 'block';
+
+          result.data.produccion.areas.forEach(area => {
+            const slug = area
+              .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quita tildes
+              .replace(/[^a-zA-Z0-9 ]/g, '') // quita demás símbolos
+              .trim().replace(/\s+/g, '-').toLowerCase();
+            const checkbox = editarModal.querySelector(`#edit_area_${slug}`);
+            if (checkbox) checkbox.checked = true;
+          });
+        } else {
+          editarModal.querySelector('#edit_acceso_produccion').checked = false;
+          editarModal.querySelector('#edit_areas_wrapper').style.display = 'none';
         }
 
 
@@ -982,5 +1068,18 @@ Gestion de Usuarios | KYP BIOINGENIERIA
     const wrapper = document.getElementById('edit_sedes_wrapper');
     wrapper.style.display = this.checked ? 'block' : 'none';
   });
+
+  document
+    .getElementById('gestion_produccion')
+    .addEventListener('change', function() {
+      const cont = document.getElementById('gestion_container');
+      if (this.checked) {
+        cont.classList.remove('d-none');
+      } else {
+        cont.classList.add('d-none');
+        // opcional: desmarcar todo
+        cont.querySelectorAll('input[type="radio"]').forEach(rb => rb.checked = false);
+      }
+    });
 </script>
 <?= $this->endSection(); ?>

@@ -35,8 +35,12 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'auth'          => \App\Filters\AuthFilter::class,
+        'productionAuth' => \App\Filters\ProductionAuthFilter::class,
+        'inventoryAuth' => \App\Filters\InventoryAuthFilter::class,
         'alreadyLogged' => \App\Filters\AlreadyLoggedInFilter::class,
         'alreadyLoggedSales' => \App\Filters\alreadyLoggedSales::class,
+        'productionAlreadyLogged' => \App\Filters\ProductionAlreadyLoggedFilter::class,
+        'inventoryAlreadyLogged' => \App\Filters\InventoryAlreadyLoggedFilter::class,
         'authsales'     => \App\Filters\AuthFilterSales::class,
         'permission'    => \App\Filters\PermissionFilter::class,
     ];
@@ -75,7 +79,14 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             // 'honeypot',
-            'csrf',
+            'csrf' => [
+                'except' => [
+                    'api/production/orders/preview-serials',
+                    'api/inventory/entries/check-serial',
+                    'api/inventory/entries/check-serials',
+                    'api/inventory/traslados/update-status/*',
+                ]
+            ],
             // 'invalidchars',
         ],
         'after' => [

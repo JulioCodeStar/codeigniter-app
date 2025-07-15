@@ -6,7 +6,6 @@ use App\Controllers\BaseController;
 use App\Models\SedeModel;
 use App\Models\Users;
 use CodeIgniter\API\ResponseTrait;
-use Firebase\JWT\JWT;
 
 class AuthController extends BaseController
 {
@@ -34,12 +33,10 @@ class AuthController extends BaseController
     $user = $userModel->validateUser($post['email'], $post['password']);
 
     if ($user !== null) {
-      $jwt = $this->generateJWT($user);
       $this->setSession($user);
 
       if ($this->request->is('ajax')) {
         return $this->respond([
-          'token' => $jwt,
           'redirect' => base_url('/')
         ]);
       }
@@ -49,29 +46,9 @@ class AuthController extends BaseController
     return redirect()->back()->withInput()->with('errors', 'Usuario o contraseña incorrectos');
   }
 
-  private function generateJWT($user)
-  {
-    $key = getenv('JWT_SECRET_KEY');
-    $payload = [
-      'iss' => base_url(),
-      'aud' => base_url(),
-      'iat' => time(),
-      'exp' => time() + 172800, // 2 días (60*60*24*2)
-      'data' => [
-        'user_id' => $user['id'],
-        'email' => $user['email'],
-        //'roles' => $user['roles'], // Asumiendo que tu modelo devuelve los roles
-        //'permisos' => $user['permisos'] // Asumiendo que tu modelo devuelve los permisos
-      ]
-    ];
-
-    return JWT::encode($payload, $key, 'HS256');
-  }
-
   private function setSession($user)
   {
     $data = [
-      'logged_in' => true,
       'user_id' => $user['id'],
       'nombres' => $user['nombres'],
       'apellidos' => $user['apellidos'],
@@ -79,16 +56,15 @@ class AuthController extends BaseController
       'active' => $user['is_active'],
     ];
 
-    $this->session->set($data);
+    $this->session->set('user', $data);
   }
 
   public function logout()
   {
-    if ($this->session->get('logged_in')) {
-      $this->session->destroy();
+    if ($this->session->get('user')) {
+      $this->session->remove('user');
     }
 
-    // Para JWT: Invalida el token si usas lista de tokens
     return redirect()->to(base_url('/auth/login'));
   }
 

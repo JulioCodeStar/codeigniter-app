@@ -7,7 +7,12 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 $routes->get('auth/login', 'Auth\AuthController::index', ['filter' => 'alreadyLogged']);
+
 $routes->get('sales/auth/login', 'Auth\AuthController::sales', ['filter' => 'alreadyLoggedSales']);
+
+$routes->get('inventory/auth/login', 'Inventory\Auth\AuthController::index', ['filter' => 'inventoryAlreadyLogged']);
+
+$routes->get('production/auth/login', 'Production\Auth\AuthController::index', ['filter' => 'productionAlreadyLogged']);
 
 $routes->get('unauthorized', function () {
   return view('errors/unauthorized');
@@ -67,7 +72,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
   });
 
   /* Consentimiento */
-  $routes->group('consentimiento', '', function ($routes) {
+  $routes->group('consentimiento', ['filter' => 'permission:gestion_pacientes.consentimiento'], function ($routes) {
     $routes->get('', 'Patient\ConsentimientoController::index');
     $routes->get('show/(:num)', 'Patient\ConsentimientoController::show/$1');
   });
@@ -97,6 +102,11 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
       $routes->get('', 'Logistica\OrdenImportacionController::index');
       $routes->get('new', 'Logistica\OrdenImportacionController::new');
     });
+  });
+
+  /* Seguimiento de Producción */
+  $routes->group('follow-up', '', function ($routes) {
+    $routes->get('', 'Production\ResProductionsController::index');
   });
 });
 
@@ -251,6 +261,91 @@ $routes->group('api', function ($routes) {
     });
   });
 
+  /* Inventory */
+  $routes->group('inventory', function ($routes) {
+    $routes->group('auth', function ($routes) {
+      $routes->post('login', 'Inventory\Auth\AuthController::login');
+      $routes->get('logout', 'Inventory\Auth\AuthController::logout');
+    });
+
+    /* Products */
+    $routes->group('products', function ($routes) {
+      $routes->post('create', 'Inventory\ProductsController::create');
+      $routes->post('delete/(:num)', 'Inventory\ProductsController::delete/$1');
+      $routes->get('show/(:num)', 'Inventory\ProductsController::show/$1');
+      $routes->post('edit/(:num)', 'Inventory\ProductsController::edit/$1');
+    });
+
+    /* Entries */
+    $routes->group('entries', function ($routes) {
+      $routes->get('get-auto-serials', 'Inventory\EntriesController::getAutoSerials');
+      $routes->post('check-serial',   'Inventory\EntriesController::checkSerial');
+      $routes->post('check-serials',  'Inventory\EntriesController::checkSerials');
+      $routes->post('create', 'Inventory\EntriesController::create');
+      $routes->post('delete/(:num)', 'Inventory\EntriesController::delete/$1');
+      $routes->get('show/(:num)', 'Inventory\EntriesController::show/$1');
+      $routes->get('generate-pdf/(:num)', 'Inventory\EntriesController::generatePdf/$1');
+    });
+
+    /* Exits */
+    $routes->group('exits', function ($routes) {
+      $routes->get('available-series', 'Inventory\ExitController::availableSeries');
+      $routes->post('create', 'Inventory\ExitController::create');
+      $routes->post('delete/(:num)', 'Inventory\ExitController::delete/$1');
+      $routes->get('show/(:num)', 'Inventory\ExitController::show/$1');
+    });
+
+    /* Stock */
+    $routes->group('stock', function ($routes) {
+      $routes->get('show/(:segment)', 'Inventory\StockController::show/$1');
+    });
+
+    /* Requirements */
+    $routes->group('requirements', function ($routes) {
+      $routes->post('create', 'Inventory\RequirementsController::create');
+      $routes->post('delete/(:num)', 'Inventory\RequirementsController::delete/$1');
+      $routes->get('show/(:num)', 'Inventory\RequirementsController::show/$1');
+    });
+
+    /* Traslados */
+    $routes->group('traslados', function ($routes) {
+      $routes->post('create', 'Inventory\TrasladosController::create');
+      $routes->post('delete/(:num)', 'Inventory\TrasladosController::delete/$1');
+      $routes->get('show-list/(:num)', 'Inventory\TrasladosController::showListTable/$1');
+      $routes->get('show/(:num)', 'Inventory\TrasladosController::show/$1');
+      $routes->post('update-status/(:num)', 'Inventory\TrasladosController::updateStatus/$1');
+    });
+  });
+
+  /* Production */
+  $routes->group('production', function ($routes) {
+    $routes->group('auth', function ($routes) {
+      $routes->post('login', 'Production\Auth\AuthController::login');
+      $routes->get('logout', 'Production\Auth\AuthController::logout');
+    });
+
+    $routes->group('products', function ($routes) {
+      $routes->post('create', 'Production\ProductionsProductsController::create');
+      $routes->post('delete/(:num)', 'Production\ProductionsProductsController::delete/$1');
+      $routes->post('edit/(:num)', 'Production\ProductionsProductsController::edit/$1');
+      $routes->get('show/(:num)', 'Production\ProductionsProductsController::show/$1');
+    });
+
+    $routes->group('orders', function ($routes) {
+      $routes->post('preview-serials', 'Production\ProductionsOrderController::previewSerials');
+      $routes->post('create', 'Production\ProductionsOrderController::create');
+      $routes->post('delete/(:num)', 'Production\ProductionsOrderController::delete/$1');
+      // $routes->post('edit/(:num)', 'Production\ProductionsOrderController::edit/$1');
+      // $routes->get('show/(:num)', 'Production\ProductionsOrderController::show/$1');
+    });
+
+    $routes->group('follow-up', function ($routes) {
+      $routes->post('create', 'Production\ProductionsOrderItemsStatusLogsController::create');
+      $routes->get('logs/(:num)', 'Production\ProductionsOrderItemsStatusLogsController::logs/$1');
+      $routes->post('update-status', 'Production\ProductionsOrderItemsStatusLogsController::updateStatus');
+    });
+  });
+
   $routes->get('csrf/refresh-token', 'CsrfController::refreshToken');
 });
 
@@ -297,4 +392,71 @@ $routes->group('sales', ['filter' => 'authsales'], function ($routes) {
   $routes->group('reports', function ($routes) {
     $routes->get('/', 'CajaVentas\Sales\ReportsController::index');
   });
+});
+
+/* ROUTES PRIVATE PRODUCTION */
+$routes->group('production', ['filter' => 'productionAuth'], function ($routes) {
+  $routes->get('', 'Production\ProductionsController::index');
+
+  /* Productos */
+  $routes->group('products', function ($routes) {
+    $routes->get('', 'Production\ProductionsProductsController::index');
+  });
+
+  /* Ordenes de Producción */
+  $routes->group('orders', function ($routes) {
+    $routes->get('', 'Production\ProductionsOrderController::index');
+  });
+
+  /* Seguimiento */
+  $routes->group('follow-up', function ($routes) {
+    $routes->get('', 'Production\ProductionsOrderItemsStatusLogsController::index');
+    $routes->get('recepcion/(:num)', 'Production\ProductionsOrderItemsStatusLogsController::pdfRecepcion/$1');
+    $routes->get('liberacion/(:num)', 'Production\ProductionsOrderItemsStatusLogsController::pdfLiberacion/$1');
+  });
+});
+
+/*---- INVENTARIO ----*/
+$routes->group('inventory', ['filter' => 'inventoryAuth', 'namespace' => 'App\Controllers\Inventory'], function ($routes) {
+
+  // Dashboard de inventario (usa la sede en sesión)
+  $routes->get('',           'InventoryController::index');
+
+  // Productos
+  $routes->group('products', function ($routes) {
+    $routes->get('', 'ProductsController::index');
+    $routes->get('new', 'ProductsController::new');
+  });
+
+  // Entradas
+  $routes->group('entries', function ($routes) {
+    $routes->get('', 'EntriesController::index');
+    $routes->get('new', 'EntriesController::new');
+  });
+
+  // Salidas
+  $routes->group('exits', function ($routes) {
+    $routes->get('', 'ExitController::index');
+    $routes->get('new', 'ExitController::new');
+  });
+
+  // Stock
+  $routes->group('stock', function ($routes) {
+    $routes->get('', 'StockController::index');
+  });
+
+  // Requerimientos
+  $routes->group('requirements', function ($routes) {
+    $routes->get('', 'RequirementsController::index');
+    $routes->get('new', 'RequirementsController::new');
+  });
+
+  // Traslados
+  $routes->group('traslados', function ($routes) {
+    $routes->get('', 'TrasladosController::index');
+    $routes->get('new', 'TrasladosController::new');
+  });
+
+  // Cambiar sede activa
+  $routes->get('change-sede/(:num)', 'InventoryController::changeSede/$1');
 });

@@ -5,6 +5,7 @@ namespace App\Controllers\Auth;
 use App\Controllers\BaseController;
 use App\Models\CajaVentasModel;
 use App\Models\PermissionModel;
+use App\Models\Production\ProductionUserModel;
 use App\Models\RoleModel;
 use App\Models\RolePermissionModel;
 use App\Models\SedeModel;
@@ -13,16 +14,24 @@ use App\Models\Users;
 
 class UserController extends BaseController
 {
-  protected $userModel, $rolModel, $userRolModel, $permisoModel, $rolePermisoModel, $cajaAccesoModel, $sedesModel;
+  protected $userModel, $rolModel, $userRolModel, $permisoModel, $rolePermisoModel, $cajaAccesoModel, $sedesModel, $userProductionModel;
+
+  protected $area_production = [
+    'Desarrollo Tecnológico',
+    'Producción',
+    'Textil'
+  ];
+  
   function __construct()
   {
-    $this->userModel = new Users();
-    $this->rolModel = new RoleModel();
-    $this->userRolModel = new UserRoleModel();
-    $this->permisoModel = new PermissionModel();
-    $this->rolePermisoModel = new RolePermissionModel();
-    $this->cajaAccesoModel = new CajaVentasModel();
-    $this->sedesModel = new SedeModel();
+    $this->userModel            = new Users();
+    $this->rolModel             = new RoleModel();
+    $this->userRolModel         = new UserRoleModel();
+    $this->permisoModel         = new PermissionModel();
+    $this->rolePermisoModel     = new RolePermissionModel();
+    $this->cajaAccesoModel      = new CajaVentasModel();
+    $this->sedesModel           = new SedeModel();
+    $this->userProductionModel  = new ProductionUserModel();
   }
 
   public function index()
@@ -30,6 +39,7 @@ class UserController extends BaseController
     $data['users'] = $this->userModel->getUsersRoles();
     $data['roles'] = $this->rolModel->findAll();
     $data['sedes'] = $this->sedesModel->findAll();
+    $data['area_production'] = $this->area_production;
     return view('auth/Users/index', $data);
   }
 
@@ -77,6 +87,19 @@ class UserController extends BaseController
                 'sede_id'    => $sedeId,
                 'is_active'  => 1,
                 'created_at' => date('Y-m-d H:i:s'),
+              ]);
+            }
+          }
+        }
+
+        if ($this->request->getPost('gestion_produccion')) {
+          $areas = $this->request->getPost('area');
+          if (is_array($areas)) {
+            foreach ($areas as $area) {
+              $this->userProductionModel->insert([
+                'user_id'    => $userId,
+                'area'       => $area,
+                'is_active'  => 1
               ]);
             }
           }
@@ -134,17 +157,29 @@ class UserController extends BaseController
 
     $sedes = array_column($accesoCaja, 'sede_id');
 
+    // Acceso a producción
+    $accesoProduccion = $this->userProductionModel
+      ->where('user_id', $id)
+      ->where('is_active', true)
+      ->findAll();
+
+    $areas = array_column($accesoProduccion, 'area');
+
     if ($this->request->isAJAX()) {
       return $this->response
         ->setStatusCode(200)
         ->setJSON([
-          'status'  => 200,
+          'status'  => 200, 
           'message' => 'Usuario encontrado',
           'data'    => [
             'user' => $user,
             'caja' => [
               'activo' => count($sedes) > 0,
               'sedes'  => $sedes,
+            ],
+            'produccion' => [
+              'activo' => count($areas) > 0,
+              'areas'  => $areas,
             ]
           ]
         ]);
@@ -178,8 +213,13 @@ class UserController extends BaseController
       $accesoCaja = $this->request->getPost('acceso_caja') === 'on';
       $sedes = $this->request->getPost('sedes') ?? [];
 
+      // Acceso a producción
+      $accesoProduccion = $this->request->getPost('gestion_produccion') === 'on';
+      $areas = $this->request->getPost('area') ?? [];
+
       // Eliminar anteriores
       $this->cajaAccesoModel->where('user_id', $id)->delete();
+      $this->userProductionModel->where('user_id', $id)->delete();
 
       if ($accesoCaja) {
         foreach ($sedes as $sedeId) {
@@ -188,6 +228,16 @@ class UserController extends BaseController
             'sede_id'   => $sedeId,
             'is_active' => true,
             'created_at' => date('Y-m-d H:i:s')
+          ]);
+        }
+      }
+
+      if ($accesoProduccion) {
+        foreach ($areas as $area) {
+          $this->userProductionModel->insert([
+            'user_id'   => $id,
+            'area'      => $area,
+            'is_active' => 1,
           ]);
         }
       }

@@ -32,6 +32,15 @@ class AuthController extends BaseController
       ->first();
 
     if (!$acceso) {
+      if ($this->request->isAJAX()) {
+        return $this->response
+            ->setStatusCode(401)
+            ->setJSON([
+                'status'  => 401,
+                'message' => 'No tienes acceso a esa sede',
+            ]);
+      }
+
       return redirect()->back()->with('error', 'No tienes acceso a esa sede');
     }
 
@@ -42,16 +51,26 @@ class AuthController extends BaseController
       'sede_id' => $sede
     ]);
 
-    return redirect()->to('/sales');
+    if ($this->request->isAJAX()) {
+      return $this->response
+          ->setStatusCode(201)
+          ->setJSON([
+              'status'  => 201,
+              'message' => 'Sesión iniciada correctamente',
+          ]);
+    }
+
+    return redirect()
+                ->to('sales')
+                ->with('success', 'Orden registrada correctamente');
   }
 
   public function logout()
   {
     if ($this->session->get('caja_user')) {
-      $this->session->destroy();
+      $this->session->remove('caja_user');
     }
 
-    // Para JWT: Invalida el token si usas lista de tokens
     return redirect()->to(base_url('/sales/auth/login'));
   }
 }

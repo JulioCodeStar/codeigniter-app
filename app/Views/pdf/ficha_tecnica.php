@@ -48,11 +48,22 @@
       font-weight: 600;
     }
 
+    .campo-titulo-2 {
+      background-color: #e9ecef;
+      width: 40%;
+      font-weight: 600;
+    }
+
     .observaciones-box {
       height: 80px;
       border: 1px dashed #6c757d;
       padding: 15px;
       margin-top: 10px;
+    }
+
+    .new-page {
+      page-break-before: always;
+      padding-top: 50px;
     }
   </style>
 </head>
@@ -63,9 +74,28 @@
       <h2 style="color: #495057;">FICHA DE REGISTRO DE PACIENTES</h2>
     </div>
 
+    <!-- Tipo de Paciente -->
+    <div class="seccion-compact">
+      <h3 style="color: #000; margin-bottom: 15px;">1. TIPO DE PACIENTE</h3>
+      <table class="table-compact" style="width: 100%;">
+        <tr>
+          <td class="campo-titulo">Tipo de Paciente</td>
+          <td colspan="3"><?= mb_strtoupper($paciente['tip_paciente']) ?> </td>
+        </tr>
+        <tr>
+          <td class="campo-titulo">¿Paciente es mayor de edad?</td>
+          <td colspan="3"><?= $paciente['mayor_edad'] ?></td>
+        </tr>
+        <tr>
+          <td class="campo-titulo">¿Paciente presenta amputación?</td>
+          <td colspan="3"><?= $paciente['presenta_ampu'] ?></td>
+        </tr>
+      </table>
+    </div>
+
     <!-- Datos Básicos -->
     <div class="seccion-compact">
-      <h3 style="color: #000; margin-bottom: 15px;">1. DATOS DEL PACIENTE</h3>
+      <h3 style="color: #000; margin-bottom: 15px;">2. DATOS DEL PACIENTE</h3>
       <table class="table-compact" style="width: 100%;">
         <tr>
           <td class="campo-titulo">Nombres completos</td>
@@ -78,12 +108,18 @@
           <td><?= $paciente['contacto'] ?></td>
         </tr>
         <tr>
-          <td class="campo-titulo">Dirección</td>
+          <td class="campo-titulo">Dirección y Distrito</td>
           <td colspan="3"><?= mb_strtoupper($paciente['direccion']) ?></td>
         </tr>
         <tr>
+          <td class="campo-titulo">Nacionalidad</td>
+          <td><?= $paciente['nacionalidad'] ?></td>
+          <td class="campo-titulo">Sede de Atención</td>
+          <td><?= $paciente['sede'] ?></td>
+        </tr>
+        <tr>
           <td class="campo-titulo">Fecha de nacimiento</td>
-          <td><?= $paciente['fecha_nacimiento'] ?></td>
+          <td><?= fecha_dmy($paciente['fecha_nacimiento']) ?></td>
           <td class="campo-titulo">Género</td>
           <td><?= $paciente['genero'] ?></td>
         </tr>
@@ -96,36 +132,56 @@
       </table>
     </div>
 
-    <!-- Datos Médicos -->
-    <div class="seccion-compact">
-      <h3 style="color: #000; margin-bottom: 15px;">2. HISTORIAL MÉDICO</h3>
-      <table class="table-compact" style="width: 100%;">
-        <tr>
-          <td class="campo-titulo">Afecciones médicas</td>
-          <td><?= $paciente['afecciones'] ?></td>
-        </tr>
-        <tr>
-          <td class="campo-titulo">Alergias</td>
-          <td><?= $paciente['alergias'] ?></td>
-        </tr>
-      </table>
-    </div>
-
+    <?php if ($paciente['mayor_edad'] === 'No'): ?>
+      <!-- Datos Apoderados -->
+      <div class="seccion-compact">
+        <h3 style="color: #000; margin-bottom: 15px;">2.1. DATOS DEL APODERADO</h3>
+        <table class="table-compact" style="width: 100%;">
+          <tr>
+            <td class="campo-titulo">Nombres completos</td>
+            <td colspan="3"><?= mb_strtoupper($paciente['nombres_apoderado'] . ' ' . $paciente['apellidos_apoderado']) ?> </td>
+          </tr>
+          <tr>
+            <td class="campo-titulo">DNI/C.E.</td>
+            <td><?= $paciente['dni_apoderado'] ?></td>
+            <td class="campo-titulo">Vinculo</td>
+            <td><?= $paciente['vinculo_apoderado'] ?></td>
+          </tr>
+        </table>
+      </div>
+    <?php endif; ?>
     <!-- Datos Técnicos -->
     <div class="seccion-compact">
       <h3 style="color: #000; margin-bottom: 15px;">3. DATOS PARA PRÓTESIS</h3>
       <table class="table-compact" style="width: 100%;">
         <tr>
-          <td class="campo-titulo">Motivo de amputación</td>
-          <td colspan="3"><?= mb_strtoupper($paciente['motivo_amputacion']) ?></td>
+          <td class="campo-titulo-2">¿El paciente usa protésis?</td>
+          <td colspan="2"><?= mb_strtoupper($paciente['usa_protesis']) ?></td>
         </tr>
         <tr>
-          <td class="campo-titulo">Tiempo de Amputación</td>
-          <td colspan="3"><?= mb_strtoupper($paciente['time_ampu']) ?></td>
+          <td class="campo-titulo-2">¿El paciente presenta una enfermedad preexistente?</td>
+          <td colspan="2"><?= mb_strtoupper($paciente['enfermedad']) ?></td>
         </tr>
+        <tr>
+          <td class="campo-titulo-2">Motivo de amputación</td>
+          <td colspan="2"><?= mb_strtoupper($paciente['motivo_amputacion']) ?></td>
+        </tr>
+        <tr>
+          <td class="campo-titulo-2">Tiempo de Amputación</td>
+          <td colspan="2"><?= mb_strtoupper($paciente['time_ampu']) ?></td>
+        </tr>
+        <?php if ($paciente['time_ampu'] === 'Sin Amputacion'): ?>
+          <tr>
+            <td class="campo-titulo-2">Expectativa de Amputación</td>
+            <td colspan="2"><?= mb_strtoupper($paciente['expectativa']) ?></td>
+          </tr>
+        <?php endif; ?>
       </table>
     </div>
 
+  </div>
+
+  <div class="new-page">
     <!-- Observaciones -->
     <div class="seccion-compact">
       <h3 style="color: #000; margin-bottom: 15px;">4. OBSERVACIONES</h3>
@@ -161,7 +217,6 @@
         <strong>Nota:</strong> Marque con un check (✓) los documentos entregados/completados
       </div>
     </div>
-
   </div>
 
 </body>

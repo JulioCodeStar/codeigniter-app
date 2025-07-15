@@ -12,7 +12,7 @@ class ComponentsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [ 'id', 'job_id', 'description', 'cantidad', 'items' ];
+    protected $allowedFields    = [ 'id', 'job_id', 'order', 'description', 'cantidad', 'items' ];
 }
 
 

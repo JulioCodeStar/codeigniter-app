@@ -453,11 +453,11 @@
                       <!--begin::Username-->
                       <div class="d-flex flex-column min-w-0 text-truncate"><!-- 👈 min-w-0 permite que el flex-item se encoja -->
                         <div class="fw-bold fs-5 text-truncate">
-                          <?= esc(session('nombres') . ' ' . session('apellidos')) ?>
+                          <?= esc(session('user')['nombres'] . ' ' . session('user')['apellidos']) ?>
                         </div>
                         <a href="#"
                           class="fw-semibold text-muted text-hover-primary fs-7 text-truncate">
-                          <?= esc(session('email')) ?>
+                          <?= esc(session('user')['email']) ?>
                         </a>
                       </div>
                       <!--end::Username-->
