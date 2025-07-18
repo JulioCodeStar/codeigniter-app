@@ -98,6 +98,7 @@ class RequirementsController extends BaseController
             $data =  [
                 'area_solicitante' => $post['area'],
                 'nombre_solicitante' => $post['solicitante'],
+                'fecha_entrega' => $post['fecha_entrega'],
                 'sede_origen' => session('inventory_user')['sede_id'],
                 'sede_destino' => $sede_destino['id'],
                 'items' => json_encode($items),
@@ -219,5 +220,103 @@ class RequirementsController extends BaseController
         $this->requirementsModel->delete($id);
 
         return redirect()->to('inventory/requirements');
+    }
+
+    public function generatePDF(int $id)
+    {
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'helvetica',
+            'margin_top' => 25,
+            'margin_bottom' => 15,
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_header' => 10,
+            'margin_footer' => 10,
+            'orientation' => 'P'
+        ]);
+
+
+        // Header del PDF
+        $mpdf->SetHTMLHeader($this->getHTMLHeader());
+
+        // Footer del PDF
+        $mpdf->SetHTMLFooter($this->getHTMLFooter());
+
+        $data = $this->requirementsModel
+            ->select('inventory_requirements.*, areas.nombres as area, sedes.sucursal as sede_origen, sedes2.sucursal as sede_destino')
+            ->join('areas', 'areas.id = inventory_requirements.area_solicitante')
+            ->join('sedes', 'sedes.id = inventory_requirements.sede_origen')
+            ->join('sedes as sedes2', 'sedes2.id = inventory_requirements.sede_destino')
+            ->where('inventory_requirements.id', $id)
+            ->first();
+
+        $productNames = array_column($this->productModel->findAll(), 'nombre', 'id');
+        $pacienteNames = []; // Aquí irán los pacientes que necesites
+
+        // Si quieres cargar solo los pacientes que aparecen en el JSON:
+        $pacienteIds = array_column(json_decode($data['items'], true), 'descripcion');
+        $pacientes = $this->pacienteModel
+            ->select('id, CONCAT(nombres, " ", apellidos) AS nombre_completo')
+            ->whereIn('id', $pacienteIds)
+            ->findAll();
+
+        $pacienteNames = array_column($pacientes, 'nombre_completo', 'id');
+
+        $html = view('pdf/inventory/requirements/index', [
+            ...$data,
+            'productNames' => $productNames,
+            'pacienteNames' => $pacienteNames,
+            'items' => json_decode($data['items'], true)
+        ]);
+
+        // Escribir HTML al PDF
+        $mpdf->WriteHTML($html);
+
+        // Generar nombre del archivo
+        $filename = 'requerimiento_' . $id . '.pdf';
+
+        // Mostrar PDF en el navegador
+        $mpdf->Output($filename, 'I');
+
+        exit;
+    }
+
+    private function getHTMLHeader()
+    {
+        return '
+            <div style="width: 100%; padding: 0 20px; border-bottom: 2px solid #216E71; padding-bottom: 15px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 70%; text-align: left; vertical-align: bottom;">
+                            <div style="font-size: 20pt; font-weight: bold; color: #216E71;">Orden de Requerimiento</div>
+                            <div style="margin-top: 5px; font-size: 12pt;">
+                                <span><strong>Referencia de Requerimiento:</strong></span>
+                            </div>
+                        </td>
+                        <td style="width: 30%; text-align: right; vertical-align: bottom;">
+                            <img src="' . base_url('assets/media/img/encabezado.png') . '" style="height: 50px; max-width: 150px;">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        ';
+    }
+
+    private function getHTMLFooter()
+    {
+        return '
+            <div style="width: 100%; border-top: 1px solid #216E71; padding-top: 10px; font-size: 9pt; text-align: center; color: #666;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 50%; text-align: left;"></td>
+                        <td style="width: 50%; text-align: right;">
+                            Página {PAGENO} de {nbpg}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        ';
     }
 }

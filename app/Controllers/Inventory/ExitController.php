@@ -185,17 +185,8 @@ class ExitController extends BaseController
                 }
 
                 // 2.2) Descuenta stock
-                $stockRow = $this->inventoryModel
-                    ->where('product_id', $pid)
-                    ->where('sede_id',    $sede)
-                    ->first();
-                if ($stockRow) {
-                    $newStock = max(0, $stockRow['stock'] - $qty);
-                    $builder = $this->db->table($this->inventoryModel->table);
-                    $builder->set('stock', $newStock)
-                        ->where('product_id', $pid)
-                        ->where('sede_id',    $sede)
-                        ->update();
+                if (!$this->inventoryModel->decrementStock($pid, $sede, $qty)) {
+                    throw new \RuntimeException("No se pudo actualizar el stock para producto {$pid}.");
                 }
 
                 // 2.3) Marca seriales como 'Utilizado'
@@ -375,5 +366,166 @@ class ExitController extends BaseController
         return redirect()
             ->to('inventory/exits')
             ->with('success', 'Salida eliminada y stock ajustado.');
+    }
+
+    public function generatePDF(int $id)
+    {
+        // Configuración de mPDF
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'helvetica',
+            'margin_top' => 25,
+            'margin_bottom' => 15,
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_header' => 10,
+            'margin_footer' => 10,
+            'orientation' => 'P'
+        ]);
+
+        $data = $this->getOrdenSalidaData($id);
+
+        // Header del PDF
+        $mpdf->SetHTMLHeader($this->getHTMLHeader($data));
+
+        // Footer del PDF
+        $mpdf->SetHTMLFooter($this->getHTMLFooter());
+
+        // Generar contenido HTML
+        $html = view('pdf/inventory/salidas/index', ['data' => $data]);
+
+        // Escribir HTML al PDF
+        $mpdf->WriteHTML($html);
+
+        // Generar nombre del archivo
+        $filename = 'orden_salida_' . $data['numero'] . '.pdf';
+
+        // Mostrar PDF en el navegador
+        $mpdf->Output($filename, 'I');
+
+        exit;
+    }
+
+    private function getOrdenSalidaData(int $id)
+    {
+        // Obtener la orden de salida principal
+        $pacienteNombre = '';
+        $orden = $this->exitsModel
+            ->select('inventory_exits.*, areas.nombres as area_solicitante')
+            ->join('areas', 'areas.id = inventory_exits.area_solicitante', 'left')
+            ->find($id);
+        
+        if ($orden['id_paciente']) {
+            $paciente = $this->pacienteModel->find($orden['id_paciente']);
+            $pacienteNombre = $paciente['nombres'] . ' ' . $paciente['apellidos'];
+        }
+        
+        // Obtener detalles de los productos
+        $detalles = $this->exitsDetailsModel
+            ->select('inventory_exits_details.*, inventory_products.codigo, inventory_products.nombre, inventory_products.descripcion, inventory_products.requiere_serie')
+            ->join('inventory_products', 'inventory_products.id = inventory_exits_details.inventory_product_id')
+            ->where('inventory_exit_id', $id)
+            ->findAll();
+
+        // Preparar estructura de productos con seriales
+        $productos = $this->procesarProductosConAnexos($detalles, 'salida');
+
+        // Construir respuesta final
+        return [
+            'id' => $orden['id'],
+            'numero' => $orden['codigo'],
+            'fecha' => $orden['fecha_salida'],
+            'emisor' => $orden['responsable_almacen'],
+            'receptor' => $orden['nombre_solicitante'],
+            'area_destinada' => $orden['area_solicitante'],
+            'paciente' => $pacienteNombre,
+            'tipo_orden' => $orden['tipo'] . ' / ' . $orden['nombre_externo'],
+            'observaciones' => $orden['notas'],
+            'productos' => $productos,
+            'comentarios' => $orden['notas'] ?? ''
+        ];
+    }
+
+    private function procesarProductosConAnexos(array $detalles, string $tipo = 'salida')
+    {
+        $productos = [];
+        $anexoLetra = 'A';
+
+        foreach ($detalles as $index => $detalle) {
+            $item = $index + 1;
+            $requiereSerie = (bool)$detalle['requiere_serie'];
+            
+            $seriales = [];
+            if ($requiereSerie) {
+                $seriales = $this->getSerialesPorDetalleSalida($detalle['id']);
+            }
+
+            $producto = [
+                'item' => $item,
+                'codigo' => $detalle['codigo'],
+                'nombre' => $detalle['nombre'],
+                'descripcion' => $detalle['descripcion'],
+                'cantidad' => $detalle['cantidad'],
+                'requiere_serie' => $requiereSerie,
+                'numero_serie' => $requiereSerie ? "Ver Anexo $anexoLetra" : 'No Aplica',
+                'anexo' => $requiereSerie ? $anexoLetra : null,
+                'seriales' => $seriales
+            ];
+
+            $productos[] = $producto;
+            
+            if ($requiereSerie && !empty($seriales)) {
+                $anexoLetra++;
+            }
+        }
+
+        return $productos;
+    }
+
+    private function getSerialesPorDetalleSalida($detalleId)
+    {
+        return $this->productsSerialsModel
+            ->select('serial, estado, sede_id, created_at')
+            ->where('inventory_exits_details_id', $detalleId)
+            ->orderBy('created_at', 'ASC')
+            ->findAll();
+    }
+
+    private function getHTMLHeader($data)
+    {
+        return '
+            <div style="width: 100%; padding: 0 20px; border-bottom: 2px solid #216E71; padding-bottom: 15px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 70%; text-align: left; vertical-align: bottom;">
+                            <div style="font-size: 20pt; font-weight: bold; color: #216E71;">Reporte de Salida</div>
+                            <div style="margin-top: 5px; font-size: 12pt;">
+                                <span><strong>Referencia de Salida:</strong> ' . $data['numero'] . '</span>
+                            </div>
+                        </td>
+                        <td style="width: 30%; text-align: right; vertical-align: bottom;">
+                            <img src="' . base_url('assets/media/img/encabezado.png') . '" style="height: 50px; max-width: 150px;">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        ';
+    }
+
+    private function getHTMLFooter()
+    {
+        return '
+            <div style="width: 100%; border-top: 1px solid #216E71; padding-top: 10px; font-size: 9pt; text-align: center; color: #666;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 50%; text-align: left;"></td>
+                        <td style="width: 50%; text-align: right;">
+                            Página {PAGENO} de {nbpg}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        ';
     }
 }

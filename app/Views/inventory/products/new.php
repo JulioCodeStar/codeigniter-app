@@ -52,6 +52,17 @@ Productos | Inventario - KYP Bioingeniería
             <div class="separator separator-dashed my-2 mb-4"></div>
 
             <div class="row g-4">
+
+                <div class="col-md-7 mb-4">
+                    <label for="searchProduct" class="form-label required">Buscar Producto de Producción</label>
+                    <select data-control="select2" data-placeholder="Buscar Producto de Producción" name="searchProduct" id="searchProduct" class="form-select">
+                        <option value="">Seleccionar Producto</option>
+                        <?php foreach ($productsProduction as $product): ?>
+                            <option value="<?= $product['id'] ?>"><?= $product['codigo'] ?> - <?= $product['nombre'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
                 <div class="col-md-6 mb-4 fv-row">
                     <label for="codigo" class="form-label required">Código</label>
                     <input type="text" name="codigo" id="codigo" class="form-control" placeholder="Ej: LN-PJ-K" />
@@ -147,6 +158,39 @@ Productos | Inventario - KYP Bioingeniería
 <?= $this->section('scripts_inventory'); ?>
 <?= csrf_scripts_basic() ?>
 <script>
+    // Initialize select2
+    $('#searchProduct').select2();
+
+    // Handle product selection
+    $('#searchProduct').on('change', async function() {
+        const productId = $(this).val();
+        if (!productId) {
+            // Clear fields if no product selected
+            $('#codigo').val('');
+            $('#nombre').val('');
+            $('#descripcion').val('');
+            return;
+        }
+
+        try {
+            const response = await fetch('<?= base_url('api/inventory/products/get-production-product-details') ?>/' + productId, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+            });
+
+            const data = await response.json();
+            // Fill form fields with product data
+            $('#codigo').val(data.codigo);
+            $('#nombre').val(data.nombre);
+            $('#descripcion').val(data.descripcion);
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
     const form = document.querySelector('#kt_product_new');
     const validator = FormValidation.formValidation(form, {
         fields: {

@@ -67,6 +67,11 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
                     <input type="text" name="solicitante" id="solicitante" class="form-control" placeholder="Nombre del Solicitante" />
                 </div>
 
+                <div class="col-md-6 mb-4 fv-row">
+                    <label for="fecha_entrega" class="form-label required">Fecha de Entrega</label>
+                    <input type="date" name="fecha_entrega" id="fecha_entrega" class="form-control" placeholder="Fecha de Entrega" />
+                </div>
+
             </div>
         </div>
 
@@ -92,6 +97,7 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
                     <select id="reqTipo" name="tipo[]" class="form-select" data-control="select2">
                         <option value="">Seleccionar Tipo</option>
                         <option value="Paciente">Paciente</option>
+                        <option value="Doctor">Doctor</option>
                         <option value="Stock">Stock</option>
                         <option value="Otros">Otros</option>
                     </select>
@@ -108,7 +114,7 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
                     </select>
                 </div>
                 <div class="col-md-4 fv-row" id="divOtros" style="display:none;">
-                    <label class="form-label required">Descripción</label>
+                    <label class="form-label required">Doctor, Stock o Otros</label>
                     <input type="text" id="reqDesc" name="descripcion[]" class="form-control" placeholder="Detalle..." />
                 </div>
 
@@ -116,6 +122,11 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
                 <div class="col-md-2 fv-row">
                     <label class="form-label required">Cantidad</label>
                     <input type="number" id="reqCantidad" name="cantidad[]" class="form-control" placeholder="Cant." min="1" />
+                </div>
+
+                <div class="col-md-6 fv-row">
+                    <label class="form-label required">F.V. o F.C - Descripcion</label>
+                    <input type="text" id="reqObservacion" name="observacion[]" class="form-control" placeholder="F.V. o F.C - Descripcion..." />
                 </div>
 
                 <!-- Botón Agregar Item -->
@@ -140,9 +151,10 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             <th>#</th>
                             <th>Producto</th>
-                            <th>Tipo</th>
-                            <th>Descripción</th>
                             <th>Cantidad</th>
+                            <th>Tipo</th>
+                            <th>Pcte - dtor o tipo</th>
+                            <th>F.V. o F.C - Descripcion</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
@@ -183,7 +195,7 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
         const $btn = $('#addItemBtn');
         const $tableW = $('#itemsTableWrapper');
         const $tbody = $('#itemsTableBody');
-
+        const $obs = $('#reqObservacion');
         let idx = 0;
 
         // Inicializa todos los Select2
@@ -210,7 +222,7 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
             $otros.val('');
             // show
             if (val === 'Paciente') return $divPac.show();
-            if (val === 'Stock' || val === 'Otros') return $divOtr.show();
+            if (val === 'Stock' || val === 'Otros' || val === 'Doctor') return $divOtr.show();
         });
 
         // Habilita/deshabilita botón de “Agregar Item”
@@ -222,7 +234,7 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
 
             if ($tipo.val() === 'Paciente') {
                 hasDesc = !!$paciente.val();
-            } else if ($tipo.val() === 'Stock' || $tipo.val() === 'Otros') {
+            } else if ($tipo.val() === 'Stock' || $tipo.val() === 'Otros' || $tipo.val() === 'Doctor') {
                 hasDesc = $otros.val().trim().length > 0;
             }
 
@@ -235,6 +247,7 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
         $paciente.on('change', updateAddBtn);
         $otros.on('input', updateAddBtn);
         $cantidad.on('input', updateAddBtn);
+        $obs.on('input', updateAddBtn);
 
         // Agregar fila a la tabla
         $btn.on('click', function(e) {
@@ -254,7 +267,7 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
                 descVal = $otros.val().trim();
                 descVal_id = $otros.val().trim();
             }
-
+            const obsVal = $obs.val().trim();
             // construye HTML de la fila con hidden inputs
             const $row = $(`
                 <tr
@@ -262,12 +275,14 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
                 data-tipo="${tipoVal}"
                 data-desc="${descVal}"
                 data-qty="${qty}"
+                data-obs="${obsVal}"
                 >
                     <td>${++idx}</td>
                     <td>${prodText}</td>
+                    <td class="text-center">${qty}</td>
                     <td>${tipoVal}</td>
                     <td>${descVal_id}</td>
-                    <td class="text-center">${qty}</td>
+                    <td>${obsVal}</td>
                     <td class="text-end">
                         <button type="button" class="btn btn-icon btn-sm btn-light-danger delete-row">
                             <i class="ki-duotone ki-trash">
@@ -304,6 +319,7 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
             $cantidad.val('');
             $paciente.val(null).trigger('change');
             $otros.val('');
+            $obs.val('');
             updateAddBtn();
         });
     });
@@ -370,6 +386,7 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
                 tipo: tr.dataset.tipo,
                 descripcion: tr.dataset.desc,
                 cantidad: parseInt(tr.dataset.qty, 10),
+                observacion: tr.dataset.obs,
             }));
 
             // 2) Volcar como JSON en el hidden

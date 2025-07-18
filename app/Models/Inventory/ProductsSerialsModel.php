@@ -89,7 +89,7 @@ class ProductsSerialsModel extends Model
             );
         }
 
-        $year = date('Y');
+        $year = date('y');
 
         // 4) Generamos la nueva secuencia
         $newSerials = [];

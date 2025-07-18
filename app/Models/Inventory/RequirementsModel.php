@@ -16,6 +16,7 @@ class RequirementsModel extends Model
         'codigo',
         'area_solicitante',
         'nombre_solicitante',
+        'fecha_entrega',
         'sede_origen',
         'sede_destino',
         'items',

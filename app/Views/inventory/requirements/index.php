@@ -283,6 +283,9 @@ Ordenes de Requerimientos | Inventario - KYP Bioingeniería
                                 <div class="menu-item px-3">
                                     <a href="#" class="menu-link px-3" data-bs-url="<?= base_url('api/inventory/requirements/delete/' . $requirement['id']) ?>" data-bs-toggle="modal" data-bs-target="#eliminarModal">Eliminar</a>
                                 </div>
+                                <div class="menu-item px-3">
+                                    <a href="<?= base_url('api/inventory/requirements/generate-pdf/' . $requirement['id']) ?>" target="_blank" class="menu-link px-3" >Pdf</a>
+                                </div>
                             </div>
                         </td>
                     </tr>

@@ -6,17 +6,19 @@ use App\Controllers\BaseController;
 use App\Models\Inventory\AreaModel;
 use App\Models\Inventory\ProductsModel;
 use App\Models\Inventory\UnidadesModel;
+use App\Models\Production\ProductionsProductsModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class ProductsController extends BaseController
 {
-    protected $productsModel, $areaModel, $unidadesModel;
+    protected $productsModel, $areaModel, $unidadesModel, $productsProductionModel;
 
     public function __construct()
     {
         $this->productsModel = new ProductsModel();
         $this->areaModel = new AreaModel();
         $this->unidadesModel = new UnidadesModel();
+        $this->productsProductionModel = new ProductionsProductsModel();
     }
 
     public function index()
@@ -32,7 +34,8 @@ class ProductsController extends BaseController
     {
         $areas = $this->areaModel->findAll();
         $unidades = $this->unidadesModel->findAll();
-        return view('inventory/products/new', compact('areas', 'unidades'));
+        $productsProduction = $this->productsProductionModel->findAll();
+        return view('inventory/products/new', compact('areas', 'unidades', 'productsProduction'));
     }
 
     public function create()
@@ -154,5 +157,11 @@ class ProductsController extends BaseController
         $this->productsModel->delete($id);
 
         return redirect()->to('inventory/products');
+    }
+
+    public function getProductionProductDetails(int $id)
+    {
+        $product = $this->productsProductionModel->find($id);
+        return $this->response->setJSON($product);
     }
 }

@@ -121,6 +121,7 @@ class EntriesController extends BaseController
 
         $exists = (bool) $this->productsSerialsModel
             ->where('serial', $serial)
+            ->where('estado', 'Disponible')
             ->countAllResults();
 
         return $this->response->setJSON(['exists' => $exists]);
@@ -133,6 +134,7 @@ class EntriesController extends BaseController
 
         $exis = $this->productsSerialsModel
             ->whereIn('serial', $list)
+            ->where('estado', 'Disponible')
             ->findColumn('serial');
 
         return $this->response->setJSON([
@@ -160,7 +162,7 @@ class EntriesController extends BaseController
                 'observacion'     => $post['observacion'] ?? null,
             ];
             $entryId = $this->entryModel->insert($dataEntry, true);
-            if (! $entryId) {
+            if (!$entryId) {
                 log_message('error', 'EntriesModel errors: ' . print_r($this->entryModel->errors(), true));
                 log_message('error', 'DB error: ' . json_encode($this->db->error()));
                 throw new \RuntimeException('No se pudo crear la entrada.');
@@ -169,7 +171,8 @@ class EntriesController extends BaseController
             // 2) Inserta cada detalle + sus seriales
             $productIds = $post['producto_id'];
             $quantities = $post['cantidad'];
-            $allSerials = $post['serials'] ?? []; // serials[0][], serials[1][], …
+            $allSerials = $post['serials'] ?? [];
+            $sedeId = session('inventory_user')['sede_id'];
 
             foreach ($productIds as $i => $productId) {
                 $qty = (int) ($quantities[$i] ?? 0);
@@ -184,54 +187,70 @@ class EntriesController extends BaseController
                     'cantidad'           => $qty,
                 ];
                 $detailId = $this->entriesDetailsModel->insert($detailData, true);
-                if (! $detailId) {
+                if (!$detailId) {
                     log_message('error', 'EntriesDetailsModel errors: ' . print_r($this->entriesDetailsModel->errors(), true));
                     log_message('error', 'DB error: ' . json_encode($this->db->error()));
                     throw new \RuntimeException("No se pudo guardar detalle para producto {$productId}.");
                 }
 
-                // 2.2) Inserta los seriales SIEMPRE que vengan en el array
+                // 2.2) Procesa los seriales
                 $serialsForThis = $allSerials[$i] ?? [];
-                if (! empty($serialsForThis)) {
+                if (!empty($serialsForThis)) {
                     foreach ($serialsForThis as $serial) {
-                        $serialData = [
-                            'inventory_product_id'         => $productId,
-                            'serial'                       => $serial,
-                            'estado'                       => 'disponible',
-                            'sede_id'                      => session('inventory_user')['sede_id'],
-                            'inventory_entries_details_id' => $detailId,
-                            'inventory_exits_details_id'   => null,
-                        ];
-                        $ok = $this->productsSerialsModel->insert($serialData);
-                        if (! $ok) {
-                            log_message('error', 'ProductsSerialModel errors: '
-                                . print_r($this->productsSerialsModel->errors(), true));
-                            log_message('error', 'DB error: '
-                                . json_encode($this->db->error(), JSON_PRETTY_PRINT));
-                            throw new \RuntimeException("No se pudo guardar el serial {$serial}.");
+                        // Verificar si el serial ya existe
+                        $existingSerial = $this->productsSerialsModel
+                            ->where('serial', $serial)
+                            ->where('inventory_product_id', $productId)
+                            ->first();
+
+                        if ($existingSerial) {
+                            // Verificar si está en estado permitido para actualizar
+                            $allowedStates = ['en Transito', 'Dañado'];
+
+                            if (in_array($existingSerial['estado'], $allowedStates)) {
+                                // Actualizar serial existente
+                                $updateData = [
+                                    'estado'                       => 'Disponible',
+                                    'sede_id'                      => $sedeId,
+                                    'inventory_entries_details_id' => $detailId,
+                                    'inventory_exits_details_id'   => null,
+                                    'updated_at'                   => date('Y-m-d H:i:s')
+                                ];
+
+                                $ok = $this->productsSerialsModel->update($existingSerial['id'], $updateData);
+                                if (!$ok) {
+                                    log_message('error', 'Error actualizando serial: ' . print_r($this->productsSerialsModel->errors(), true));
+                                    throw new \RuntimeException("No se pudo actualizar el serial {$serial}.");
+                                }
+                            } else {
+                                throw new \RuntimeException("El serial {$serial} ya existe y está en estado '{$existingSerial['estado']}', no se puede procesar.");
+                            }
+                        } else {
+                            // Insertar nuevo serial
+                            $serialData = [
+                                'inventory_product_id'         => $productId,
+                                'serial'                       => $serial,
+                                'estado'                       => 'Disponible',
+                                'sede_id'                      => $sedeId,
+                                'inventory_entries_details_id' => $detailId,
+                                'inventory_exits_details_id'   => null,
+                            ];
+
+                            $ok = $this->productsSerialsModel->insert($serialData);
+                            if (!$ok) {
+                                log_message('error', 'ProductsSerialModel errors: '
+                                    . print_r($this->productsSerialsModel->errors(), true));
+                                log_message('error', 'DB error: '
+                                    . json_encode($this->db->error(), JSON_PRETTY_PRINT));
+                                throw new \RuntimeException("No se pudo guardar el serial {$serial}.");
+                            }
                         }
                     }
                 }
 
                 // 2.3) Actualiza stock en inventory
-                $stockRow = $this->inventoryModel
-                    ->where('product_id', $productId)
-                    ->where('sede_id',    session('inventory_user')['sede_id'])
-                    ->first();
-
-                if ($stockRow) {
-                    $newStock = $stockRow['stock'] + $qty;
-                    $builder = $this->db->table($this->inventoryModel->table);
-                    $builder->set('stock', $newStock)
-                        ->where('product_id', $productId)
-                        ->where('sede_id',    session('inventory_user')['sede_id'])
-                        ->update();
-                } else {
-                    $this->inventoryModel->insert([
-                        'product_id' => $productId,
-                        'sede_id'    => session('inventory_user')['sede_id'],
-                        'stock'      => $qty,
-                    ]);
+                if (!$this->inventoryModel->incrementStock($productId, $sedeId, $qty)) {
+                    throw new \RuntimeException("No se pudo actualizar el stock para producto {$productId}.");
                 }
             }
 
@@ -376,37 +395,161 @@ class EntriesController extends BaseController
 
     public function generatePDF(int $id)
     {
+
+        // Configuración de mPDF
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4',
-            'font' => 'arial',
-            'margin_top' => 15,
+            'default_font' => 'helvetica',
+            'margin_top' => 25,
+            'margin_bottom' => 15,
+            'margin_left' => 15,
+            'margin_right' => 15,
             'margin_header' => 10,
             'margin_footer' => 10,
+            'orientation' => 'P'
         ]);
 
-        $mpdf->SetHTMLHeader('
-            <div style="width: 100%; padding: 0 20px; border-bottom: 2px solid #216E71; padding-bottom: 20px;">
-                <table style="width: 100%;">
+        $data_entries = [
+            'entries' => $this->entryModel->where('id', $id)->first(),
+            'details' => $this->entriesDetailsModel->where('inventory_entry_id', $id)->findAll(),
+            'data' => $this->getInventoryData($id),
+        ];
+
+        // Header del PDF
+        $mpdf->SetHTMLHeader($this->getHTMLHeader($data_entries));
+
+        // Footer del PDF
+        $mpdf->SetHTMLFooter($this->getHTMLFooter());
+
+        // Generar contenido HTML
+        $html = view('pdf/inventory/entradas/index', $data_entries);
+
+        // Escribir HTML al PDF
+        $mpdf->WriteHTML($html);
+
+        // Generar nombre del archivo
+        $filename = 'entrada_' . $data_entries['entries']['codigo'] . '.pdf';
+
+        // Mostrar PDF en el navegador
+        $mpdf->Output($filename, 'I');
+
+        exit;
+    }
+
+    private function getInventoryData(int $id)
+    {
+        // Obtener datos de la entrada principal
+        $entries = $this->entryModel
+            ->select('inventory_entries.*, sedes.sucursal as sede')
+            ->join('sedes', 'sedes.id = inventory_entries.sede_id')
+            ->where('inventory_entries.id', $id)
+            ->first();
+
+        // Obtener detalles de los productos
+        $details = $this->entriesDetailsModel
+            ->select('inventory_entries_details.*, inventory_products.codigo, inventory_products.nombre, inventory_products.descripcion, inventory_products.requiere_serie')
+            ->join('inventory_products', 'inventory_products.id = inventory_entries_details.product_id')
+            ->where('inventory_entry_id', $id)
+            ->findAll();
+
+        // Preparar estructura de productos con seriales
+        $productos = [];
+        $anexoLetra = 'A'; // Comenzar con la letra A para los anexos
+
+        foreach ($details as $index => $detalle) {
+            $item = $index + 1;
+
+            // Determinar si el producto requiere números de serie
+            $requiereSerie = (bool)$detalle['requiere_serie'];
+
+            // Obtener seriales si aplica
+            $seriales = [];
+            if ($requiereSerie) {
+                $seriales = $this->getSerialesPorDetalle($detalle['id']);
+            }
+
+            // Construir estructura del producto
+            $producto = [
+                'item' => $item,
+                'codigo' => $detalle['codigo'],
+                'nombre' => $detalle['nombre'],
+                'descripcion' => $detalle['descripcion'],
+                'cantidad' => $detalle['cantidad'],
+                'requiere_serie' => $requiereSerie,
+                'numero_serie' => $requiereSerie ? "Ver Anexo $anexoLetra" : 'No Aplica',
+                'anexo' => $requiereSerie ? $anexoLetra : null,
+                'seriales' => $seriales
+            ];
+
+            $productos[] = $producto;
+
+            // Avanzar a la siguiente letra solo si tiene seriales
+            if ($requiereSerie && !empty($seriales)) {
+                $anexoLetra++;
+            }
+        }
+
+        // Construir respuesta final
+        return [
+            'id' => $entries['id'],
+            'referencia' => $entries['codigo'],
+            'fecha_recepcion' => $entries['fecha_recepcion'],
+            'proveedor' => $entries['proveedor'],
+            'tipo_descripcion' => $entries['tipo'] . ' / ' . $entries['descripcion'],
+            'sede' => $entries['sede'],
+            'productos' => $productos,
+            'observaciones' => $entries['observacion']
+        ];
+    }
+
+    private function getSerialesPorDetalle($detalleId)
+    {
+        $seriales = $this->productsSerialsModel
+            ->select('serial, estado, sede_id, created_at')
+            ->where('inventory_entries_details_id', $detalleId)
+            ->orderBy('created_at', 'ASC')
+            ->findAll();
+
+        return $seriales;
+    }
+
+    private function getHTMLHeader($data)
+    {
+        return '
+            <div style="width: 100%; padding: 0 20px; border-bottom: 2px solid #216E71; padding-bottom: 15px;">
+                <table style="width: 100%; border-collapse: collapse;">
                     <tr>
                         <td style="width: 70%; text-align: left; vertical-align: bottom;">
-                            <div style="font-size: 20pt; font-weight: bold;">Reporte de Ingreso</div>
-                            <div style="margin-top: 5px;">
-                                <span>Referencia de Ingreso: ENT-2025-0001</span>
+                            <div style="font-size: 20pt; font-weight: bold; color: #216E71;">Reporte de Ingreso</div>
+                            <div style="margin-top: 5px; font-size: 12pt;">
+                                <span><strong>Referencia de Ingreso:</strong> ' . $data['entries']['codigo'] . '</span>
                             </div>
                         </td>
                         <td style="width: 30%; text-align: right; vertical-align: bottom;">
-                            <img src="' . base_url('assets/media/img/encabezado.png') . '" style="height: 50px;">
+                            <img src="' . base_url('assets/media/img/encabezado.png') . '" style="height: 50px; max-width: 150px;">
                         </td>
                     </tr>
                 </table>
             </div>
-        ');
+        ';
+    }
 
-        $html = view('pdf/inventory/entradas/index');
-
-        $mpdf->WriteHTML($html);
-        $mpdf->Output('entradas.pdf', 'I');
-        exit;
-    }   
+    private function getHTMLFooter()
+    {
+        return '
+            <div style="width: 100%; border-top: 1px solid #216E71; padding-top: 10px; font-size: 9pt; text-align: center; color: #666;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 50%; text-align: left;">
+                           
+                        </td>
+                        <td style="width: 50%; text-align: right;">
+                            Página {PAGENO} de {nbpg}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        ';
+    }
 }

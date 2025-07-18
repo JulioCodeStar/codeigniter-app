@@ -214,6 +214,9 @@ Salidas | Inventario - KYP Bioingeniería
                                 <div class="menu-item px-3">
                                     <a href="#" class="menu-link px-3" data-bs-url="<?= base_url('api/inventory/exits/delete/' . $exit['id']) ?>" data-bs-toggle="modal" data-bs-target="#eliminarModal">Eliminar</a>
                                 </div>
+                                <div class="menu-item px-3">
+                                    <a href="<?= base_url('api/inventory/exits/generate-pdf/' . $exit['id']) ?>" class="menu-link px-3" target="_blank">Pdf</a>
+                                </div>
                             </div>
                         </td>
                     </tr>

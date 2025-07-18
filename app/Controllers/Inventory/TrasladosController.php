@@ -3,6 +3,8 @@
 namespace App\Controllers\Inventory;
 
 use App\Controllers\BaseController;
+use App\Models\Inventory\EntriesDetailsModel;
+use App\Models\Inventory\EntriesModel;
 use App\Models\Inventory\ExitsDetailsModel;
 use App\Models\Inventory\ExitsModel;
 use App\Models\Inventory\InventoryModel;
@@ -16,7 +18,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class TrasladosController extends BaseController
 {
-    protected $sedeModel, $requirementModel, $productModel, $inventoryModel, $productsSerialsModel, $db, $trasladoModel, $trasladoDetailsModel, $exitModel, $exitsDetailsModel;
+    protected $sedeModel, $requirementModel, $productModel, $inventoryModel, $productsSerialsModel, $db, $trasladoModel, $trasladoDetailsModel, $exitModel, $exitsDetailsModel, $entriesModel, $entriesDetailsModel;
 
     public function __construct()
     {
@@ -29,6 +31,8 @@ class TrasladosController extends BaseController
         $this->trasladoDetailsModel = new TrasladosDetailsModel();
         $this->exitModel            = new ExitsModel();
         $this->exitsDetailsModel    = new ExitsDetailsModel();
+        $this->entriesModel         = new EntriesModel();
+        $this->entriesDetailsModel  = new EntriesDetailsModel();
 
         $this->db                   = \Config\Database::connect();
     }
@@ -54,16 +58,23 @@ class TrasladosController extends BaseController
         ];
         // Define transiciones para cada estado
         $allowedTransitions = [
-            'pendiente'    => ['aprobado', 'cancelado'],
-            'aprobado'     => ['empaquetando', 'cancelado'],
-            'empaquetando' => ['en transito', 'cancelado'],
-            'en transito'  => ['recibido', 'cancelado'],
-            'recibido'     => [],
-            'cancelado'    => [],
+            'pendiente'    => ['aprobado', 'empaquetando', 'en transito', 'recibido', 'cancelado'],
+            'aprobado'     => ['pendiente', 'empaquetando', 'en transito', 'recibido', 'cancelado'],
+            'empaquetando' => ['pendiente', 'aprobado', 'en transito', 'recibido', 'cancelado'],
+            'en transito'  => ['pendiente', 'aprobado', 'empaquetando', 'recibido', 'cancelado'],
+            'recibido'     => ['cancelado'],
+            'cancelado'    => ['pendiente', 'aprobado', 'empaquetando', 'recibido'],
         ];
 
+        // Contar todos los traslados
+        $totalTraslados = $this->trasladoModel->countAllResults();
+        $totalPendientes = $this->trasladoModel->where('estado', 'pendiente')->countAllResults();
+
+        $totalAprobados = $this->trasladoModel->where('estado', 'aprobado')->countAllResults();
+        $totalEnTraslado = $this->trasladoModel->where('estado', 'en tránsito')->countAllResults();
+
         if (session('inventory_user')['sede_id'] == 1) {
-            return view('inventory/traslados/index', compact('traslados', 'statusClass', 'allowedTransitions'));
+            return view('inventory/traslados/index', compact('traslados', 'statusClass', 'allowedTransitions', 'totalTraslados', 'totalPendientes', 'totalAprobados', 'totalEnTraslado'));
         } else {
             return redirect()->to(base_url('inventory'));
         }
@@ -334,6 +345,7 @@ class TrasladosController extends BaseController
                 'status'   => 200,
                 'traslado' => $traslado,
                 'codigo'   => $exit['codigo'] ?? null,
+                'id_salida'      => $exit['id'],
                 'details'  => $details,
             ]);
         } catch (\Exception $e) {
@@ -351,42 +363,135 @@ class TrasladosController extends BaseController
     {
         helper('filesystem');
         try {
-            if (! $this->request->isAJAX()) {
+            if (!$this->request->isAJAX()) {
                 throw new \RuntimeException('Solicitud inválida');
             }
-            $input     = $this->request->getJSON(true);       // obtiene el body JSON como array
-            $newStatus = $input['status']   ?? null;
+
+            $input = $this->request->getJSON(true);
+            $newStatus = $input['status'] ?? null;
+
             $allowed = [
-                'pendiente'    => ['aprobado', 'cancelado'],
-                'aprobado'     => ['empaquetando', 'cancelado'],
-                'empaquetando' => ['en transito', 'cancelado'],
-                'en transito'  => ['recibido', 'cancelado'],
-                'recibido'     => [],   // fin
-                'cancelado'    => [],   // fin
+                'pendiente'    => ['aprobado', 'empaquetando', 'en transito', 'recibido', 'cancelado'],
+                'aprobado'     => ['pendiente', 'empaquetando', 'en transito', 'recibido', 'cancelado'],
+                'empaquetando' => ['pendiente', 'aprobado', 'en transito', 'recibido', 'cancelado'],
+                'en transito'  => ['pendiente', 'aprobado', 'empaquetando', 'recibido', 'cancelado'],
+                'recibido'     => ['cancelado'],
+                'cancelado'    => ['pendiente', 'aprobado', 'empaquetando', 'en transito', 'recibido'],
             ];
 
+            // Obtener traslado y validar
             $traslado = $this->trasladoModel->find($id);
-            if (! $traslado) {
+            if (!$traslado) {
                 return $this->response->setStatusCode(404)
                     ->setJSON(['status' => 404, 'message' => 'Traslado no encontrado']);
             }
 
+            $sedeOrigen = $this->sedeModel->find($traslado['sede_origen']);
+            $sedeDestino = $this->sedeModel->find($traslado['sede_destino']);
+
+            $requirement = $this->requirementModel->find($traslado['requirement_id']);
+            if (!$requirement) {
+                return $this->response->setStatusCode(404)
+                    ->setJSON(['status' => 404, 'message' => 'Requerimiento no encontrado']);
+            }
+
+            // Validar transición de estados
             $current = $traslado['estado'];
-            if (! in_array($newStatus, $allowed[$current] ?? [])) {
+            if (!in_array($newStatus, $allowed[$current] ?? [])) {
                 return $this->response->setStatusCode(400)
                     ->setJSON(['status' => 400, 'message' => "No se puede pasar de {$current} a {$newStatus}"]);
             }
 
+            $this->db->transStart();
+
+            // Actualizar estados primero
             $this->trasladoModel->update($id, ['estado' => $newStatus]);
+            $this->requirementModel->update($requirement['id'], ['estado' => $newStatus]);
+
+            // Proceso para estado RECIBIDO
+            if ($newStatus === 'recibido') {
+                // 1. Registrar entrada en destino
+                $dataEntry = [
+                    'tipo' => 'Traslado',
+                    'descripcion' => "Traslado " . $traslado['codigo'] . " desde " . $sedeOrigen['sucursal'],
+                    'fecha_recepcion' => date('Y-m-d'),
+                    'responsable' => $requirement['nombre_solicitante'] ?? 'Sistema',
+                    'proveedor' => "desde la sede de " . $sedeOrigen['sucursal'],
+                    'sede_id' => $traslado['sede_destino'],
+                    'traslado_id' => $id,
+                ];
+
+                $entryId = $this->entriesModel->insert($dataEntry, true);
+
+                // 2. Obtener detalles del traslado
+                $trasladoDetails = $this->trasladoDetailsModel
+                    ->where('traslado_id', $id)
+                    ->findAll();
+
+                foreach ($trasladoDetails as $detail) {
+                    // Registrar detalle de entrada
+                    $entryDetailData = [
+                        'inventory_entry_id' => $entryId,
+                        'product_id' => $detail['producto_id'],
+                        'cantidad' => $detail['cantidad']
+                    ];
+
+                    $entryDetailId = $this->entriesDetailsModel->insert($entryDetailData, true);
+
+                    // 3. Manejar productos con serie
+                    $producto = $this->productModel->find($detail['producto_id']);
+
+                    if ($producto['requiere_serie']) {
+                        // Obtener seriales asociados a la salida
+                        $seriales = $this->productsSerialsModel
+                            ->where('inventory_exits_details_id', $detail['inventory_exits_details_id'])
+                            ->findAll();
+    
+                        foreach ($seriales as $serial) {
+                            // Actualizar cada serial
+                            $this->productsSerialsModel->update($serial['id'], [
+                                'estado' => 'Disponible',
+                                'sede_id' => $traslado['sede_destino'],
+                                'inventory_entries_details_id_dest' => $entryDetailId,
+                                'updated_at' => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                    }
+    
+                    // 4. Actualizar stock en destino (SIEMPRE, independientemente de si requiere serie o no)
+                    if (!$this->inventoryModel->incrementStock($detail['producto_id'], $traslado['sede_destino'], $detail['cantidad'])) {
+                        throw new \RuntimeException("No se pudo actualizar el stock en destino para producto {$detail['producto_id']}.");
+                    }
+
+                    // 5. Actualizar detalle de traslado con entrada
+                    $this->trasladoDetailsModel->update($detail['id'], [
+                        'inventory_entries_details_id' => $entryDetailId
+                    ]);
+                }
+            }
+
+            $this->db->transComplete();
+
+            if ($this->db->transStatus() === false) {
+                throw new \RuntimeException('Error en transacción, rollback efectuado.');
+            }
+
             return $this->response->setJSON([
                 'status'  => 200,
-                'message' => "Estado actualizado a “{$newStatus}”",
+                'message' => "Estado actualizado a \"{$newStatus}\"",
+                'data'    => [
+                    'traslado_id' => $id,
+                    'new_status' => $newStatus
+                ]
             ]);
         } catch (\Exception $e) {
             log_message('error', 'Error updateStatus(): ' . $e->getMessage());
             return $this->response
                 ->setStatusCode(500)
-                ->setJSON(['status' => 500, 'message' => 'Error interno al cambiar estado']);
+                ->setJSON([
+                    'status' => 500,
+                    'message' => 'Error interno al cambiar estado: ' . $e->getMessage()
+                ]);
         }
     }
 }

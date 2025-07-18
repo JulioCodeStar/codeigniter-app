@@ -273,6 +273,7 @@ $routes->group('api', function ($routes) {
       $routes->post('create', 'Inventory\ProductsController::create');
       $routes->post('delete/(:num)', 'Inventory\ProductsController::delete/$1');
       $routes->get('show/(:num)', 'Inventory\ProductsController::show/$1');
+      $routes->get('get-production-product-details/(:num)', 'Inventory\ProductsController::getProductionProductDetails/$1');
       $routes->post('edit/(:num)', 'Inventory\ProductsController::edit/$1');
     });
 
@@ -293,6 +294,7 @@ $routes->group('api', function ($routes) {
       $routes->post('create', 'Inventory\ExitController::create');
       $routes->post('delete/(:num)', 'Inventory\ExitController::delete/$1');
       $routes->get('show/(:num)', 'Inventory\ExitController::show/$1');
+      $routes->get('generate-pdf/(:num)', 'Inventory\ExitController::generatePDF/$1');
     });
 
     /* Stock */
@@ -305,6 +307,7 @@ $routes->group('api', function ($routes) {
       $routes->post('create', 'Inventory\RequirementsController::create');
       $routes->post('delete/(:num)', 'Inventory\RequirementsController::delete/$1');
       $routes->get('show/(:num)', 'Inventory\RequirementsController::show/$1');
+      $routes->get('generate-pdf/(:num)', 'Inventory\RequirementsController::generatePDF/$1');
     });
 
     /* Traslados */

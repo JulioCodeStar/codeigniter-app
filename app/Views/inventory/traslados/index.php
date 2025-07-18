@@ -77,7 +77,7 @@ Traslados | Inventario - KYP Bioingeniería
             </div>
             <div class="card-body p-0">
                 <h6 class="card-title">Total Traslados</h6>
-                <div class="card-number">3</div>
+                <div class="card-number"><?= $totalTraslados ?></div>
             </div>
         </div>
 
@@ -94,7 +94,7 @@ Traslados | Inventario - KYP Bioingeniería
             </div>
             <div class="card-body p-0">
                 <h6 class="card-title">Pendientes de Aprobación</h6>
-                <div class="card-number">8</div>
+                <div class="card-number"><?= $totalPendientes ?></div>
             </div>
         </div>
     </div>
@@ -109,7 +109,7 @@ Traslados | Inventario - KYP Bioingeniería
             </div>
             <div class="card-body p-0">
                 <h6 class="card-title">Aprobados</h6>
-                <div class="card-number">2</div>
+                <div class="card-number"><?= $totalAprobados ?></div>
             </div>
         </div>
     </div>
@@ -125,7 +125,7 @@ Traslados | Inventario - KYP Bioingeniería
             </div>
             <div class="card-body p-0">
                 <h6 class="card-title">En Traslado</h6>
-                <div class="card-number">1</div>
+                <div class="card-number"><?= $totalEnTraslado ?></div>
             </div>
         </div>
     </div>
@@ -344,9 +344,9 @@ Traslados | Inventario - KYP Bioingeniería
                                         Ver
                                     </a>
                                 </div>
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-bs-url="<?= base_url('api/inventory/traslados/delete/' . $traslado['id']) ?>" data-bs-toggle="modal" data-bs-target="#eliminarModal">Eliminar</a>
-                                </div>
+                                <!-- <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3" data-bs-url="<? //= base_url('api/inventory/traslados/delete/' . $traslado['id']) ?>" data-bs-toggle="modal" data-bs-target="#eliminarModal">Eliminar</a>
+                                </div> -->
                             </div>
                         </td>
                     </tr>
@@ -389,8 +389,8 @@ Traslados | Inventario - KYP Bioingeniería
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-danger">Ver Salida</button>
-                <button class="btn btn-warning">Ver Requerimiento</button>
+                <a href="" id="viewTrasladoSalida" target="_blank" class="btn btn-danger">Ver Salida</a>
+                <a href="" id="viewTrasladoRequerimiento" target="_blank" class="btn btn-warning">Ver Requerimiento</a>
                 <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
@@ -471,6 +471,8 @@ Traslados | Inventario - KYP Bioingeniería
                             'X-Requested-With': 'XMLHttpRequest'
                         }
                     });
+                    console.log(res);
+                    
                     const payload = await res.json();
                     if (!res.ok || payload.status !== 200) {
                         throw new Error(payload.message || 'Error al cargar el traslado');
@@ -515,6 +517,9 @@ Traslados | Inventario - KYP Bioingeniería
                     });
                     tbody.innerHTML = rows;
 
+                    document.getElementById('viewTrasladoSalida').href = `<?= base_url('api/inventory/exits/generate-pdf/') ?>${payload.id_salida}`;
+                    document.getElementById('viewTrasladoRequerimiento').href = `<?= base_url('api/inventory/requirements/generate-pdf/') ?>${payload.traslado.requirement_id}`;
+
                     // 3.5) Mostrar el modal
                     modal.show();
 
@@ -558,7 +563,22 @@ Traslados | Inventario - KYP Bioingeniería
                 });
                 if (!isConfirmed) return;
 
+                // Mostrar loading después de confirmar
+                Swal.fire({
+                    title: 'Procesando...',
+                    html: 'Guardando cambios... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 try {
+                    // Simular delay mínimo para mostrar el loading
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
                     const res = await fetch(`<?= base_url('api/inventory/traslados/update-status/') ?>${id}`, {
                         method: 'POST',
                         headers: {
@@ -574,6 +594,7 @@ Traslados | Inventario - KYP Bioingeniería
                         throw new Error(data.message || 'Error al cambiar estado');
                     }
 
+                    // Mostrar mensaje de éxito
                     Swal.fire({
                         text: data.message,
                         icon: 'success',
@@ -588,6 +609,7 @@ Traslados | Inventario - KYP Bioingeniería
 
                 } catch (err) {
                     console.error(err);
+                    // Mostrar mensaje de error
                     Swal.fire({
                         text: err.message || 'Error de red',
                         icon: 'error',
