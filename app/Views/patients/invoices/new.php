@@ -335,7 +335,7 @@ Gestion de Pacientes | KYP BIOINGENIERIA
 
           <div class="fv-row">
             <label class="form-label fw-bold fs-6 text-gray-700">Peso (kg.)</label>
-            <input type="text" class="form-control form-control-solid" name="peso" id="peso" placeholder="(opcional)" />
+            <input type="number" class="form-control form-control-solid" name="weight" id="weight" placeholder="(opcional)" />
           </div>
         </div>
         <!--end::Input group-->

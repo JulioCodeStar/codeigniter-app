@@ -17,7 +17,24 @@ class PatientController extends BaseController
   /* View Listado de Pacientes */
   public function index()
   {
-    $data['list'] = $this->patientModel->findAll();
+    $data['list'] = $this->patientModel
+        ->select('pacientes.*, 
+                 latest_contract.fecha_garantia, 
+                 latest_contract.contrato_id,
+                 CASE 
+                     WHEN latest_contract.contrato_id IS NULL THEN "sin contrato"
+                     WHEN latest_contract.fecha_garantia >= CURDATE() THEN "activa"
+                     ELSE "caducó"
+                 END as estado_contrato')
+        ->join('(SELECT paciente_id, 
+                        MAX(id) as contrato_id, 
+                        MAX(fecha_garantia) as fecha_garantia 
+                 FROM contratos 
+                 GROUP BY paciente_id) as latest_contract', 
+               'latest_contract.paciente_id = pacientes.id', 'left')
+        ->orderBy('pacientes.id', 'DESC')
+        ->findAll();
+    
     return view('patients/listado', $data);
   }
 

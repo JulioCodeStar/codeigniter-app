@@ -90,5 +90,5 @@ class Autoload extends AutoloadConfig
      *
      * @var list<string>
      */
-    public $helpers = ['menu', 'form', 'fecha', 'currency', 'cookie', 'apertura', 'csrf', 'permissions'];
+    public $helpers = ['menu', 'form', 'fecha', 'currency', 'cookie', 'apertura', 'csrf', 'permissions', 'money_letter'];
 }

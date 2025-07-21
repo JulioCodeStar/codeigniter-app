@@ -18,7 +18,7 @@ class InvoiceModel extends Model
     'encargado',
     'servicios_id',
     'jobs_id',
-    'peso',
+    'weight',
     'moneda',
     'monto',
     'aplica_descuento',
@@ -34,8 +34,6 @@ class InvoiceModel extends Model
     'aprobacion'
   ];
 
-  protected bool $allowEmptyInserts = false;
-
   // Dates
   protected $useTimestamps = true;
   protected $dateFormat    = 'datetime';
@@ -45,9 +43,6 @@ class InvoiceModel extends Model
   // Callbacks
   protected $allowCallbacks = true;
   protected $beforeInsert   = ['generateCod'];
-  protected $afterInsert    = [];
-  protected $beforeUpdate   = [];
-  protected $afterUpdate    = [];
 
   protected function generateCod(array $data)
   {

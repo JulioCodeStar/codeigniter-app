@@ -46,7 +46,7 @@ class ContractModel extends Model
 
   public function getContractById(int $id_contract)
   {
-    return $this->select('contratos.*, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, pacientes.dni, pacientes.direccion, pacientes.sede, jobs.descripcion AS trabajo, cotizaciones.peso, cotizaciones.ajustes, servicios.id AS servicios_id')
+    return $this->select('contratos.*, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, pacientes.dni, pacientes.direccion, pacientes.sede, pacientes.mayor_edad, pacientes.nombres_apoderado, pacientes.apellidos_apoderado, pacientes.dni_apoderado, pacientes.vinculo_apoderado, pacientes.tip_paciente, pacientes.edad, jobs.descripcion AS trabajo, cotizaciones.weight, cotizaciones.ajustes, servicios.id AS servicios_id')
       ->join('pacientes', 'pacientes.id = contratos.paciente_id', 'left')
       ->join('cotizaciones', 'cotizaciones.id = contratos.cotizacion_id', 'left')
       ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')

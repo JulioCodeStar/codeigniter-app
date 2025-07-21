@@ -77,7 +77,7 @@ class VentasAccesoriosModel extends Model
 
   public function getVentastById(int $id_ventas)
   {
-    return $this->select('ventas_accesorios.*, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, pacientes.dni, pacientes.direccion, pacientes.sede, jobs.descripcion AS trabajo, cotizaciones.peso, cotizaciones.ajustes, servicios.id AS servicios_id')
+    return $this->select('ventas_accesorios.*, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, pacientes.dni, pacientes.direccion, pacientes.sede, jobs.descripcion AS trabajo, cotizaciones.weight, cotizaciones.ajustes, servicios.id AS servicios_id')
       ->join('pacientes', 'pacientes.id = ventas_accesorios.paciente_id', 'left')
       ->join('cotizaciones', 'cotizaciones.id = ventas_accesorios.cotizacion_id', 'left')
       ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')

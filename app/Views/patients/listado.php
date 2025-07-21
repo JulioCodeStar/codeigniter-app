@@ -8,29 +8,29 @@ Gestion de Pacientes | KYP BIOINGENIERIA
 
 <?= $this->section('toolbar'); ?>
 
-  <h1
-    class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
-    Mantenimiento de Pacientes
-  </h1>
+<h1
+  class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+  Mantenimiento de Pacientes
+</h1>
 
-  <ul
-    class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+<ul
+  class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 
-    <li class="breadcrumb-item text-muted">Pacientes</li>
+  <li class="breadcrumb-item text-muted">Pacientes</li>
 
-    <li class="breadcrumb-item">
-      <span class="bullet bg-gray-500 w-5px h-2px"></span>
-    </li>
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
 
-    <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
+  <li class="breadcrumb-item text-muted">Gestión de Pacientes</li>
 
-    <li class="breadcrumb-item">
-      <span class="bullet bg-gray-500 w-5px h-2px"></span>
-    </li>
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
 
-    <li class="breadcrumb-item text-muted">Listado</li>
+  <li class="breadcrumb-item text-muted">Listado</li>
 
-  </ul>
+</ul>
 
 <?= $this->endSection(); ?>
 
@@ -155,7 +155,11 @@ Gestion de Pacientes | KYP BIOINGENIERIA
               </a>
             </td>
             <td><span class="badge badge-light-primary badge-lg">historial de procesos</span></td>
-            <td><span class="badge badge-light-warning badge-lg">garantía de mantenimiento</span></td>
+            <td><span class="badge badge-<?=
+                                          $row['estado_contrato'] == 'activa' ? 'success' : ($row['estado_contrato'] == 'sin contrato' ? 'primary' : 'danger')
+                                          ?>">
+                <?= ucfirst($row['estado_contrato']) ?>
+              </span></td>
             <td class="text-end">
 
               <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
@@ -327,7 +331,7 @@ Gestion de Pacientes | KYP BIOINGENIERIA
                         </div>
 
                         <div class="menu-item px-3">
-                          <a href="# target="_blank" class="menu-link px-3">
+                          <a href="# target=" _blank" class="menu-link px-3">
                             Transhumeral
                           </a>
                         </div>

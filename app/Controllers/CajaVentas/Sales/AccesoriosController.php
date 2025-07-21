@@ -22,8 +22,8 @@ class AccesoriosController extends BaseController
     $this->itemsModel       = new InvoiceListModel();
 
     $this->hoy              = date('Y-m-d');
-    $this->id_user          = session('caja_user')['id'];
-    $this->id_sede          = session('caja_user')['sede_id'];
+    $this->id_user          = session('caja_user')['id'] ?? null;
+    $this->id_sede          = session('caja_user')['sede_id'] ?? null;
   }
 
   public function index()

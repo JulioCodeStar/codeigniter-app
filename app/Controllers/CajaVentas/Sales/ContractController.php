@@ -22,8 +22,8 @@ class ContractController extends BaseController
     $this->itemsModel = new InvoiceListModel();
 
     $this->hoy = date('Y-m-d');
-    $this->id_user = session('caja_user')['id'];
-    $this->sede_id = session('caja_user')['sede_id'];
+    $this->id_user = session('caja_user')['id'] ?? null;
+    $this->sede_id = session('caja_user')['sede_id'] ?? null;
   }
 
   public function index()
@@ -149,17 +149,26 @@ class ContractController extends BaseController
     $listInvoice = $this->itemsModel->where('cotizacion_id', $contract['cotizacion_id'])->findAll();
 
     $data = [
-      'paciente' => mb_strtoupper($contract['nombres'] . ' ' . $contract['apellidos']),
-      'contract_date' => $contract['fecha_inicio'],
-      'cod_paciente' => $contract['cod_paciente'],
-      'dni' => $contract['dni'],
-      'direccion' => mb_strtoupper($contract['direccion']),
-      'sede' => $contract['sede'],
-      'logo' => base_url('assets/media/img/encabezado.png'),
-      'id_coti' => $listInvoice,
-      'peso' => $contract['peso'],
-      'ajustes' => $contract['ajustes'],
-      'trabajo' => mb_strtoupper($contract['trabajo']),
+      'paciente'            => mb_strtoupper($contract['nombres'] . ' ' . $contract['apellidos']),
+      'contract_date'       => $contract['fecha_inicio'],
+      'cod_paciente'        => $contract['cod_paciente'],
+      'dni'                 => $contract['dni'],
+      'direccion'           => mb_strtoupper($contract['direccion']),
+      'sede'                => $contract['sede'],
+      'logo'                => base_url('assets/media/img/encabezado.png'),
+      'id_coti'             => $listInvoice,
+      'peso'                => $contract['weight'],
+      'ajustes'             => $contract['ajustes'],
+      'trabajo'             => mb_strtoupper($contract['trabajo']),
+      'mayor_edad'          => $contract['mayor_edad'],
+      'nombres_apoderado'   => mb_strtoupper($contract['nombres_apoderado'] . ' ' . $contract['apellidos_apoderado']),
+      'dni_apoderado'       => $contract['dni_apoderado'],
+      'vinculo_apoderado'   => $contract['vinculo_apoderado'],
+      'tip_paciente'        => $contract['tip_paciente'],
+      'edad'                => $contract['edad'],
+      'total'               => moneda($contract['monto_total']),
+      'moneda'              => ($contract['moneda'] == 'PEN') ? 'S/. ' : 'US$ ',
+      'total_letter'        => money_to_words($contract['monto_total'], $contract['moneda']),
     ];
 
     $viewMap = [

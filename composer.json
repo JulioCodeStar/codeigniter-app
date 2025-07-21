@@ -13,6 +13,7 @@
         "php": "^8.1",
         "codeigniter4/framework": "^4.0",
         "firebase/php-jwt": "^6.11",
+        "luecano/numero-a-letras": "^3.0",
         "mpdf/mpdf": "^8.2",
         "phpoffice/phpspreadsheet": "^4.3",
         "ramsey/uuid": "^4.7"
