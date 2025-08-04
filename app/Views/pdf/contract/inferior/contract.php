@@ -322,6 +322,7 @@
                     <?php foreach ($id_coti as $item) : ?>
                         <li><?= $item['cantidad'] . ' ' . $item['title'] . ': ' . $item['descripcion'] ?></li>
                     <?php endforeach; ?>
+                    <li>Carnet de Membresía</li>
                 </ul>
             </div>
 
@@ -356,6 +357,7 @@
                     <?php foreach ($id_coti as $item) : ?>
                         <li><?= $item['cantidad'] . ' ' . $item['title'] . ': ' . $item['descripcion'] ?></li>
                     <?php endforeach; ?>
+                    <li>Carnet de Membresía</li>
                 </ul>
             </div>
 

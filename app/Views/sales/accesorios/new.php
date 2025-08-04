@@ -143,11 +143,6 @@ Contratos - KYP Bioingeniería
       </div>
     </div>
 
-
-    <button type="button" id="" class="btn btn-secondary">
-      Previsualizar
-    </button>
-
     <button id="kt_submit_form_accesorios" type="button" class="btn btn-primary">
       <span class="indicator-label">
         Guardar

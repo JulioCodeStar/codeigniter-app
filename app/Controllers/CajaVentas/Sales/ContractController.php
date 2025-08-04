@@ -7,23 +7,28 @@ use App\Models\InvoiceListModel;
 use App\Models\InvoiceModel;
 use App\Models\CajaVentas\ContractModel;
 use App\Models\CajaVentas\PagosModel;
+use App\Models\History\PatientProcessModel;
+use App\Models\History\ProcessServiceModel;
 use CodeIgniter\API\ResponseTrait;
 
 class ContractController extends BaseController
 {
   use ResponseTrait;
-  protected $hoy, $pagosModel, $contractModel, $invoiceModel, $itemsModel, $id_user, $sede_id;
+  protected $hoy, $pagosModel, $contractModel, $invoiceModel, $itemsModel, $id_user, $sede_id, $db, $processServiceModel, $patientProcessModel;
 
   public function __construct()
   {
-    $this->pagosModel = new PagosModel();
-    $this->contractModel = new ContractModel();
-    $this->invoiceModel = new InvoiceModel();
-    $this->itemsModel = new InvoiceListModel();
+    $this->pagosModel           = new PagosModel();
+    $this->contractModel        = new ContractModel();
+    $this->invoiceModel         = new InvoiceModel();
+    $this->itemsModel           = new InvoiceListModel();
+    $this->processServiceModel  = new ProcessServiceModel();
+    $this->patientProcessModel  = new PatientProcessModel();
 
-    $this->hoy = date('Y-m-d');
-    $this->id_user = session('caja_user')['id'] ?? null;
-    $this->sede_id = session('caja_user')['sede_id'] ?? null;
+    $this->hoy              = date('Y-m-d');
+    $this->id_user          = session('caja_user')['id'] ?? null;
+    $this->sede_id          = session('caja_user')['sede_id'] ?? null;
+    $this->db               = \Config\Database::connect();
   }
 
   public function index()
@@ -74,6 +79,8 @@ class ContractController extends BaseController
   {
     try {
 
+      $this->db->transStart();
+
       $data = [
         'paciente_id'     => $this->request->getPost('paciente_id'),
         'cotizacion_id'   => $this->request->getPost('id_cotizacion'),
@@ -96,10 +103,37 @@ class ContractController extends BaseController
           'moneda'        => $this->request->getPost('moneda'),
           'monto'         => $this->request->getPost('bono'),
           'user_id'       => $this->id_user,
-          'sede_id'         => $this->sede_id,
+          'sede_id'       => $this->sede_id,
         ];
 
         $this->pagosModel->insert($data_pagos);
+
+        // 3) Recuperar el servicio de la cotización
+        $cot = $this->invoiceModel->find($data['cotizacion_id']);
+        $servicioId = $cot['servicios_id'];
+
+        // 4) Obtener el PRIMER proceso para ese servicio
+        $primerProc = $this->processServiceModel
+          ->where('service_id', $servicioId)
+          ->orderBy('order', 'ASC')
+          ->first();
+
+        if ($primerProc) {
+          // 5) Insertar en paciente_procesos
+          $this->patientProcessModel->insert([
+            'contract_id'         => $query,
+            'process_id'          => $primerProc['id'],
+            'status'              => 'en_proceso',
+            'process_actual'      => 1,
+          ]);
+        }
+
+        $this->db->transComplete();
+
+        // Responder según AJAX o redirección normal
+        if ($this->db->transStatus() === false) {
+            throw new \Exception('Falló la transacción al crear contrato y proceso');
+        }
 
         if ($this->request->isAJAX()) {
           return $this->response
@@ -181,7 +215,9 @@ class ContractController extends BaseController
       throw new \Exception("Tipo de ficha inválido: " . $contract['servicios_id']);
     }
 
-    $ficha = $viewMap[$contract['servicios_id']];
+    if ($contract['tip_paciente'] == "Regular") {
+      $ficha = $viewMap[$contract['servicios_id']];
+    }
 
     $contract = view($ficha, $data);
 
@@ -356,9 +392,9 @@ class ContractController extends BaseController
     ]);
 
     $allPagos = $this->pagosModel->getPagosById($id, 'contrato', $index);
-    
+
     // Filtrar los pagos hasta el número de pago solicitado
-    $pagos = array_filter($allPagos, function($pago) use ($index) {
+    $pagos = array_filter($allPagos, function ($pago) use ($index) {
       return $pago['pago_nro'] <= $index;
     });
 
@@ -373,6 +409,9 @@ class ContractController extends BaseController
       'trabajo' => mb_strtoupper($pagos[0]['trabajo']),
       'pagos' => $pagos,
       'fecha' => fecha_dmy($pagos[$index - 1]['created_at']),
+      'mayor_edad' => $pagos[$index - 1]['mayor_edad'],
+      'nombres_apoderado' => $pagos[$index - 1]['nombres_apoderado'],
+      'apellidos_apoderado' => $pagos[$index - 1]['apellidos_apoderado'],
     ];
 
     $pagos_view = view('pdf/contract/pagos', $data);

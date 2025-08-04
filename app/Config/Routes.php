@@ -55,6 +55,13 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('pagos/(:num)', 'Patient\ContractController::pagos/$1');
   });
 
+  /* Historial */
+  $routes->group('history', [''], function ($routes) {
+    $routes->get('', 'History\HistoryController::index');
+    $routes->get('view/(:num)', 'History\HistoryController::viewResumen/$1');
+    $routes->get('new/(:num)', 'History\HistoryController::new/$1');
+  });
+
   /* Accesorios */
   $routes->group('accesorios', ['filter' => 'permission:gestion_pacientes.ventas_accesorios'], function ($routes) {
     $routes->get('', 'Patient\AccesoriosController::index');
@@ -153,6 +160,13 @@ $routes->group('api', function ($routes) {
   $routes->group('contract', function ($routes) {
     $routes->get('generate/(:num)', 'CajaVentas\Sales\ContractController::generatePdfContract/$1');
     $routes->get('generate/pagos/(:num)/(:num)', 'CajaVentas\Sales\ContractController::generatePdfPagosContract/$1/$2');
+  });
+
+  $routes->group('history', function ($routes) {
+    $routes->post('create', 'History\HistoryController::create');
+    $routes->post('completar-proceso/(:num)', 'History\HistoryController::completarProceso/$1');
+    $routes->get('ver-registro/(:num)', 'History\HistoryController::verRegistroDebug/$1');
+    $routes->get('generate/(:num)', 'History\HistoryController::generatePdfOneHistory/$1');
   });
 
   /* Accesorios */

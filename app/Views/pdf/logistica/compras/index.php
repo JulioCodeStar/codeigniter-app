@@ -205,23 +205,25 @@
         <div class="section" style="padding-top: 80px;">
             <table style="width: 100%;">
                 <tr>
-                    <td style="width: 50%; vertical-align: top; padding-right: 10px;">
-                        <div style="font-weight: bold;">Información del Proveedor</div>
-                        <div class="info-card">
-                            <div class="info-row">
-                                <span class="info-label">Empresa:</span>
-                                <span class="info-value">Servicios Técnicos Especializados S.A.</span>
+                    <?php if ($compra['proveedor_id'] != null) { ?>
+                        <td style="width: 50%; vertical-align: top; padding-right: 10px;">
+                            <div style="font-weight: bold;">Información del Proveedor</div>
+                            <div class="info-card">
+                                <div class="info-row">
+                                    <span class="info-label">Empresa:</span>
+                                    <span class="info-value"><?= $compra['empresa'] ?></span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Contacto:</span>
+                                    <span class="info-value"><?= $compra['telefono'] ?></span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Correo:</span>
+                                    <span class="info-value"><?= $compra['email'] ?></span>
+                                </div>
                             </div>
-                            <div class="info-row">
-                                <span class="info-label">Contacto:</span>
-                                <span class="info-value">Ing. Carlos Mendoza</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Correo:</span>
-                                <span class="info-value">contacto@serviciostecnicos.com</span>
-                            </div>
-                        </div>
-                    </td>
+                        </td>
+                    <?php } ?>
                     <td style="width: 50%; vertical-align: top; padding-left: 10px; text-align: left;">
                         <div style="font-weight: bold;">Información de la Compra</div>
                         <div class="info-card">

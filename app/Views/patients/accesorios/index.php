@@ -8,23 +8,23 @@ Gestion de Pacientes | KYP BIOINGENIERIA
 
 <?= $this->section('toolbar'); ?>
 
-  <h1
-    class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
-    Mantenimiento de Pacientes
-  </h1>
+<h1
+  class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+  Mantenimiento de Pacientes
+</h1>
 
-  <ul
-    class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+<ul
+  class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 
-    <li class="breadcrumb-item text-muted">Pacientes</li>
+  <li class="breadcrumb-item text-muted">Pacientes</li>
 
-    <li class="breadcrumb-item">
-      <span class="bullet bg-gray-500 w-5px h-2px"></span>
-    </li>
+  <li class="breadcrumb-item">
+    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+  </li>
 
-    <li class="breadcrumb-item text-muted">Ventas Accesorios</li>
+  <li class="breadcrumb-item text-muted">Ventas Accesorios</li>
 
-  </ul>
+</ul>
 
 <?= $this->endSection(); ?>
 
@@ -50,64 +50,44 @@ Gestion de Pacientes | KYP BIOINGENIERIA
     <div class="card-toolbar">
       <!--begin::Toolbar-->
       <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-        <!--begin::Filter-->
-        <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-          <i class="ki-duotone ki-filter fs-2">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>Filtros</button>
-        <!--begin::Menu 1-->
-        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
-          <!--begin::Header-->
-          <div class="px-7 py-5">
-            <div class="fs-5 text-gray-900 fw-bold">Filter Options</div>
+        <button type="button" class="btn btn-light-warning me-2" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+          <i class="ki-duotone ki-exit-down fs-2"><span class="path1"></span><span class="path2"></span></i>
+          Exportar
+        </button>
+
+        <div id="kt_datatable_example_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+          <!--begin::Menu item-->
+          <div class="menu-item px-3">
+            <a href="#" class="menu-link px-3" data-kt-export="copy">
+              Copy to clipboard
+            </a>
           </div>
-          <!--end::Header-->
-          <!--begin::Separator-->
-          <div class="separator border-gray-200"></div>
-          <!--end::Separator-->
-          <!--begin::Content-->
-          <div class="px-7 py-5" data-kt-user-table-filter="form">
-            <!--begin::Input group-->
-            <div class="mb-10">
-              <label class="form-label fs-6 fw-semibold">Role:</label>
-              <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-user-table-filter="role" data-hide-search="true">
-                <option></option>
-                <option value="Administrator">Administrator</option>
-                <option value="Analyst">Analyst</option>
-                <option value="Developer">Developer</option>
-                <option value="Support">Support</option>
-                <option value="Trial">Trial</option>
-              </select>
-            </div>
-            <!--end::Input group-->
-            <!--begin::Input group-->
-            <div class="mb-10">
-              <label class="form-label fs-6 fw-semibold">Two Step Verification:</label>
-              <select class="form-select form-select-solid fw-bold" data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true" data-kt-user-table-filter="two-step" data-hide-search="true">
-                <option></option>
-                <option value="Enabled">Enabled</option>
-              </select>
-            </div>
-            <!--end::Input group-->
-            <!--begin::Actions-->
-            <div class="d-flex justify-content-end">
-              <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6" data-kt-menu-dismiss="true" data-kt-user-table-filter="reset">Reset</button>
-              <button type="submit" class="btn btn-primary fw-semibold px-6" data-kt-menu-dismiss="true" data-kt-user-table-filter="filter">Apply</button>
-            </div>
-            <!--end::Actions-->
+          <!--end::Menu item-->
+          <!--begin::Menu item-->
+          <div class="menu-item px-3">
+            <a href="#" class="menu-link px-3" data-kt-export="excel">
+              Export as Excel
+            </a>
           </div>
-          <!--end::Content-->
+          <!--end::Menu item-->
+          <!--begin::Menu item-->
+          <div class="menu-item px-3">
+            <a href="#" class="menu-link px-3" data-kt-export="csv">
+              Export as CSV
+            </a>
+          </div>
+          <!--end::Menu item-->
+          <!--begin::Menu item-->
+          <div class="menu-item px-3">
+            <a href="#" class="menu-link px-3" data-kt-export="pdf">
+              Export as PDF
+            </a>
+          </div>
+          <!--end::Menu item-->
         </div>
-        <!--end::Menu 1-->
-        <!--end::Filter-->
-        <!--begin::Export-->
-        <button type="button" class="btn btn-light-primary me-3">
-          <i class="ki-duotone ki-exit-up fs-2">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>Exportar</button>
         <!--end::Export-->
+
+        <div id="kt_datatable_example_buttons" class="d-none"></div>
 
       </div>
       <!--end::Toolbar-->
@@ -197,7 +177,7 @@ Gestion de Pacientes | KYP BIOINGENIERIA
     let dt_accesorios;
 
     const initDatatable = () => {
-      dt_accesorios = $("#kt_table_contract").DataTable({
+      dt_accesorios = $("#kt_table_accesorios").DataTable({
         searchDelay: 500,
         responsive: true,
         processing: true,
@@ -207,6 +187,57 @@ Gestion de Pacientes | KYP BIOINGENIERIA
         "language": {
           "url": "<?= base_url('assets/i18n/Spanish.json') ?>"
         }
+      });
+    }
+
+    const exportButtons = () => {
+      const documentTitle = 'Ventas_Accesorios';
+      const columnasAExportar = [0, 1, 2, 3, 4, 5];
+      const buttons = new $.fn.dataTable.Buttons(dt_accesorios, {
+        buttons: [{
+            extend: 'copyHtml5',
+            title: documentTitle,
+            exportOptions: {
+              columns: columnasAExportar
+            }
+          },
+          {
+            extend: 'excelHtml5',
+            title: documentTitle,
+            exportOptions: {
+              columns: columnasAExportar
+            }
+          },
+          {
+            extend: 'csvHtml5',
+            title: documentTitle,
+            exportOptions: {
+              columns: columnasAExportar
+            }
+          },
+          {
+            extend: 'pdfHtml5',
+            title: documentTitle,
+            exportOptions: {
+              columns: columnasAExportar
+            }
+          }
+        ]
+      }).container().appendTo($('#kt_datatable_example_buttons'));
+
+      // Hook dropdown menu click event to datatable export buttons
+      const exportButtons = document.querySelectorAll('#kt_datatable_example_export_menu [data-kt-export]');
+      exportButtons.forEach(exportButton => {
+        exportButton.addEventListener('click', e => {
+          e.preventDefault();
+
+          // Get clicked export value
+          const exportValue = e.target.getAttribute('data-kt-export');
+          const target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+          // Trigger click event on hidden datatable export buttons
+          target.click();
+        });
       });
     }
 
@@ -220,6 +251,7 @@ Gestion de Pacientes | KYP BIOINGENIERIA
     return {
       init: function() {
         initDatatable();
+        exportButtons();
         handleSearchAccesorios();
       }
     }

@@ -85,6 +85,7 @@ class Filters extends BaseFilters
                     'api/inventory/entries/check-serial',
                     'api/inventory/entries/check-serials',
                     'api/inventory/traslados/update-status/*',
+                    'api/history/completar-proceso/*',
                 ]
             ],
             // 'invalidchars',

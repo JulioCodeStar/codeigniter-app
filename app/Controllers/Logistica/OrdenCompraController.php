@@ -113,7 +113,10 @@ class OrdenCompraController extends BaseController
             'margin_footer' => 10,
         ]);
 
-        $compra = $this->compraModel->find($id);
+        $compra = $this->compraModel
+            ->select('orden_compra.*, proveedores.*')
+            ->join('proveedores', 'proveedores.id = orden_compra.proveedor_id', 'left')
+            ->find($id);
 
         $view = 'pdf/logistica/compras/index';
 

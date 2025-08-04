@@ -31,7 +31,7 @@ class ConsentimientoModel extends Model
         ->join('servicios', 'servicios.id = cotizaciones.servicios_id', 'left')
         ->join('jobs', 'jobs.id = cotizaciones.jobs_id', 'left')
         ->join('pacientes', 'pacientes.id = contratos.paciente_id', 'left')
-        ->where('consentimiento.id', $id)
+        ->where('contratos.id', $id)
         ->first();
 
       return $query;

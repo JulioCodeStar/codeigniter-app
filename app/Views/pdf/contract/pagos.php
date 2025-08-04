@@ -218,8 +218,14 @@
                     <td>
                         <div class="signature-content">
                             <hr class="signature-line">
+                            <?php if ($mayor_edad == "Si") { ?>
                             <div class="signature-name"><?= $paciente ?></div>
                             <div>EL CLIENTE</div>
+                            <?php } ?>
+                            <?php if ($mayor_edad == "No") { ?>
+                            <div class="signature-name"><?= $nombres_apoderado . ' ' . $apellidos_apoderado ?></div>
+                            <div>EL REPRESENTANTE LEGAL</div>
+                            <?php } ?>
                         </div>
                     </td>
                 </tr>

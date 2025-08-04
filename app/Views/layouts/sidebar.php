@@ -119,7 +119,7 @@
             <!--end:Managment Patients Title-->
 
             <!--begin:Pacientes Section-->
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('patient|invoice|contract|accesorios|citas|managment|consentimiento', 'parent') ?>">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('patient|invoice|contract|accesorios|citas|managment|consentimiento|history', 'parent') ?>">
               <span class="menu-link">
                 <span class="menu-icon">
                   <i class="ki-duotone ki-user fs-2"><span class="path1"></span><span class="path2"></span></i>
@@ -128,7 +128,7 @@
                 <span class="menu-arrow"></span>
               </span>
 
-              <div class="menu-sub menu-sub-accordion <?= set_active_menu(['patient|invoice|contract|accesorios|citas|managment|consentimiento'], 'sub') ?>">
+              <div class="menu-sub menu-sub-accordion <?= set_active_menu(['patient|invoice|contract|accesorios|citas|managment|consentimiento|history'], 'sub') ?>">
 
                 <!-- Gestión de Pacientes -->
                 <?php if (show_if_permission(['gestion_pacientes.pacientes.listado', 'gestion_pacientes.pacientes.create'])): ?>
@@ -200,6 +200,14 @@
                   </div>
                 <?php endif; ?>
 
+                <!-- Historial de Pacientes -->
+                <div class="menu-item">
+                  <a class="menu-link <?= set_active_menu('history', 'link') ?>" href="<?= base_url('history') ?>">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title">Historial de Pacientes</span>
+                  </a>
+                </div>
+
                 <!-- Ventas Accesorios -->
                 <?php if (show_if_permission('gestion_pacientes.ventas_accesorios')): ?>
                   <div class="menu-item">
@@ -268,7 +276,7 @@
 
 
 
-          <?php if (show_if_permission(permisos_logistica())): ?> 
+          <?php if (show_if_permission(permisos_logistica())): ?>
             <!--begin:Managment Logística Title-->
             <div class="menu-item pt-5">
               <div class="menu-content">
@@ -294,41 +302,41 @@
               <div class="menu-sub menu-sub-accordion <?= set_active_menu('logistica', 'sub') ?>">
                 <?php if (show_if_permission(['logistica.orden_de_compra.listado', 'logistica.orden_de_compra.create', 'logistica.orden_de_compra.proveedores'])): ?>
                   <!--begin:Orden Compra item-->
-                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('logistica/orden-compra|logistica/proveedor', 'sub') ?>">
-                      <span class="menu-link">
-                        <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                        <span class="menu-title">Orden Compra</span>
-                        <span class="menu-arrow"></span>
-                      </span>
-                      <div class="menu-sub menu-sub-accordion menu-active-bg">
-                        <?php if (show_if_permission('logistica.orden_de_compra.proveedores')): ?>
-                          <div class="menu-item">
-                            <a class="menu-link <?= set_active_menu('logistica/proveedor', 'link') ?>" href="<?= base_url('logistica/proveedor') ?>">
-                              <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                              <span class="menu-title">Proveedores</span>
-                            </a>
-                          </div>
-                        <?php endif; ?>
+                  <div data-kt-menu-trigger="click" class="menu-item menu-accordion <?= set_active_menu('logistica/orden-compra|logistica/proveedor', 'sub') ?>">
+                    <span class="menu-link">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">Orden Compra</span>
+                      <span class="menu-arrow"></span>
+                    </span>
+                    <div class="menu-sub menu-sub-accordion menu-active-bg">
+                      <?php if (show_if_permission('logistica.orden_de_compra.proveedores')): ?>
+                        <div class="menu-item">
+                          <a class="menu-link <?= set_active_menu('logistica/proveedor', 'link') ?>" href="<?= base_url('logistica/proveedor') ?>">
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                            <span class="menu-title">Proveedores</span>
+                          </a>
+                        </div>
+                      <?php endif; ?>
 
-                        <?php if (show_if_permission('logistica.orden_de_compra.listado')): ?>
-                          <div class="menu-item">
-                            <a class="menu-link <?= set_active_menu('logistica/orden-compra', 'link') ?>" href="<?= base_url('logistica/orden-compra') ?>">
-                              <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                              <span class="menu-title">Listado</span>
-                            </a>
-                          </div>
-                        <?php endif; ?>
+                      <?php if (show_if_permission('logistica.orden_de_compra.listado')): ?>
+                        <div class="menu-item">
+                          <a class="menu-link <?= set_active_menu('logistica/orden-compra', 'link') ?>" href="<?= base_url('logistica/orden-compra') ?>">
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                            <span class="menu-title">Listado</span>
+                          </a>
+                        </div>
+                      <?php endif; ?>
 
-                        <?php if (show_if_permission('logistica.orden_de_compra.create')): ?>
-                          <div class="menu-item">
-                            <a class="menu-link <?= set_active_menu('logistica/orden-compra/new', 'link') ?>" href="<?= base_url('logistica/orden-compra/new') ?>">
-                              <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                              <span class="menu-title">Nuevo Registro</span>
-                            </a>
-                          </div>
-                        <?php endif; ?>
-                      </div>
+                      <?php if (show_if_permission('logistica.orden_de_compra.create')): ?>
+                        <div class="menu-item">
+                          <a class="menu-link <?= set_active_menu('logistica/orden-compra/new', 'link') ?>" href="<?= base_url('logistica/orden-compra/new') ?>">
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                            <span class="menu-title">Nuevo Registro</span>
+                          </a>
+                        </div>
+                      <?php endif; ?>
                     </div>
+                  </div>
                   <!--end:Orden Compra item-->
                 <?php endif; ?>
 
@@ -450,7 +458,7 @@
               </div>
               <!--end:Seguimiento de Producción -->
             <?php endif; ?>
-          <!--end:Logística item-->
+            <!--end:Logística item-->
           <?php endif; ?>
           <!--end:Managment Logística Title-->
 

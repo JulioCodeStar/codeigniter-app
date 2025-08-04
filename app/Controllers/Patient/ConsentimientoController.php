@@ -156,12 +156,12 @@ class ConsentimientoController extends BaseController
     $consen = $this->consentimientoModel->getConsentimientoById($id);
 
     $data = [
-      'paciente' => mb_strtoupper($consen['nombres'] . ' ' . $consen['apellidos']),
-      'trabajo' => mb_strtoupper($consen['trabajo']),
-      'dni' => $consen['dni'],
-      'items' => json_decode($consen['items'], true),
-      'logo' => base_url('assets/media/img/encabezado.png'),
-      'sede' => $consen['sede'],
+      'paciente'  => mb_strtoupper($consen['nombres'] . ' ' . $consen['apellidos']),
+      'trabajo'   => mb_strtoupper($consen['trabajo']),
+      'dni'       => $consen['dni'],
+      'items'     => json_decode($consen['items'], true),
+      'logo'      => base_url('assets/media/img/encabezado.png'),
+      'sede'      => $consen['sede'],
     ];
 
     $view = 'pdf/Consentimiento/index';
@@ -205,12 +205,12 @@ class ConsentimientoController extends BaseController
     $consen = $this->consentimientoModel->getConsentimientoById($id);
 
     $data = [
-      'paciente' => mb_strtoupper($consen['nombres'] . ' ' . $consen['apellidos']),
-      'trabajo' => mb_strtoupper($consen['trabajo']),
-      'dni' => $consen['dni'],
-      'items' => json_decode($consen['items'], true),
-      'logo' => base_url('assets/media/img/encabezado.png'),
-      'sede' => $consen['sede'],
+      'paciente'  => mb_strtoupper($consen['nombres'] . ' ' . $consen['apellidos']),
+      'trabajo'   => mb_strtoupper($consen['trabajo']),
+      'dni'       => $consen['dni'],
+      'items'     => json_decode($consen['items'], true),
+      'logo'      => base_url('assets/media/img/encabezado.png'),
+      'sede'      => $consen['sede'],
     ];
 
     $view = 'pdf/Consentimiento/carta_final';
@@ -254,13 +254,13 @@ class ConsentimientoController extends BaseController
     $consen = $this->consentimientoModel->getConsentimientoById($id);
 
     $data = [
-      'paciente' => mb_strtoupper($consen['nombres'] . ' ' . $consen['apellidos']),
-      'trabajo' => mb_strtoupper($consen['trabajo']),
-      'dni' => $consen['dni'],
+      'paciente'  => mb_strtoupper($consen['nombres'] . ' ' . $consen['apellidos']),
+      'trabajo'   => mb_strtoupper($consen['trabajo']),
+      'dni'       => $consen['dni'],
       'direccion' => $consen['direccion'],
-      'items' => json_decode($consen['items'], true),
-      'logo' => base_url('assets/media/img/encabezado.png'),
-      'sede' => $consen['sede'],
+      'items'     => json_decode($consen['items'], true),
+      'logo'      => base_url('assets/media/img/encabezado.png'),
+      'sede'      => $consen['sede'],
     ];
 
     $view = 'pdf/Consentimiento/imagen';

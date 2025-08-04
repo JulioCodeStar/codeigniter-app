@@ -253,14 +253,14 @@ class PagosModel extends Model
       ->join("($subquery) as p", 'p.id = pagos.id', 'left');
 
     if ($modulo === 'contrato') {
-      $builder->select('contratos.fecha_inicio, contratos.moneda, contratos.monto_total, CONCAT(pacientes.nombres, " ", pacientes.apellidos) AS paciente, pacientes.dni, pacientes.cod_paciente, sedes.sucursal AS sede, jobs.descripcion AS trabajo')
+      $builder->select('contratos.fecha_inicio, contratos.moneda, contratos.monto_total, CONCAT(pacientes.nombres, " ", pacientes.apellidos) AS paciente, pacientes.dni, pacientes.cod_paciente, pacientes.mayor_edad, pacientes.nombres_apoderado, pacientes.apellidos_apoderado, sedes.sucursal AS sede, jobs.descripcion AS trabajo')
         ->join('contratos', 'pagos.referencia_id = contratos.id', 'left')
         ->join('pacientes', 'contratos.paciente_id = pacientes.id', 'left')
         ->join('sedes', 'contratos.sede_id = sedes.id', 'left')
         ->join('cotizaciones', 'contratos.cotizacion_id = cotizaciones.id', 'left')
         ->join('jobs', 'cotizaciones.jobs_id = jobs.id', 'left');
     } else if ($modulo === 'venta') {
-      $builder->select('ventas_accesorios.fecha_inicio, ventas_accesorios.moneda, ventas_accesorios.monto_total, ventas_accesorios.n_boleta, CONCAT(pacientes.nombres, " ", pacientes.apellidos) AS paciente, pacientes.dni, pacientes.cod_paciente, sedes.sucursal AS sede, jobs.descripcion AS trabajo')
+      $builder->select('ventas_accesorios.fecha_inicio, ventas_accesorios.moneda, ventas_accesorios.monto_total, ventas_accesorios.n_boleta, CONCAT(pacientes.nombres, " ", pacientes.apellidos) AS paciente, pacientes.dni, pacientes.cod_paciente, pacientes.mayor_edad, pacientes.nombres_apoderado, pacientes.apellidos_apoderado,, sedes.sucursal AS sede, jobs.descripcion AS trabajo')
         ->join('ventas_accesorios', 'pagos.referencia_id = ventas_accesorios.id', 'left')
         ->join('pacientes', 'ventas_accesorios.paciente_id = pacientes.id', 'left')
         ->join('sedes', 'ventas_accesorios.sede_id = sedes.id', 'left')

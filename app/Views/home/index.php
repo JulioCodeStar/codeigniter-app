@@ -116,24 +116,12 @@
      </div>
  </div>
 
- <style>
-  /* Clase para tarjetas con borde en hover */
-  .card-hover-border {
-    border: 1px solid var(--bs-light);
-    transition: border-color .2s, border-width .2s;
-  }
-  .card-hover-border:hover {
-    border-color: var(--bs-primary);
-    border-width: 2px;
-  }
-</style>
-
  <div class="my-10">
      <h1 class="mb-4 text-center pb-4">Módulos del Sistema</h1>
      <div class="row g-4">
          <!-- Gestión de Pacientes -->
          <div class="col-12 col-md-6 col-lg-4">
-             <div class="card h-100 card-hover-border">
+             <div class="card h-100 border-light shadow-sm" onmouseover="this.classList.add('shadow')" onmouseout="this.classList.remove('shadow')">
                  <div class="card-body d-flex flex-column">
                      <div class="d-flex align-items-start mb-3">
                          <div class="p-3 bg-primary bg-opacity-10 rounded">
@@ -156,7 +144,7 @@
 
          <!-- Cotizaciones (seleccionado) -->
          <div class="col-12 col-md-6 col-lg-4">
-             <div class="card h-100 card-hover-border">
+             <div class="card h-100 border-light shadow-sm" onmouseover="this.classList.add('shadow')" onmouseout="this.classList.remove('shadow')">
                  <div class="card-body d-flex flex-column">
                      <div class="d-flex align-items-start mb-3">
                          <div class="p-3 bg-success bg-opacity-10 rounded">
@@ -179,7 +167,7 @@
 
          <!-- Contratos -->
          <div class="col-12 col-md-6 col-lg-4">
-             <div class="card h-100 card-hover-border">
+             <div class="card h-100 border-light shadow-sm" onmouseover="this.classList.add('shadow')" onmouseout="this.classList.remove('shadow')">
                  <div class="card-body d-flex flex-column">
                      <div class="d-flex align-items-start mb-3">
                          <div class="p-3 bg-warning bg-opacity-10 rounded">
@@ -202,7 +190,7 @@
 
          <!-- Citas Médicas -->
          <div class="col-12 col-md-6 col-lg-4">
-             <div class="card h-100 card-hover-border">
+             <div class="card h-100 border-light shadow-sm" onmouseover="this.classList.add('shadow')" onmouseout="this.classList.remove('shadow')">
                  <div class="card-body d-flex flex-column">
                      <div class="d-flex align-items-start mb-3">
                          <div class="p-3 bg-warning bg-opacity-10 rounded">
@@ -225,7 +213,7 @@
 
          <!-- Facturación -->
          <div class="col-12 col-md-6 col-lg-4">
-             <div class="card h-100 card-hover-border">
+             <div class="card h-100 border-light shadow-sm" onmouseover="this.classList.add('shadow')" onmouseout="this.classList.remove('shadow')">
                  <div class="card-body d-flex flex-column">
                      <div class="d-flex align-items-start mb-3">
                          <div class="p-3 bg-success bg-opacity-10 rounded">
@@ -248,7 +236,7 @@
 
          <!-- Reportes -->
          <div class="col-12 col-md-6 col-lg-4">
-             <div class="card h-100 card-hover-border">
+             <div class="card h-100 border-light shadow-sm" onmouseover="this.classList.add('shadow')" onmouseout="this.classList.remove('shadow')">
                  <div class="card-body d-flex flex-column">
                      <div class="d-flex align-items-start mb-3">
                          <div class="p-3 bg-info bg-opacity-10 rounded">

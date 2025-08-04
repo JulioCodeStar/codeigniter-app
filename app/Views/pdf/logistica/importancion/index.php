@@ -114,6 +114,13 @@
         </div>
     <?php endforeach; ?>
 
+    <div class="notes-section" style="margin-top: 20px; border-top: 2px solid #ccc; padding-top: 10px;">
+        <h3 style="margin-bottom: 10px; color: #333;">Notas</h3>
+        <div style="font-size: 9pt;">
+            <?= $importacion['observaciones'] ?>
+        </div>
+    </div>
+
 </body>
 
 </html>

@@ -42,35 +42,41 @@ class InvoiceModel extends Model
 
   // Callbacks
   protected $allowCallbacks = true;
-  protected $beforeInsert   = ['generateCod'];
+  protected $beforeInsert   = ['generarCodigo'];
 
-  protected function generateCod(array $data)
+  protected function generarCodigo(array $data)
   {
-    $prefix = 'COT-';
+    // Si el campo ya viene seteado, no lo modificamos
+    if (isset($data['data']['cod_cotizacion']) && !empty($data['data']['cod_cotizacion'])) {
+      return $data;
+    }
 
-    // Buscar la última secuencia del día
-    $lastCode = $this->where('cod_cotizacion LIKE', $prefix . '%')
-      ->orderBy('id', 'DESC')
-      ->first();
+    // Obtener el último código de orden de compra
+    $lastRecord = $this->orderBy('cod_cotizacion', 'DESC')->first();
 
-    if ($lastCode) {
-      // Extraer el número secuencial
-      $lastNumber = (int) substr($lastCode['cod_cotizacion'], -7);
-      $sequence = str_pad($lastNumber + 1, 7, '0', STR_PAD_LEFT);
+    // Obtener el año actual
+    $currentYear = date('Y');
+
+    // Si no hay registros previos, empezamos con COT-YYYY-0001
+    if (empty($lastRecord)) {
+      $newCode = "COT-{$currentYear}-0001";
     } else {
-      // Primera cotización del día
-      $sequence = '0000001';
+      // Extraer el número del último código
+      preg_match('/COT-([0-9]{4})-([0-9]{4})/', $lastRecord['cod_cotizacion'], $matches);
+      if (isset($matches[2])) {
+        $lastNumber = intval($matches[2]);
+        $newNumber = $lastNumber + 1;
+        $newCode = sprintf("COT-%s-%04d", $currentYear, $newNumber);
+      } else {
+        // Si el formato no coincide, empezamos desde 0001
+        $newCode = "COT-{$currentYear}-0001";
+      }
     }
 
-    $codigo = $prefix . $sequence;
-
-    if (!isset($data['data']['cod_cotizacion'])) {
-      $data['data']['cod_cotizacion'] = $codigo;
-    }
-
+    // Asignar el nuevo código al data
+    $data['data']['cod_cotizacion'] = $newCode;
     return $data;
   }
-
   public function getInvoiceAll()
   {
     return $this->select('cotizaciones.*, pacientes.id AS paciente_id, pacientes.nombres, pacientes.apellidos, pacientes.cod_paciente, servicios.descripcion AS servicio, jobs.descripcion AS trabajo')
